@@ -1,60 +1,320 @@
-<div>
-    <label>Tipos</label>
-    <select>
-    <option>Débitos contra fazenda pública - tributários</option>
-    <option>Débitos contra fazenda pública - não tributários</option>
-    <option>Créditos fazendários</option>
-    <option>Débitos / Créditos entre particulares</option>
-    <option>Abatimentos</option>
-    </select>
-</div> 
-<div>
-    <pre>LANÇAMENTOS</pre>
-    <label for="valor">Valor</label>
-    <input type="text" id="valor" name="valor"/>
-    <label for="valor">Correção Monetária?</label>
-    <input type="checkbox" id="correcao" name="correcao"/>
-</div>
-<div>
-    <label>Índice</label>
-    <select>
-    <option>IPCA-E</option>
-    <option>IGP-M</option>
-    <option>TR</option>
-    <option>Lei 6899/81</option>
-    <option>UFIR/RJ</option>
-    </select>
-</div>
-<div>
-    <label for="dataDeInicio">Data de Início</label>
-    <input type="date" id="dataDeInicio" name="dataDeInicio"/>
-    <label for="dataDeTermino">Data de Término</label>
-    <input type="date" id="dataDeTermino" name="dataDeTermino"/>
-</div>
-<div>
-    <pre>JUROS</pre>
-    <label>Periodicidade</label>
-    <select>
-        <option>Mensal</option>
-        <option>Anual</option>
-    </select>
-</div>
-<div>
-    <label>Índice</label>
-    <select>
-    <option>SELIC</option>
-    <option>POUPANÇA(Atual)</option>
-    <option>POUPANÇA(Antiga)</option>
-    <option>Código Civil 6% / 0,5 % ao mês</option>
-    <option>Código Civil 12% / 6 % ao mes</option>
-    </select>
-</div>
-<div>
-    <label for="dataDeInicio">Data de Início</label>
-    <input type="date" id="dataDeInicio" name="dataDeInicio"/>
-    <label for="dataDeTermino">Data de Término</label>
-    <input type="date" id="dataDeTermino" name="dataDeTermino"/>
-</div>
-<div>
-    <button type="button" onClick="addEntry()">Incluir Lançamento (+)</button>
-</div>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+
+<mat-card>
+
+    <mat-card-content>
+
+        <form id="htmlData" class="container" [formGroup]="formCalc">
+            <!--<form class="container" [formGroup]="formCadastro">-->
+
+            <div fxLayoutGap="15px">
+                <label>Tipos</label>
+
+                <mat-form-field style="width: 25%;" appearance="outline">
+                    <mat-select>
+                        <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
+                        <mat-option value="Ntributado">Débitos contra fazenda pública - não tributários</mat-option>
+                        <mat-option value="creditos">Créditos fazendários</mat-option>
+                        <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
+                        <mat-option value="abatimentos">Abatimentos</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </div>
+            <br>
+            <section>
+                <pre>LANÇAMENTOS</pre>
+                <div fxLayout="row" fxLayoutGap="15px">
+                    <div>
+                        <label for="valor">Valor</label>
+                        <mat-form-field appearance="outline">
+                            <input formControlName="fcValorLanca" matInput currencyMask
+                                [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
+                        </mat-form-field>
+                    </div>
+
+
+                    <div>
+
+                        <label>Índice</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select formControlName="fcIndiceLanca">
+                                <mat-option value="IPCA-E">IPCA-E</mat-option>
+                                <mat-option value="IGP-M">IGP-M</mat-option>
+                                <mat-option value="TR">TR</mat-option>
+                                <mat-option value="SELIC">SELIC</mat-option>
+
+                                <mat-option value="ufir_rj">UFIR/RJ</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                    </div>
+                    <div class="divTop">
+                        <br>
+                        <label>Correção Monetaria ? </label>
+                        <mat-checkbox style="margin-left: 15px;"></mat-checkbox>
+
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutGap="20px">
+                    <label for="dataDeInicio">Data de Início</label>
+                    <input formControlName="fcDtIniLanca" type="date" id="dataDeInicio" name="dataDeInicio" />
+                    <label for="dataDeTermino">Data de Término</label>
+                    <input formControlName="fcDtFimLanca" type="date" id="dataDeTermino" name="dataDeTermino" />
+                    <button mat-raised-button color="primary" (click)="addTbl()"
+                        style="background-color: #3099FF;">Incluir Lançamento (+)
+                    </button>
+                </div>
+                <div>
+
+                </div>
+                <br>
+
+                <div class="example-container mat-elevation-z2">
+
+                    <mat-table #table [dataSource]="dataSourceLanca">
+                        <ng-container matColumnDef="select">
+                            <mat-header-cell *matHeaderCellDef>
+
+                            </mat-header-cell>
+
+                            <mat-cell *matCellDef="let row">
+
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="delete" class="coluna">
+                            <mat-header-cell *matHeaderCellDef class="coluna">Excluir
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab"
+                                    title="Clique para excluir" (click)="$event.stopPropagation(); 
+                                        $event ? selection.toggle(row) : null;
+                                        selection.isSelected(row);
+                                        removeSelectedRows('ServTec') ">
+
+                            </mat-cell>
+                            
+                        </ng-container>
+
+                        <ng-container matColumnDef="position" class="coluna" >
+                            <mat-header-cell *matHeaderCellDef class="coluna"> Nº
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element; let i = index"  > {{i + 1}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                            <mat-footer-cell *matFooterCellDef >Total</mat-footer-cell>
+                        </ng-container>
+
+                        
+
+                        <ng-container matColumnDef="indice">
+                            <mat-header-cell *matHeaderCellDef> Indice</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.indice}} </mat-cell>
+                            
+                        </ng-container>
+
+                        <ng-container matColumnDef="dtIni">
+                            <mat-header-cell *matHeaderCellDef> Data Inicio </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dtIni}} </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="dtFim">
+                            <mat-header-cell *matHeaderCellDef> Data Fim </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dtFim}} </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="dias">
+                            <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="valor">
+                            <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.valor | currency:'BRL'}} </mat-cell>
+                                <mat-footer-cell *matFooterCellDef >SUM</mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="noData">
+                            <mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumnsLanc.length">
+                                Nenhum lançamento cadastrado.
+                            </mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="check" class="coluna">
+                            <mat-header-cell *matHeaderCellDef class="coluna">
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <mat-icon class="iconValidTab" *ngIf="element.position > 0">done
+                                </mat-icon>
+                            </mat-cell>
+                            
+                        </ng-container>
+
+
+                        <mat-header-row *matHeaderRowDef="displayedColumnsLanc"></mat-header-row>
+                        
+                        <mat-footer-row *matFooterRowDef="['noData']" [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0" ></mat-footer-row>
+                        <!--
+                        <mat-footer-row *matFooterRowDef="['indice']" [hidden]="dataSourceLanca && dataSourceLanca.data.length <= 0"></mat-footer-row>
+                        -->
+
+                        
+                        <mat-row *matRowDef="let row; columns: displayedColumnsLanc;" (click)="selection.toggle(row)">
+                        </mat-row>
+
+                        
+                        
+
+
+
+
+
+                    </mat-table>
+
+                </div>
+
+
+            </section>
+            <br>
+            <pre>JUROS</pre>
+            <div fxLayout="row" fxLayoutGap="20px">
+
+
+                <label>Periodicidade</label>
+                <mat-form-field appearance="outline">
+                    <mat-select formControlName="fcPeriodoJuros">
+                        <mat-option value="dd">Diario</mat-option>
+                        <mat-option value="mm">Mensal</mat-option>
+                        <mat-option value="yyyy">Anual</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                <label>Índice</label>
+                <mat-form-field appearance="outline">
+                    <mat-select formControlName="fcIndiceJuros">
+                        <mat-option>SELIC</mat-option>
+                        <mat-option>POUPANÇA(Atual)</mat-option>
+                        <mat-option>POUPANÇA(Antiga)</mat-option>
+                        <mat-option>Código Civil 6% / 0,5 % ao mês</mat-option>
+                        <mat-option>Código Civil 12% / 6 % ao mes</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </div>
+
+            <div fxLayout="row" fxLayoutGap="20px">
+
+                <label for="dataDeInicio">Data de Início</label>
+                <input formControlName="fcDtIniJuros" type="date" id="dataDeInicio" name="dataDeInicio" />
+                <label for="dataDeTermino">Data de Término</label>
+                <input formControlName="fcDtFimJuros" type="date" id="dataDeTermino" name="dataDeTermino" />
+                <button mat-raised-button color="primary" style="background-color: #3099FF;"
+                    onClick="addEntry()">Incluir Lançamento (+)</button>
+
+            </div>
+            <br>
+            <div class="example-container mat-elevation-z2">
+
+                <mat-table #table [dataSource]="dataSourceJuros">
+                    <ng-container matColumnDef="select">
+                        <mat-header-cell *matHeaderCellDef>
+
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="delete" class="coluna">
+                        <mat-header-cell *matHeaderCellDef class="coluna">Excluir
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab" title="Clique para excluir"
+                                (click)="$event.stopPropagation(); 
+                                    $event ? selection.toggle(row) : null;
+                                    selection.isSelected(row);
+                                    removeSelectedRows('ServTec') ">
+
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="position" class="coluna">
+                        <mat-header-cell *matHeaderCellDef class="coluna"> Nº
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
+                    </ng-container>
+
+                    
+
+                    <ng-container matColumnDef="indice">
+                        <mat-header-cell *matHeaderCellDef> Indice</mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.indice}} </mat-cell>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="dtIni">
+                        <mat-header-cell *matHeaderCellDef> Data Inicio </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.dtIni}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dtFim">
+                        <mat-header-cell *matHeaderCellDef> Data Fim </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.dtFim}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dias">
+                        <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="valor">
+                        <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.valor}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="check" class="coluna">
+                        <mat-header-cell *matHeaderCellDef class="coluna">
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                            <mat-icon class="iconValidTab" *ngIf="element.position > 0">done
+                            </mat-icon>
+                        </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
+                    </mat-row>
+
+                </mat-table>
+
+                <div *ngIf="this.dataSourceJuros.data.length == 0">
+                    Nenhuma taxa de juros cadastrada.
+                </div>
+            </div>
+
+        </form>
+
+
+    </mat-card-content>
+    <div style="text-align: center;">
+
+        <br>
+        <br>
+        <div>
+            <button mat-raised-button color="primary" style="background-color: #3099FF;" (click)="openPDF()">Visualizar
+                <mat-icon>visibility</mat-icon>
+            </button>
+        </div>
+
+
+        <br> <br>
+        <div>
+            <p>{{ datahoje }}</p>
+        </div>
+    </div>
+</mat-card>
