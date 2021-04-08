@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef,Injectable } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import { CalcService } from '../services/calc.service'
 import {
   FormBuilder,
@@ -21,9 +21,10 @@ const pdfFontsX = require('pdfmake-unicode/dist/pdfmake-unicode.js');
 pdfMakeX.vfs = pdfFontsX.pdfMake.vfs;
 import * as pdfMake from 'pdfmake/build/pdfmake';
 const dateFormat = require('dateformat');
+const moment = require('moment');
 
 
-import  { responseIndice } from '../model/responseIndice.model'
+import { responseIndice } from '../model/responseIndice.model'
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -38,7 +39,7 @@ export class CalcComponent implements OnInit {
 
   constructor(public service: CalcService) { }
   //  public users: User[] = [];
-  
+
   public formCalc = new FormGroup({
     //Lançmentos
     fcLancametos: new FormControl(""),
@@ -46,6 +47,7 @@ export class CalcComponent implements OnInit {
     fcDtFimLanca: new FormControl(""),
     fcValorLanca: new FormControl(""),
     fcIndiceLanca: new FormControl(""),
+    fcTipos: new FormControl(""),
     // Juros
     fcDtIniJuros: new FormControl(""),
     fcDtFimJuros: new FormControl(""),
@@ -58,6 +60,9 @@ export class CalcComponent implements OnInit {
   // @ViewChild('htmlData') htmlData:ElementRef;
 
   dados: any = [];
+
+  isActive = false;
+
 
   //datahoje = dateFormat(Date.now(), "dddd  mmm  yyyy, hh:MM:ss");
 
@@ -92,11 +97,13 @@ export class CalcComponent implements OnInit {
     "indice",
     "dias",
     "valor",    
+    "juros",
+    "valorCorr",
     "check",
   ];
 
   displayedColumnsF = ['indice', 'valor'];
-  
+
 
   ngOnInit(): void {
     console.log("OOOO", this.dataSourceJuros.data.length)
@@ -104,63 +111,86 @@ export class CalcComponent implements OnInit {
   }
 
 
-  public difDays() {
-    let dt1;
-    let dt2;
-    if (this.formCalc.get("fcDtIniLanca")?.value != "" && this.formCalc.get("fcDtFimLanca")?.value != "") {
-      dt1 = new Date(this.formCalc.get("fcDtIniLanca")?.value);
-      dt2 = new Date(this.formCalc.get("fcDtFimLanca")?.value);
-      return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
-    } else {
-      return 0
-    }
+  days360(dateA: any, dateB: any) {
+    //var dateA = new Date(this.formCalc.get("fcDtIniLanca")?.value);
+    //var dateB = new Date(this.formCalc.get("fcDtFimLanca")?.value);
 
+    dateA = new Date(dateA);
+    dateB = new Date(dateB);
+    
+    var dayA = dateA.getDate();
+    var dayB = dateB.getDate();
 
+    if (this.lastDayOfFebruary(dateA) && this.lastDayOfFebruary(dateB))
+      dayB = 30;
+
+    if (dayA == 31 && this.lastDayOfFebruary(dateA))
+      dayA = 30;
+
+    if (dayA == 30 && dayB == 31)
+      dayB = 30;
+
+    if(dayA == 31){
+      dayA = 30;
+    }  
+    if(dayB == 31){
+      dayB = 30;
+    }  
+    
+    var days = ((dateB.getFullYear() - dateA.getFullYear()) * 360) + (((dateB.getMonth() + 1) - (dateA.getMonth() + 1)) * 30) + (dayB - dayA);
+    return days ;
   }
 
+  lastDayOfFebruary(date: any) {
+
+    var lastDay = new Date(date.getFullYear(), 2, 1);
+    console.log("Last Dau", lastDay)
+    return date.getDate() == lastDay;
+  }
+
+  
 
   public addTbl() {
-    console.log("Entrou")//let dados = [];
     
-   // console.log('evente', evento)
     const evento = this.formCalc.get("fcIndiceLanca")?.value;
-    var datePipe = new DatePipe('pt-br');
-    const dat = responseIndice;
-    const data_ini =  datePipe.transform( this.formCalc.get('fcDtIniLanca')?.value, 'dd-MM-YYYY');
-    const data_fim = datePipe.transform( this.formCalc.get('fcDtFimLanca')?.value, 'dd-MM-YYYY');
+    moment.locale('pt-BR');
+    const dat = responseIndice;    
 
-    console.log('DT INI', data_ini)
-    console.log('DT FIM', data_fim)
+    let data_ini = "" 
+    let data_fim = ""    
+    
+    let dt1 = (this.formCalc.get("fcDtIniLanca")?.value);
+    let dt2 = (this.formCalc.get("fcDtFimLanca")?.value);
 
-    this.service.getIndice(evento, data_ini , data_fim).subscribe((res: any) => {
-      this.ResponseIndice = res.content
-      console.log('Json',res);            
+    data_ini = moment(dt1).format('DD-MM-YYYY');
+    data_fim = moment(dt2).format('DD-MM-YYYY');    
+
+    this.service.getIndice(evento, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
+      this.ResponseIndice = res.content      
       this.setCalc(res.content);
     })
-
     
-    // this.dataSource = new MatTableDataSource<Element>(this.dataTable);
   }
-  
+
 
 
   public openPDF(): void {
-    const data = this.datahoje.toString();    
+    const data = this.datahoje.toString();
     const docDefinition = {
-      
-      content: [        
+
+      content: [
         {
-        table: {
-          headerRows: 1,
-          widths: ['*', 'auto', 100, '*'],
-          body: [
-            ['First', 'Second', 'Third', 'Последняя'],
-            ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
-          ]
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto', 100, '*'],
+            body: [
+              ['First', 'Second', 'Third', 'Последняя'],
+              ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
+              [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+            ]
+          },
         },
-      },
-      { qr: 'text in QR' }
+        { qr: 'text in QR' }
       ],
       /*
       footer: function(currentPage, pageCount) { 
@@ -178,72 +208,98 @@ export class CalcComponent implements OnInit {
     };
 
 
-    pdfMake.createPdf(docDefinition).open({}, window);
+    pdfMake.createPdf(docDefinition).open({});
 
-    
+
 
   }
   /*
 
-  */
-
-
+    
   public getValue(evento: string) {
-
+    
     console.log('evente', evento)
     var datePipe = new DatePipe('pt-br');
     const dat = responseIndice;
-    const data_ini =  datePipe.transform( this.formCalc.get('fcDtIniLanca')?.value, 'dd-MM-YYYY');
-    const data_fim = datePipe.transform( this.formCalc.get('fcDtFimLanca')?.value, 'dd-MM-YYYY');
+    const data_ini = datePipe.transform(this.formCalc.get('fcDtIniLanca')?.value, 'dd-MM-YYYY');
+    const data_fim = datePipe.transform(this.formCalc.get('fcDtFimLanca')?.value, 'dd-MM-YYYY');
 
-    console.log('DT INI', data_ini)
-    console.log('DT FIM', data_fim)
+    console.log('DT INI', data_ini?.toString())
+    console.log('DT FIM', data_fim?.toString())
 
-    this.service.getIndice(evento, data_ini , data_fim).subscribe((res: any) => {
+    this.service.getIndice(evento, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
       this.ResponseIndice = res.content
-      console.log('Json',res);            
+      console.log('Json', res);
       this.setCalc(res.content);
     })
-      
-    
-
   }
-  setCalc(data: any){
-    let maior = 0
-    
-    let day = this.difDays()
-    let respIndice;
 
-    data.map((x:any)=>{
-      if(x.acumulado > maior ){
-        maior = x.acumulado
+  */
+
+  setCalc(data: any) {
+    let maior = 0
+    let dtIni = "";
+    let dtFim = "";
+    let Juros = 0
+    let days2003 = 0
+
+    dtIni = this.formCalc.get("fcDtIniLanca")?.value;
+    dtFim = this.formCalc.get("fcDtFimLanca")?.value;
+
+    // Função para calcular calcular juros anteriores a 2003
+    if(dtIni < "2003-01-10"){
+      console.log("menor");
+      console.log("Diif",this.days360(dtIni,"2003-01-10"));
+      let dd = (((0.06)/360) * this.days360(dtIni,"2003-01-10") );
+      dd = dd 
+      Juros = (dd + 1) * this.formCalc.get("fcValorLanca")?.value
+      //console.log("DDD", dd );
+      console.log("Juros", Juros );
+    }
+    // Função para calcular calcular juros posteriores a 2003
+    if(dtIni > "2003-01-10"){      
+      //console.log("Diif",this.days360(dtIni,dtFim));
+      let dd = (((0.12)/360) * this.days360(dtIni,dtFim) );
+      dd = dd 
+      Juros = (dd ) * this.formCalc.get("fcValorLanca")?.value
+      console.log("DDD", dd );
+      console.log("Juros", Juros );
+      
+    }
+
+
+    let day = this.days360(dtIni,dtFim);    
+    let respIndice;
+    
+    //console.log('dtIni', dtIni)
+    //console.log('dtDim', dtFim)
+    
+
+    let total = 0;
+    let total2 = 0;
+    data.map((x: any) => {
+      total = total + x.valor;
+      if (x.acumulado > maior) {
+        maior = x.acumulado;
         respIndice = x.nome;
+    
       }
-    
+
     })
-    
-    
-    console.log("respIndice",respIndice)
+    console.log("Juros", Juros );
     this.dados.push({
-      dtIni: this.formCalc.get("fcDtIniLanca")?.value,
-      dtFim: this.formCalc.get("fcDtFimLanca")?.value,
+      dtIni: dtIni,
+      dtFim: dtFim,
       indice: respIndice,
       dias: day,
-      valor: maior * this.formCalc.get("fcValorLanca")?.value
+      valor:  this.formCalc.get("fcValorLanca")?.value, 
+      juros: Juros,
+      valorCorr: (maior * this.formCalc.get("fcValorLanca")?.value) + Juros
     });
-    //this.dataTableJuros = dados;
+    
     this.dataTableLanca = this.dados
-    //console.log("DDDDD", dados)
-    //console.log("dataTableJuros", this.dataTableLanca)
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
-  }
-  public getIgpm(evento: string) {
 
-    console.log('evente', evento)
-    // debugger
-    this.service.getIgmp().subscribe((res: any) => {
-      console.log(res._embedded);
-    })
   }
 
 
@@ -254,7 +310,7 @@ export interface Element {
   dtFim: Date;
   indice: string;
   dias: number;
-  valor:number
+  valor: number
 }
 export interface ElementLanc {
   dtIni: Date;
@@ -263,5 +319,5 @@ export interface ElementLanc {
   indice: string;
   dias: number;
   valor: number
-  
+
 }

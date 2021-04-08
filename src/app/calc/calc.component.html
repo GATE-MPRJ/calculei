@@ -16,20 +16,24 @@
                 <label>Tipos</label>
 
                 <mat-form-field style="width: 25%;" appearance="outline">
-                    <mat-select>
+                    <mat-select formControlName="fcTipos">
                         <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
+                        <!-- Nâo aparecer 6.899/81 -->
                         <mat-option value="Ntributado">Débitos contra fazenda pública - não tributários</mat-option>
-                        <mat-option value="creditos">Créditos fazendários</mat-option>
+
                         <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
+                        <!-- Nâo aparecer 11.960/2009 -->
+
                         <mat-option value="abatimentos">Abatimentos</mat-option>
                     </mat-select>
                 </mat-form-field>
 
             </div>
             <br>
+
             <section>
                 <pre>LANÇAMENTOS</pre>
-                <div fxLayout="row" fxLayoutGap="15px">
+                <div fxLayout="row" fxLayoutGap="15px" class="lancamentos">
                     <div>
                         <label for="valor">Valor</label>
                         <mat-form-field appearance="outline">
@@ -48,18 +52,49 @@
                                 <mat-option value="IGP-M">IGP-M</mat-option>
                                 <mat-option value="TR">TR</mat-option>
                                 <mat-option value="SELIC">SELIC</mat-option>
+                                <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
+                                    TJ/RJ LEI 11.960/2009</mat-option>
+                                <!--(formCadastro.controls.FcDano.value > 0)-->
 
-                                <mat-option value="ufir_rj">UFIR/RJ</mat-option>
+                                <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
+                                    TJ/RJ LEI 6.899/81</mat-option>
                             </mat-select>
                         </mat-form-field>
 
                     </div>
+                    <!--
                     <div class="divTop">
                         <br>
                         <label>Correção Monetaria ? </label>
                         <mat-checkbox style="margin-left: 15px;"></mat-checkbox>
 
                     </div>
+
+                    <div class="ui-overlaypanel" [hidden]="!isActive">
+                        <div class="header" class="mat-elevation-z8">
+                            <h1>Lançamentos</h1>
+                            <div class="separator"></div>
+                        </div>
+                        <div class="contente">
+
+                            <div style="padding-top: 10px;">
+                                Lançamentos podem ser de 2 tipos, lançamentos de crédito ou pagamento.
+                            </div>
+                            <div style="padding-top: 10px;">
+                                Lançamentos de crédito correspondem aos valores oriundos de decisões judiciais, custas,
+                                despesas etc, que eventualmente podem
+                                ser corrigidas por um determinado período de tempo.
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <button mat-button (click)="isActive = !isActive">
+                        <span class="material-icons">
+                            info
+                        </span>
+                    </button>
+                    -->
                 </div>
                 <div fxLayout="row" fxLayoutGap="20px">
                     <label for="dataDeInicio">Data de Início</label>
@@ -75,9 +110,9 @@
                 </div>
                 <br>
 
-                <div class="example-container mat-elevation-z2">
+                <div class="example-container ">
 
-                    <mat-table #table [dataSource]="dataSourceLanca">
+                    <mat-table #table [dataSource]="dataSourceLanca" class="mat-elevation-z8">
                         <ng-container matColumnDef="select">
                             <mat-header-cell *matHeaderCellDef>
 
@@ -99,46 +134,62 @@
                                         removeSelectedRows('ServTec') ">
 
                             </mat-cell>
-                            
+
                         </ng-container>
 
-                        <ng-container matColumnDef="position" class="coluna" >
+                        <ng-container matColumnDef="position" class="coluna">
                             <mat-header-cell *matHeaderCellDef class="coluna"> Nº
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let element; let i = index"  > {{i + 1}} </mat-cell>
+                            <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
                             <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-                            <mat-footer-cell *matFooterCellDef >Total</mat-footer-cell>
+                            <mat-footer-cell *matFooterCellDef>Total</mat-footer-cell>
                         </ng-container>
 
-                        
+
 
                         <ng-container matColumnDef="indice">
-                            <mat-header-cell *matHeaderCellDef> Indice</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef> Índice de correção monetária</mat-header-cell>
                             <mat-cell *matCellDef="let element"> {{element.indice}} </mat-cell>
-                            
+
                         </ng-container>
 
                         <ng-container matColumnDef="dtIni">
                             <mat-header-cell *matHeaderCellDef> Data Inicio </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.dtIni}} </mat-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dtIni | date: 'dd/MM/yyyy'}} </mat-cell>
                         </ng-container>
 
                         <ng-container matColumnDef="dtFim">
                             <mat-header-cell *matHeaderCellDef> Data Fim </mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.dtFim}} </mat-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dtFim | date: 'dd/MM/yyyy'}} </mat-cell>
                         </ng-container>
 
                         <ng-container matColumnDef="dias">
                             <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
                             <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
-                            <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
                         </ng-container>
+
+                        <ng-container matColumnDef="juros">
+                            <mat-header-cell *matHeaderCellDef> Juros </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.juros| currency:'BRL'}} </mat-cell>
+                        </ng-container>
+
                         <ng-container matColumnDef="valor">
                             <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
                             <mat-cell *matCellDef="let element">
                                 {{element.valor | currency:'BRL'}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef >SUM</mat-footer-cell>
+                            <mat-footer-cell *matFooterCellDef>SUM</mat-footer-cell>
                         </ng-container>
+
+                        <ng-container matColumnDef="valorCorr">
+                            <mat-header-cell *matHeaderCellDef> Valor Total </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.valorCorr | currency:'BRL'}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef>SUM</mat-footer-cell>
+                        </ng-container>
+
+
+
                         <ng-container matColumnDef="noData">
                             <mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumnsLanc.length">
                                 Nenhum lançamento cadastrado.
@@ -151,23 +202,34 @@
                                 <mat-icon class="iconValidTab" *ngIf="element.position > 0">done
                                 </mat-icon>
                             </mat-cell>
-                            
-                        </ng-container>
 
+                        </ng-container>
+                        <!--
+                        <ng-container matColumnDef="header-row-first-group">
+                            <mat-header-cell *matHeaderCellDef 
+                                [style.text-align]="center" [attr.colspan]="2">  </mat-header-cell>
+                          </ng-container>
+                          
+                          
+                          <ng-container matColumnDef="header-row-second-group">
+                            <mat-header-cell *matHeaderCellDef [attr.colspan]="2" style="margin-left: 40px;"> Second group </mat-header-cell>
+                          </ng-container>
+                        
+                          <ng-container matColumnDef="header-row-tre-group">
+                            <mat-header-cell *matHeaderCellDef [attr.colspan]="2"> Tree group </mat-header-cell>
+                          </ng-container>
+                           
+                          <mat-header-row *matHeaderRowDef="['header-row-first-group', 'header-row-second-group','header-row-tre-group']"></mat-header-row>
+                          -->
 
                         <mat-header-row *matHeaderRowDef="displayedColumnsLanc"></mat-header-row>
-                        
-                        <mat-footer-row *matFooterRowDef="['noData']" [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0" ></mat-footer-row>
-                        <!--
-                        <mat-footer-row *matFooterRowDef="['indice']" [hidden]="dataSourceLanca && dataSourceLanca.data.length <= 0"></mat-footer-row>
-                        -->
+                        <mat-footer-row *matFooterRowDef="['noData']" [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"></mat-footer-row>
 
-                        
                         <mat-row *matRowDef="let row; columns: displayedColumnsLanc;" (click)="selection.toggle(row)">
                         </mat-row>
 
-                        
-                        
+
+
 
 
 
@@ -250,7 +312,7 @@
                         <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
                     </ng-container>
 
-                    
+
 
                     <ng-container matColumnDef="indice">
                         <mat-header-cell *matHeaderCellDef> Indice</mat-header-cell>
