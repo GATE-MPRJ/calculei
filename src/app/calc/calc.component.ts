@@ -26,6 +26,7 @@ const moment = require('moment');
 
 import { responseIndice } from '../model/responseIndice.model'
 import { Observable } from 'rxjs';
+import { validateHorizontalPosition } from '@angular/cdk/overlay';
 
 @Injectable()
 @Component({
@@ -33,6 +34,7 @@ import { Observable } from 'rxjs';
   templateUrl: './calc.component.html',
   styleUrls: ['./calc.component.scss']
 })
+
 
 
 export class CalcComponent implements OnInit {
@@ -47,6 +49,7 @@ export class CalcComponent implements OnInit {
     fcDtFimLanca: new FormControl(""),
     fcValorLanca: new FormControl(""),
     fcIndiceLanca: new FormControl(""),
+    FcJuros: new FormControl(""),
     fcTipos: new FormControl(""),
     // Juros
     fcDtIniJuros: new FormControl(""),
@@ -86,6 +89,8 @@ export class CalcComponent implements OnInit {
   public ResponseIndice: responseIndice[] = [];
   //public ResponseIndice: Observable<responseIndice>;
   //ResponseIndice = [];
+  SumTotal = 0;
+  public SumTotalCorr = 0;
   dataTableLanca = [];
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca);
   displayedColumnsLanc = [
@@ -96,7 +101,7 @@ export class CalcComponent implements OnInit {
     "dtFim",
     "indice",
     "dias",
-    "valor",    
+    "valor",
     "juros",
     "valorCorr",
     "check",
@@ -117,7 +122,7 @@ export class CalcComponent implements OnInit {
 
     dateA = new Date(dateA);
     dateB = new Date(dateB);
-    
+
     var dayA = dateA.getDate();
     var dayB = dateB.getDate();
 
@@ -130,15 +135,15 @@ export class CalcComponent implements OnInit {
     if (dayA == 30 && dayB == 31)
       dayB = 30;
 
-    if(dayA == 31){
+    if (dayA == 31) {
       dayA = 30;
-    }  
-    if(dayB == 31){
+    }
+    if (dayB == 31) {
       dayB = 30;
-    }  
-    
+    }
+
     var days = ((dateB.getFullYear() - dateA.getFullYear()) * 360) + (((dateB.getMonth() + 1) - (dateA.getMonth() + 1)) * 30) + (dayB - dayA);
-    return days ;
+    return days;
   }
 
   lastDayOfFebruary(date: any) {
@@ -148,28 +153,28 @@ export class CalcComponent implements OnInit {
     return date.getDate() == lastDay;
   }
 
-  
+
 
   public addTbl() {
-    
+
     const evento = this.formCalc.get("fcIndiceLanca")?.value;
     moment.locale('pt-BR');
-    const dat = responseIndice;    
+    const dat = responseIndice;
 
-    let data_ini = "" 
-    let data_fim = ""    
-    
+    let data_ini = ""
+    let data_fim = ""
+
     let dt1 = (this.formCalc.get("fcDtIniLanca")?.value);
     let dt2 = (this.formCalc.get("fcDtFimLanca")?.value);
 
     data_ini = moment(dt1).format('DD-MM-YYYY');
-    data_fim = moment(dt2).format('DD-MM-YYYY');    
+    data_fim = moment(dt2).format('DD-MM-YYYY');
 
     this.service.getIndice(evento, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
-      this.ResponseIndice = res.content      
+      this.ResponseIndice = res.content
       this.setCalc(res.content);
     })
-    
+
   }
 
 
@@ -213,28 +218,6 @@ export class CalcComponent implements OnInit {
 
 
   }
-  /*
-
-    
-  public getValue(evento: string) {
-    
-    console.log('evente', evento)
-    var datePipe = new DatePipe('pt-br');
-    const dat = responseIndice;
-    const data_ini = datePipe.transform(this.formCalc.get('fcDtIniLanca')?.value, 'dd-MM-YYYY');
-    const data_fim = datePipe.transform(this.formCalc.get('fcDtFimLanca')?.value, 'dd-MM-YYYY');
-
-    console.log('DT INI', data_ini?.toString())
-    console.log('DT FIM', data_fim?.toString())
-
-    this.service.getIndice(evento, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
-      this.ResponseIndice = res.content
-      console.log('Json', res);
-      this.setCalc(res.content);
-    })
-  }
-
-  */
 
   setCalc(data: any) {
     let maior = 0
@@ -247,33 +230,34 @@ export class CalcComponent implements OnInit {
     dtFim = this.formCalc.get("fcDtFimLanca")?.value;
 
     // Função para calcular calcular juros anteriores a 2003
-    if(dtIni < "2003-01-10"){
-      console.log("menor");
-      console.log("Diif",this.days360(dtIni,"2003-01-10"));
-      let dd = (((0.06)/360) * this.days360(dtIni,"2003-01-10") );
-      dd = dd 
-      Juros = (dd + 1) * this.formCalc.get("fcValorLanca")?.value
-      //console.log("DDD", dd );
-      console.log("Juros", Juros );
-    }
-    // Função para calcular calcular juros posteriores a 2003
-    if(dtIni > "2003-01-10"){      
-      //console.log("Diif",this.days360(dtIni,dtFim));
-      let dd = (((0.12)/360) * this.days360(dtIni,dtFim) );
-      dd = dd 
-      Juros = (dd ) * this.formCalc.get("fcValorLanca")?.value
-      console.log("DDD", dd );
-      console.log("Juros", Juros );
-      
-    }
+    if (this.formCalc.get("FcJuros")?.value == true) {
+      if (dtIni < "2003-01-10") {
+        console.log("menor");
+        console.log("Diif", this.days360(dtIni, "2003-01-10"));
+        let dd = (((0.06) / 360) * this.days360(dtIni, "2003-01-10"));
+        //dd = dd 
+        Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
+        console.log("Juros 6", Juros);
+        console.log("DD 6", dd);
+        console.log("DD + 1 6", dd + 1);
+        console.log("DAYS 6", this.days360(dtIni, "2003-01-10"));
+      }
 
+      if (dtIni > "2003-01-10") {
 
-    let day = this.days360(dtIni,dtFim);    
+        let dd = (((0.12) / 360) * this.days360(dtIni, dtFim));
+        //dd = dd 
+        Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
+        console.log("DDD 12", dd);
+        console.log("Juros 12", Juros);
+        console.log("DD 12", dd);
+        console.log("DD + 1 12", dd + 1);
+        console.log("DAYS 12", this.days360(dtIni, "2003-01-10"));
+      }
+    }
+    let day = this.days360(dtIni, dtFim);
     let respIndice;
-    
-    //console.log('dtIni', dtIni)
-    //console.log('dtDim', dtFim)
-    
+    console.log("Juros", this.formCalc.get("FcJuros")?.value);
 
     let total = 0;
     let total2 = 0;
@@ -282,22 +266,33 @@ export class CalcComponent implements OnInit {
       if (x.acumulado > maior) {
         maior = x.acumulado;
         respIndice = x.nome;
-    
+
       }
 
     })
-    console.log("Juros", Juros );
+    console.log("Juros", Juros);
     this.dados.push({
       dtIni: dtIni,
       dtFim: dtFim,
       indice: respIndice,
       dias: day,
-      valor:  this.formCalc.get("fcValorLanca")?.value, 
+      valor: this.formCalc.get("fcValorLanca")?.value,
       juros: Juros,
       valorCorr: (maior * this.formCalc.get("fcValorLanca")?.value) + Juros
     });
-    
+    //this.SumTotal = this.SumTotal + this.formCalc.get("fcValorLanca")?.value;
+    this.SumTotal = 0;
+    this.SumTotalCorr = 0;
+    console.log("Dados", this.dados)
     this.dataTableLanca = this.dados
+    this.dataTableLanca.map((x: any) => {
+
+      this.SumTotal = this.SumTotal + x.valor
+      this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
+    }
+    )
+
+
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
 
   }

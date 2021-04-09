@@ -15,6 +15,24 @@
 }
 .lancamentos {
     z-index: 1;
+  
+}
+label {
+    //width:180px;
+    margin-top: 5%;
+    clear:left;
+    text-align:right;
+    padding-right:10px;
+}
+
+input, label {
+    //float:left;
+}
+.footerBold {
+    flex: 0 10px 0;
+    color: black;
+    font-weight: bolder;
+    //margin-left: 70px;
 }
 .ui-overlaypanel {
     position: absolute;
@@ -47,7 +65,7 @@
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
     }
-    
+
     .close {
         position: absolute;
         top: -10px;
@@ -76,51 +94,23 @@ h5,
 h6 {
     margin: 0px !important;
 }
-
-/* colunas da tabela..
-mat-header-cell:nth-child(1) {
-    flex: 0 0 5%;
-}
-mat-header-cell:nth-child(2) {
-    flex: 0 0 5%;
-}
-mat-header-cell:nth-child(3) {
-    flex: 0 0 10%;
-}
-mat-header-cell:nth-child(4) {
-    flex: 0 0 10%;
-}
-mat-header-cell:nth-child(5) {
-    flex: 0 0 10%;
-}
-mat-header-cell:nth-child(6) {
-    flex: 0 0 10%;
-}
-mat-header-cell:nth-child(7) {
-    flex: 0 0 10%;
+.coluna {
+    width: 20px;
 }
 
-mat-cell:nth-child(1) {
-    flex: 0 0 5%;
+.mat-column-select {
+    flex: 0 0 50px;
 }
-mat-cell:nth-child(2) {
-    flex: 0 0 5%;
+.mat-column-position {
+    flex: 0 0 50px;
 }
-mat-cell:nth-child(3) {
-    flex: 0 0 10%;
+.mat-column-name {
+    flex: 0 0 45%;
 }
-mat-cell:nth-child(4) {
-    flex: 0 0 10%;
+.mat-column-weight{
+    flex: 0 0 50%;
 }
-mat-cell:nth-child(5) {
-    flex: 0 0 10%;
+.mat-column-dias{
+    margin-left: 20px;
 }
-mat-cell:nth-child(6) {
-    flex: 0 0 10%;
-}
-mat-cell:nth-child(7) {
-    flex: 0 0 10%;
-}
-
-
-*/
+  
