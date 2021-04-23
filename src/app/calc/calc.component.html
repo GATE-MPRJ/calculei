@@ -10,20 +10,15 @@
     <mat-card-content>
 
         <form id="htmlData" class="container" [formGroup]="formCalc">
-            <!--<form class="container" [formGroup]="formCadastro">-->
-
             <div fxLayoutGap="15px">
                 <label>Tipos</label>
-
                 <mat-form-field style="width: 25%;" appearance="outline">
                     <mat-select formControlName="fcTipos">
                         <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
                         <!-- Nâo aparecer 6.899/81 -->
                         <mat-option value="Ntributado">Débitos contra fazenda pública - não tributários</mat-option>
-
-                        <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
-                        <!-- Nâo aparecer 11.960/2009 -->
-
+                        <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option> 
+                         <!-- Nâo aparecer 11.960/2009 -->
                         <mat-option value="abatimentos">Abatimentos</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -45,56 +40,56 @@
 
                     </div>
                 </div>
-
                 <button mat-button (click)="isActive = !isActive">
                     <span class="material-icons">
                         info
                     </span>
                 </button>
-
-
             </div>
             <br>
 
             <section>
                 <pre>LANÇAMENTOS</pre>
 
-
-
                 <div fxLayout="row" fxLayoutGap="15px" class="lancamentos">
                     <div>
-                        <label>Índice</label>
-
-                        <mat-form-field appearance="outline">
-                            <mat-select formControlName="fcIndiceLanca">
-                                <mat-option value="IPCA-E">IPCA-E</mat-option>
-                                <mat-option value="IGP-M">IGP-M</mat-option>
-                                <mat-option value="TR">TR</mat-option>
-                                <mat-option value="SELIC">SELIC</mat-option>
-                                <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
-                                    TJ/RJ LEI 11.960/2009</mat-option>
-                                <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
-                                    TJ/RJ LEI 6.899/81</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div>
-                        <label for="valor">Valor</label>
-                        <mat-form-field appearance="outline">
-                            <input formControlName="fcValorLanca" matInput currencyMask
-                                [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
-                        </mat-form-field>
-                    </div>
-
-                    <div style="margin-left: 15%;" fxLayout="row" fxLayoutGap="15px">
-
                         <div>
-                            <label for="dataDeInicio">Início </label>
-                            <input formControlName="fcDtIniLanca" type="date" id="dataDeInicio" name="dataDeInicio" />
+                            <label>Índice</label>
+                            <mat-form-field appearance="outline">
+                                <mat-select formControlName="fcIndiceLanca">
+                                    <mat-option value="IPCA-E">IPCA-E</mat-option>
+                                    <mat-option value="IGP-M">IGP-M</mat-option>
+                                    <mat-option value="TR">TR</mat-option>
+                                    <mat-option value="SELIC">SELIC</mat-option>
+                                    <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
+                                        TJ/RJ LEI 11.960/2009</mat-option>
+                                    <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
+                                        TJ/RJ LEI 6.899/81</mat-option>
+                                </mat-select>
+                            </mat-form-field>
                         </div>
                         <div>
-                            <label for="dataDeTermino">Término </label>
-                            <input formControlName="fcDtFimLanca" type="date" id="dataDeTermino" name="dataDeTermino" />
+                            <label for="valor">Valor</label>
+                            <mat-form-field appearance="outline">
+                                <input formControlName="fcValorLanca" matInput currencyMask
+                                    [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="margin-left: 50%;">Período </label>
+
+                        <div style="margin-left: 15%;" fxLayout="row" fxLayoutGap="5px">
+                            <div>
+                                <label for="dataDeInicio">Início </label>
+                                <input formControlName="fcDtIniLanca" type="date" id="dataDeInicio"
+                                    name="dataDeInicio" />
+                            </div>
+                            <div>
+                                <label for="dataDeTermino">Término </label>
+                                <input formControlName="fcDtFimLanca" type="date" id="dataDeTermino"
+                                    name="dataDeTermino" />
+                            </div>
                         </div>
                     </div>
 
@@ -104,19 +99,20 @@
                     <div>
                         <br>
                         <label>O cálculo será acrescido de juros? </label>
-                        
-                        <mat-checkbox class="example-margin" [(ngModel)]="ngmJuros" formControlName="FcJuros"></mat-checkbox>
-
+                        <mat-checkbox class="example-margin" [(ngModel)]="ngmJuros" formControlName="FcJuros">
+                        </mat-checkbox> 
+                        <br>                       
+                        <mat-hint>Percentual de juros até 10/01/2003: 6% ao ano ou 0,5% ao mês</mat-hint>
+                        <br>
+                        <mat-hint>Percentual de juros a partir de 10/01/2003 12% ao ano ou 1% ao mês </mat-hint>
                     </div>
                     <div>
                         <button mat-raised-button color="primary" (click)="addTbl()"
-                            style="background-color: #3099FF;margin-left: 30px;">Incluir Lançamento (+)
+                            style="background-color: #3099FF;margin-left: 80%;">Calcular (+)
                         </button>
                     </div>
                 </div>
-                <div>
-
-                </div>
+                <div class="separator"></div>
                 <br>
 
                 <div class="example-container ">
@@ -173,7 +169,8 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <ng-container matColumnDef="juros">
+
+                        <ng-container matColumnDef="juros" [hidden]="formCalc.controls.FcJuros.value == true">
                             <mat-header-cell *matHeaderCellDef> Juros </mat-header-cell>
                             <mat-cell *matCellDef="let element">
                                 {{element.juros| currency:'BRL'}} </mat-cell>

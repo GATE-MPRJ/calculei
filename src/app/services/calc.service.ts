@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
+//home/anderson_valgas/Documentos/OpenShift/CalcJud_Front/src/environments/environment.ts
 @Injectable({
   providedIn: 'root'
 })
 export class CalcService {
 
-  url = 'http://localhost:8092/calc/'; // api rest fake
-
+  baseUrl  = 'http://localhost:8082/calculos/'; // api rest fake
+  
   //https://h-gateprodata.mprj.mp.br/gate/api/Cidadao/teste
   constructor(private httpClient: HttpClient) { }
   httpOptions = {
@@ -22,12 +23,12 @@ export class CalcService {
   }
   
   getIndice(indice: string,startDate: any, endDate: any) {
-    return this.httpClient.get(this.url + indice +"/BetweenDates?startDate="+ startDate+ "&endDate=" + endDate,{ responseType: 'json' })            
+    return this.httpClient.get(this.baseUrl + indice +"/BetweenDates?startDate="+ startDate+ "&endDate=" + endDate,{ responseType: 'json' })            
 
   }
 
   getIgmp() {
-    return this.httpClient.get(this.url + "/igpm/search/findByJoinedDateBetweenNative?startDate=01-07-1997&endDate=01-07-1998",this.httpOptions)      
+    return this.httpClient.get(this.baseUrl + "/igpm/search/findByJoinedDateBetweenNative?startDate=01-07-1997&endDate=01-07-1998",this.httpOptions)      
       .pipe(
         retry(2),
         catchError(this.handleError)

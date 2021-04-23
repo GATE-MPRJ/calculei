@@ -1,210 +1,180 @@
 {
         "content": [
                 {
-                        "Pegunta": "Nos últimos 14 dias você realizou algum teste para COVID-19?",
-                        "codp": 1,
-                        "Respostas": [
-                                {
-                                        "res": "Não fiz o teste",
-                                        "codp": 1
-                                },
-                                {
-                                        "res": "Fiz o teste e estou aguardando resultado",
-                                        "codp": 1
-                                },
-                                {
-                                        "res": "Fiz o teste e o resultado foi NEGATIVO para Covid-19",
-                                        "codp": 1
-                                },
-                                {
-                                        "res": "Fiz o teste e o resultado foi POSITIVO para Covid-19",
-                                        "codp": 1
-                                }
-                        ]
+                        "data": "2019-05-01 00:00:00.0",
+                        "acumulado": 1.0045,
+                        "fator": 1.0045,
+                        "valor": 0.45,
+                        "nome": "IGP-M",
+                        "id": 743
                 },
                 {
-                        "Pegunta": "Qual a data do teste realizado?",
-                        "codp": 2,
-                        "Respostas": []
+                        "data": "2019-06-01 00:00:00.0",
+                        "acumulado": 1.0125359999999999,
+                        "fator": 1.008,
+                        "valor": 0.8,
+                        "nome": "IGP-M",
+                        "id": 744
                 },
                 {
-                        "Pegunta": "Nos últimos 14 dias você teve algum desses sintomas (ou agravamento deles, caso sejam crônicos ou preexistentes)?",
-                        "codp": 3,
-                        "Respostas": [
-                                {
-                                        "res": "Febre (temperatura acima de 37,8°)",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Tosse",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Dificuldade para respirar",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Produção de escarro",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Congestão nasal ou conjuntiva",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Dificuldade para deglutir",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Dor de garganta",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Coriza",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Anosmia (diminuição ou perda do olfato)",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Cianose (descoloração azulada da pele, especialmente nos dedos, e das mucosas)",
-                                        "codp": 3
-                                },
-                                {
-                                        "res": "Não apresentei nenhum sintoma",
-                                        "codp": 3
-                                }
-                        ]
+                        "data": "2019-07-01 00:00:00.0",
+                        "acumulado": 1.016586144,
+                        "fator": 1.004,
+                        "valor": 0.4,
+                        "nome": "IGP-M",
+                        "id": 745
                 },
                 {
-                        "Pegunta": "Qual a data provável do primeiro sintoma identificado?",
-                        "codp": 4,
-                        "Respostas": []
+                        "data": "2019-08-01 00:00:00.0",
+                        "acumulado": 1.0097750168351998,
+                        "fator": 0.9933,
+                        "valor": -0.67,
+                        "nome": "IGP-M",
+                        "id": 746
                 },
                 {
-                        "Pegunta": "Você se enquadra no grupo de risco abaixo para fins de adoção prioritária do regime diferenciado de teletrabalho, segundo o art. 15 da Resolução Conjunta GPGJ/CGMP nº 31/ 2020 e nº 35/2020?",
-                        "codp": 5,
-                        "Respostas": [
-                                {
-                                        "res": "Sim, integro o grupo citado por força do inciso I (doenças cardiovasculares (incluindo hipertensão arterial sistêmica), doenças pulmonares crônicas, tuberculose em todas as formas, doenças hematológicas, diabetes mellitus, obesidade (especialmente aqueles com Índice de Massa Corpórea igual ou superior a 40); transtornos neurológicos que comprometam a função respiratória ou aumentem o risco de aspiração, menores de 19 anos de idade em uso prolongado de ácido acetilsalicílico (risco de síndrome de Reye)) e estou ciente que DEVO REPORTAR essa condição ao Núcleo de Saúde Ocupacional",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Sim, integro o grupo citado por força do inciso II (imunodeprimidos, incluindo os oncológicos, nefropatas, hepatopatas, transplantados, portadores de HIV/ AIDS e em uso de medicamentos imunossupressores(corticoide, quimioterápicos, inibidores de TNFalfa)) e estou ciente que DEVO REPORTAR essa condição ao Núcleo de Saúde Ocupacional",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Sim, integro o grupo citado por força do inciso III (grávidas em qualquer idade gestacional e puérperas até 02 semanas após o parto (incluindo as que tiveram aborto ou perda fetal)) e estou ciente que DEVO REPORTAR essa condição ao Núcleo de Saúde Ocupacional",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Sim, integro o grupo citado por força do inciso IV (tenho filho(s) menor(es) de 2 (dois) anos de idade) e estou ciente que devo reportar essa condição à chefia imediata, sendo DESNECESSÁRIA a comunicação ao Núcleo de Saúde Ocupacional",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Sim, integro o grupo citado por força do inciso V (com idade igual ou superior a 60 (sessenta) anos) e estou ciente que devo reportar essa condição à chefia imediata, sendo DESNECESSÁRIA a comunicação ao Núcleo de Saúde Ocupacional",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Sim, integro o grupo citado por força do inciso VI (pessoas com deficiência, nos termos do art. 2º da Lei nº 13.146/2015, o que pressupõe opção do interessado e aprovação por equipe multidisciplinar do Núcleo de Saúde Ocupacional, conforme avaliação biopsicossocial, consideradas as barreiras eventualmente existentes)  e estou ciente que DEVO REPORTAR essa condição ao Núcleo de Saúde Ocupacional",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Não integro nenhum dos grupos de risco acima, mas moro na mesma casa com alguém que o(s) integra, sendo DESNECESSÁRIO reportar essa condição ao Núcleo de Saúde Ocupacional e à chefia imediata",
-                                        "codp": 5
-                                },
-                                {
-                                        "res": "Não integro e não moro com ninguém que integre o(s) grupo(s) de risco citado(s) acima",
-                                        "codp": 5
-                                }
-                        ]
+                        "data": "2019-09-01 00:00:00.0",
+                        "acumulado": 1.0096740393335162,
+                        "fator": 0.9999,
+                        "valor": -0.01,
+                        "nome": "IGP-M",
+                        "id": 747
                 },
                 {
-                        "Pegunta": "Nos últimos 14 dias, a contar da data do preenchimento deste formulário, você:",
-                        "codp": 6,
-                        "Respostas": [
-                                {
-                                        "res": "Teve contato próximo com alguém que fosse um caso suspeito ou confirmado para COVID-19",
-                                        "codp": 6
-                                },
-                                {
-                                        "res": "Reside ou trabalhou no domicílio de alguém que fosse um caso suspeito ou confirmado para COVID-19",
-                                        "codp": 6
-                                },
-                                {
-                                        "res": "Nenhuma das opções",
-                                        "codp": 6
-                                }
-                        ]
+                        "data": "2019-10-01 00:00:00.0",
+                        "acumulado": 1.016539822800984,
+                        "fator": 1.0068,
+                        "valor": 0.68,
+                        "nome": "IGP-M",
+                        "id": 748
                 },
                 {
-                        "Pegunta": "Qual a data provável do contato com suspeito ou confirmado para COVID-19?",
-                        "codp": 7,
-                        "Respostas": []
+                        "data": "2019-11-01 00:00:00.0",
+                        "acumulado": 1.019589442269387,
+                        "fator": 1.003,
+                        "valor": 0.3,
+                        "nome": "IGP-M",
+                        "id": 749
                 },
                 {
-                        "Pegunta": "Quanto à modalidade das atividades desenvolvidas por você atualmente:",
-                        "codp": 8,
-                        "Respostas": [
-                                {
-                                        "res": "Realizo teletrabalho contínuo",
-                                        "codp": 8
-                                },
-                                {
-                                        "res": "Realizo trabalho presencial contínuo",
-                                        "codp": 8
-                                },
-                                {
-                                        "res": "Minhas atividades NÃO envolvem contato com o público externo",
-                                        "codp": 8
-                                },
-                                {
-                                        "res": "Minhas atividades envolvem contato com o publico externo",
-                                        "codp": 8
-                                },
-                                {
-                                        "res": "Participei de inspeção ou diligência em instituição de acolhimento ou confinamento de pessoas de qualquer natureza nos últimos 14 dias. Em caso positivo, indique o nome da instituição abaixo",
-                                        "codp": 8
-                                }
-                        ]
+                        "data": "2019-12-01 00:00:00.0",
+                        "acumulado": 1.040898861612817,
+                        "fator": 1.0209,
+                        "valor": 2.09,
+                        "nome": "IGP-M",
+                        "id": 750
                 },
                 {
-                        "Pegunta": "Nome das instituições em que participou de inspeção ou diligência",
-                        "codp": 9,
-                        "Respostas": []
+                        "data": "2020-01-01 00:00:00.0",
+                        "acumulado": 1.0458951761485584,
+                        "fator": 1.0048,
+                        "valor": 0.48,
+                        "nome": "IGP-M",
+                        "id": 751
                 },
                 {
-                        "Pegunta": "Autorizo o uso e o tratamento das informações pessoais prestadas para a adoção de medidas temporárias para a prevenção ao contágio pelo novo coronavírus (COVID - 19).",
-                        "codp": 10,
-                        "Respostas": [
-                                {
-                                        "res": "Sim, autorizo",
-                                        "codp": 10
-                                },
-                                {
-                                        "res": "Não, não autorizo",
-                                        "codp": 10
-                                }
-                        ]
+                        "data": "2020-02-01 00:00:00.0",
+                        "acumulado": 1.0454768180780991,
+                        "fator": 0.9996,
+                        "valor": -0.04,
+                        "nome": "IGP-M",
+                        "id": 752
                 },
                 {
-                        "Pegunta": "Documentos",
-                        "codp": 11,
-                        "Respostas": [
-                                {
-                                        "res": "Ciente, já enviei os documentos necessários ao Núcleo de Saúde Ocupacional (pergunta 04, incisos I a III  e inciso VI) ou comuniquei à chefia imediata (pergunta 4, incisos IV e V), neste último caso, sem a necessidade de envio de documentos",
-                                        "codp": 11
-                                },
-                                {
-                                        "res": "Ciente, ainda não enviei os citados documentos, mas enviarei em breve",
-                                        "codp": 11
-                                },
-                                {
-                                        "res": "Ciente, no meu caso não é necessário o envio de nenhum documento",
-                                        "codp": 11
-                                }
-                        ]
+                        "data": "2020-03-01 00:00:00.0",
+                        "acumulado": 1.0584407306222674,
+                        "fator": 1.0124,
+                        "valor": 1.24,
+                        "nome": "IGP-M",
+                        "id": 753
+                },
+                {
+                        "data": "2020-04-01 00:00:00.0",
+                        "acumulado": 1.0669082564672456,
+                        "fator": 1.008,
+                        "valor": 0.8,
+                        "nome": "IGP-M",
+                        "id": 754
+                },
+                {
+                        "data": "2020-05-01 00:00:00.0",
+                        "acumulado": 1.0698955995853539,
+                        "fator": 1.0028,
+                        "valor": 0.28,
+                        "nome": "IGP-M",
+                        "id": 755
+                },
+                {
+                        "data": "2020-06-01 00:00:00.0",
+                        "acumulado": 1.0865859709388854,
+                        "fator": 1.0156,
+                        "valor": 1.56,
+                        "nome": "IGP-M",
+                        "id": 756
+                },
+                {
+                        "data": "2020-07-01 00:00:00.0",
+                        "acumulado": 1.1108168380908225,
+                        "fator": 1.0223,
+                        "valor": 2.23,
+                        "nome": "IGP-M",
+                        "id": 757
+                },
+                {
+                        "data": "2020-08-01 00:00:00.0",
+                        "acumulado": 1.141253219454511,
+                        "fator": 1.0274,
+                        "valor": 2.74,
+                        "nome": "IGP-M",
+                        "id": 758
+                },
+                {
+                        "data": "2020-09-01 00:00:00.0",
+                        "acumulado": 1.190783609178837,
+                        "fator": 1.0434,
+                        "valor": 4.34,
+                        "nome": "IGP-M",
+                        "id": 759
+                },
+                {
+                        "data": "2020-10-01 00:00:00.0",
+                        "acumulado": 1.2292459197553136,
+                        "fator": 1.0323,
+                        "valor": 3.23,
+                        "nome": "IGP-M",
+                        "id": 760
+                },
+                {
+                        "data": "2020-11-01 00:00:00.0",
+                        "acumulado": 1.269565185923288,
+                        "fator": 1.0328,
+                        "valor": 3.28,
+                        "nome": "IGP-M",
+                        "id": 761
+                },
+                {
+                        "data": "2020-12-01 00:00:00.0",
+                        "acumulado": 1.2817530117081515,
+                        "fator": 1.0096,
+                        "valor": 0.96,
+                        "nome": "IGP-M",
+                        "id": 762
+                },
+                {
+                        "data": "2021-01-01 00:00:00.0",
+                        "acumulado": 1.3148222394102218,
+                        "fator": 1.0258,
+                        "valor": 2.58,
+                        "nome": "IGP-M",
+                        "id": 763
+                },
+                {
+                        "data": "2021-02-01 00:00:00.0",
+                        "acumulado": 1.3480872420673005,
+                        "fator": 1.0253,
+                        "valor": 2.53,
+                        "nome": "IGP-M",
+                        "id": 764
                 }
         ]
 }

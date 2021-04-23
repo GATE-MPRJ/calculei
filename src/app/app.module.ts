@@ -5,15 +5,19 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalcComponent } from './calc/calc.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
-import { registerLocaleData } from '@angular/common';
+
 import ptBr from '@angular/common/locales/pt';
 import { MatSliderModule } from '@angular/material/slider';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from './material/material.module';
 import { NgxCurrencyModule } from 'ngx-currency';
-import localeBr from '@angular/common/locales/pt';
+
+
 import { NgModule, LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeBr from '@angular/common/locales/pt';
+registerLocaleData(localeBr, 'pt');
 
 registerLocaleData(ptBr);
 export const customCurrencyMaskConfig = {

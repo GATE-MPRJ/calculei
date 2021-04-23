@@ -27,6 +27,7 @@ const moment = require('moment');
 import { responseIndice } from '../model/responseIndice.model'
 import { Observable } from 'rxjs';
 import { validateHorizontalPosition } from '@angular/cdk/overlay';
+import { IfStmt } from '@angular/compiler';
 
 @Injectable()
 @Component({
@@ -115,10 +116,8 @@ export class CalcComponent implements OnInit {
     console.log("OOOO", this.dataSourceLanca.data.length)
   }
 
-
+  // Função para Converter ano em ano 360 dias
   days360(dateA: any, dateB: any) {
-    //var dateA = new Date(this.formCalc.get("fcDtIniLanca")?.value);
-    //var dateB = new Date(this.formCalc.get("fcDtFimLanca")?.value);
 
     dateA = new Date(dateA);
     dateB = new Date(dateB);
@@ -157,7 +156,8 @@ export class CalcComponent implements OnInit {
 
   public addTbl() {
 
-    const evento = this.formCalc.get("fcIndiceLanca")?.value;
+
+    const INDICES = this.formCalc.get("fcIndiceLanca")?.value;
     moment.locale('pt-BR');
     const dat = responseIndice;
 
@@ -170,51 +170,96 @@ export class CalcComponent implements OnInit {
     data_ini = moment(dt1).format('DD-MM-YYYY');
     data_fim = moment(dt2).format('DD-MM-YYYY');
 
-    this.service.getIndice(evento, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
+
+
+    this.service.getIndice(INDICES, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
       this.ResponseIndice = res.content
-      this.setCalc(res.content);
     })
+    
+    if (this.ResponseIndice.length > 0) {
+
+      if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
+        console.log("IF ===", INDICES)
+        this.setCalcTj(this.ResponseIndice)
+        //this.setCalc(this.ResponseIndice);
+      }else{
+        console.log("IF !==", INDICES)
+        //this.setCalcTj(this.ResponseIndice)
+        this.setCalc(this.ResponseIndice);
+      }
+    
+      
+    }
 
   }
+  // Acertar esse para fazer os calculos usando dados do TJ
+  setCalcTj(data: any) {
+    console.log("TJ XXX", data)
 
-
-
-  public openPDF(): void {
-    const data = this.datahoje.toString();
-    const docDefinition = {
-
-      content: [
-        {
-          table: {
-            headerRows: 1,
-            widths: ['*', 'auto', 100, '*'],
-            body: [
-              ['First', 'Second', 'Third', 'Последняя'],
-              ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
-              [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
-            ]
-          },
-        },
-        { qr: 'text in QR' }
-      ],
-      /*
-      footer: function(currentPage, pageCount) { 
-        return [
-          { text: currentPage.toString() + ' of ' + pageCount + '\n' + data, alignment: (currentPage % 2) ? 'center' : 'right'  }
-        ]
-      },
-      */
-      info: {
-        title: 'Calculo Judicial',
-        author: 'Anderson Pires Valgas',
-        keywords: 'keywords for document',
-
+    let maior = 0
+    let dtIni = "";
+    let dtFim = "";
+    let Juros = 0
+    let days2003 = 0
+    let fator = 0;
+    let dtIni2: Date;
+    dtIni = this.formCalc.get("fcDtIniLanca")?.value;
+    dtFim = this.formCalc.get("fcDtFimLanca")?.value;
+    dtIni2 = this.formCalc.get("fcDtIniLanca")?.value;
+    // Função para calcular calcular juros anteriores e posteriores a 2003
+    if (this.formCalc.get("FcJuros")?.value == true) {
+      if (dtIni < "2003-01-10") {
+        let dd = (((0.06) / 360) * this.days360(dtIni, "2003-01-10"));
+        Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
       }
-    };
+
+      if (dtIni > "2003-01-10") {
+        let dd = (((0.12) / 360) * this.days360(dtIni, dtFim));
+        Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
+      }
+    }
+    let day = this.days360(dtIni, dtFim);
+    let respIndice;
+
+    let total = 0;
+    let total2 = 0;
 
 
-    pdfMake.createPdf(docDefinition).open({});
+    data.map((x: any) => {
+      total = total + x.valor;
+      dtIni = dtIni + " 00:00:00.0"
+      console.log("dtIni",dtIni2)
+      console.log("xdata",x.data)
+      if(x.data === dtIni)  {
+        maior = x.acumulado;
+        respIndice = x.nome;
+        fator = x.fator;
+        console.log("fator",x.fator)
+      }
 
+    })
+
+    this.dados.push({
+      dtIni: dtIni,
+      dtFim: dtFim,
+      indice: respIndice,
+      dias: day,
+      valor: this.formCalc.get("fcValorLanca")?.value,
+      juros: Juros,
+      valorCorr: (fator * this.formCalc.get("fcValorLanca")?.value) + Juros
+    });
+
+    this.SumTotal = 0;
+    this.SumTotalCorr = 0;
+    console.log("Dados", this.dados)
+    this.dataTableLanca = this.dados
+    this.dataTableLanca.map((x: any) => {
+
+      this.SumTotal = this.SumTotal + x.valor
+      this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
+    });
+
+    this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
 
 
   }
@@ -229,38 +274,25 @@ export class CalcComponent implements OnInit {
     dtIni = this.formCalc.get("fcDtIniLanca")?.value;
     dtFim = this.formCalc.get("fcDtFimLanca")?.value;
 
-    // Função para calcular calcular juros anteriores a 2003
+    // Função para calcular calcular juros anteriores e posteriores a 2003
     if (this.formCalc.get("FcJuros")?.value == true) {
       if (dtIni < "2003-01-10") {
-        console.log("menor");
-        console.log("Diif", this.days360(dtIni, "2003-01-10"));
         let dd = (((0.06) / 360) * this.days360(dtIni, "2003-01-10"));
-        //dd = dd 
         Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
-        console.log("Juros 6", Juros);
-        console.log("DD 6", dd);
-        console.log("DD + 1 6", dd + 1);
-        console.log("DAYS 6", this.days360(dtIni, "2003-01-10"));
       }
 
       if (dtIni > "2003-01-10") {
-
         let dd = (((0.12) / 360) * this.days360(dtIni, dtFim));
-        //dd = dd 
         Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
-        console.log("DDD 12", dd);
-        console.log("Juros 12", Juros);
-        console.log("DD 12", dd);
-        console.log("DD + 1 12", dd + 1);
-        console.log("DAYS 12", this.days360(dtIni, "2003-01-10"));
       }
     }
     let day = this.days360(dtIni, dtFim);
     let respIndice;
-    console.log("Juros", this.formCalc.get("FcJuros")?.value);
 
     let total = 0;
     let total2 = 0;
+
+
     data.map((x: any) => {
       total = total + x.valor;
       if (x.acumulado > maior) {
@@ -270,7 +302,7 @@ export class CalcComponent implements OnInit {
       }
 
     })
-    console.log("Juros", Juros);
+
     this.dados.push({
       dtIni: dtIni,
       dtFim: dtFim,
@@ -280,7 +312,7 @@ export class CalcComponent implements OnInit {
       juros: Juros,
       valorCorr: (maior * this.formCalc.get("fcValorLanca")?.value) + Juros
     });
-    //this.SumTotal = this.SumTotal + this.formCalc.get("fcValorLanca")?.value;
+
     this.SumTotal = 0;
     this.SumTotalCorr = 0;
     console.log("Dados", this.dados)
@@ -289,14 +321,44 @@ export class CalcComponent implements OnInit {
 
       this.SumTotal = this.SumTotal + x.valor
       this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
-    }
-    )
-
+    });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
 
   }
 
+  public openPDF(): void {
+    const data = this.datahoje.toString();
+    const docDefinition = {
+
+      content: [
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto', 100, '*'],
+            body: [
+              ['First', 'Second', 'Third', 'Последняя'],
+              ['R$ 12223,88', 'Value 2', 'Value 3', 'Value 4'],
+              ['R$ 12223,88', 'Value 2', 'Value 3', 'Value 4'],
+              [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val4']
+            ]
+          },
+
+        },
+
+      ],
+
+      info: {
+        title: 'Calculo Judicial',
+        author: 'Anderson Pires Valgas',
+        keywords: 'keywords for document',
+
+      }
+    };
+
+    pdfMake.createPdf(docDefinition).open({});
+
+  }
 
 }
 export interface Element {
