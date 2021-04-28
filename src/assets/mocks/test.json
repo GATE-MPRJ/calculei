@@ -1,180 +1,130 @@
 {
         "content": [
                 {
+                        "data": "2019-01-01 00:00:00.0",
+                        "fator": 1.05318899,
+                        "nome": "INDICE-TJ",
+                        "id": 652
+                },
+                {
+                        "data": "2019-02-01 00:00:00.0",
+                        "fator": 1.05003761,
+                        "nome": "INDICE-TJ",
+                        "id": 653
+                },
+                {
+                        "data": "2019-03-01 00:00:00.0",
+                        "fator": 1.04648063,
+                        "nome": "INDICE-TJ",
+                        "id": 654
+                },
+                {
+                        "data": "2019-04-01 00:00:00.0",
+                        "fator": 1.04085657,
+                        "nome": "INDICE-TJ",
+                        "id": 655
+                },
+                {
                         "data": "2019-05-01 00:00:00.0",
-                        "acumulado": 1.0045,
-                        "fator": 1.0045,
-                        "valor": 0.45,
-                        "nome": "IGP-M",
-                        "id": 743
+                        "fator": 1.03341907,
+                        "nome": "INDICE-TJ",
+                        "id": 656
                 },
                 {
                         "data": "2019-06-01 00:00:00.0",
-                        "acumulado": 1.0125359999999999,
-                        "fator": 1.008,
-                        "valor": 0.8,
-                        "nome": "IGP-M",
-                        "id": 744
+                        "fator": 1.029816,
+                        "nome": "INDICE-TJ",
+                        "id": 657
                 },
                 {
                         "data": "2019-07-01 00:00:00.0",
-                        "acumulado": 1.016586144,
-                        "fator": 1.004,
-                        "valor": 0.4,
-                        "nome": "IGP-M",
-                        "id": 745
+                        "fator": 1.02919732,
+                        "nome": "INDICE-TJ",
+                        "id": 658
                 },
                 {
                         "data": "2019-08-01 00:00:00.0",
-                        "acumulado": 1.0097750168351998,
-                        "fator": 0.9933,
-                        "valor": -0.67,
-                        "nome": "IGP-M",
-                        "id": 746
+                        "fator": 1.02827069,
+                        "nome": "INDICE-TJ",
+                        "id": 659
                 },
                 {
                         "data": "2019-09-01 00:00:00.0",
-                        "acumulado": 1.0096740393335162,
-                        "fator": 0.9999,
-                        "valor": -0.01,
-                        "nome": "IGP-M",
-                        "id": 747
+                        "fator": 1.02744655,
+                        "nome": "INDICE-TJ",
+                        "id": 660
                 },
                 {
                         "data": "2019-10-01 00:00:00.0",
-                        "acumulado": 1.016539822800984,
-                        "fator": 1.0068,
-                        "valor": 0.68,
-                        "nome": "IGP-M",
-                        "id": 748
+                        "fator": 1.02652307,
+                        "nome": "INDICE-TJ",
+                        "id": 661
                 },
                 {
                         "data": "2019-11-01 00:00:00.0",
-                        "acumulado": 1.019589442269387,
-                        "fator": 1.003,
-                        "valor": 0.3,
-                        "nome": "IGP-M",
-                        "id": 749
+                        "fator": 1.02560125,
+                        "nome": "INDICE-TJ",
+                        "id": 662
                 },
                 {
                         "data": "2019-12-01 00:00:00.0",
-                        "acumulado": 1.040898861612817,
-                        "fator": 1.0209,
-                        "valor": 2.09,
-                        "nome": "IGP-M",
-                        "id": 750
+                        "fator": 1.02416874,
+                        "nome": "INDICE-TJ",
+                        "id": 663
                 },
                 {
                         "data": "2020-01-01 00:00:00.0",
-                        "acumulado": 1.0458951761485584,
-                        "fator": 1.0048,
-                        "valor": 0.48,
-                        "nome": "IGP-M",
-                        "id": 751
+                        "fator": 1.0135266,
+                        "nome": "INDICE-TJ",
+                        "id": 664
                 },
                 {
                         "data": "2020-02-01 00:00:00.0",
-                        "acumulado": 1.0454768180780991,
-                        "fator": 0.9996,
-                        "valor": -0.04,
-                        "nome": "IGP-M",
-                        "id": 752
+                        "fator": 1.00638184,
+                        "nome": "INDICE-TJ",
+                        "id": 665
                 },
                 {
                         "data": "2020-03-01 00:00:00.0",
-                        "acumulado": 1.0584407306222674,
-                        "fator": 1.0124,
-                        "valor": 1.24,
-                        "nome": "IGP-M",
-                        "id": 753
+                        "fator": 1.0041724,
+                        "nome": "INDICE-TJ",
+                        "id": 666
                 },
                 {
                         "data": "2020-04-01 00:00:00.0",
-                        "acumulado": 1.0669082564672456,
-                        "fator": 1.008,
-                        "valor": 0.8,
-                        "nome": "IGP-M",
-                        "id": 754
+                        "fator": 1.0039691,
+                        "nome": "INDICE-TJ",
+                        "id": 667
                 },
                 {
                         "data": "2020-05-01 00:00:00.0",
-                        "acumulado": 1.0698955995853539,
-                        "fator": 1.0028,
-                        "valor": 0.28,
-                        "nome": "IGP-M",
-                        "id": 755
+                        "fator": 1.00407074,
+                        "nome": "INDICE-TJ",
+                        "id": 668
                 },
                 {
                         "data": "2020-06-01 00:00:00.0",
-                        "acumulado": 1.0865859709388854,
-                        "fator": 1.0156,
-                        "valor": 1.56,
-                        "nome": "IGP-M",
-                        "id": 756
+                        "fator": 1.01002819,
+                        "nome": "INDICE-TJ",
+                        "id": 669
                 },
                 {
                         "data": "2020-07-01 00:00:00.0",
-                        "acumulado": 1.1108168380908225,
-                        "fator": 1.0223,
-                        "valor": 2.23,
-                        "nome": "IGP-M",
-                        "id": 757
+                        "fator": 1.00982793,
+                        "nome": "INDICE-TJ",
+                        "id": 670
                 },
                 {
                         "data": "2020-08-01 00:00:00.0",
-                        "acumulado": 1.141253219454511,
-                        "fator": 1.0274,
-                        "valor": 2.74,
-                        "nome": "IGP-M",
-                        "id": 758
+                        "fator": 1.00680661,
+                        "nome": "INDICE-TJ",
+                        "id": 671
                 },
                 {
                         "data": "2020-09-01 00:00:00.0",
-                        "acumulado": 1.190783609178837,
-                        "fator": 1.0434,
-                        "valor": 4.34,
-                        "nome": "IGP-M",
-                        "id": 759
-                },
-                {
-                        "data": "2020-10-01 00:00:00.0",
-                        "acumulado": 1.2292459197553136,
-                        "fator": 1.0323,
-                        "valor": 3.23,
-                        "nome": "IGP-M",
-                        "id": 760
-                },
-                {
-                        "data": "2020-11-01 00:00:00.0",
-                        "acumulado": 1.269565185923288,
-                        "fator": 1.0328,
-                        "valor": 3.28,
-                        "nome": "IGP-M",
-                        "id": 761
-                },
-                {
-                        "data": "2020-12-01 00:00:00.0",
-                        "acumulado": 1.2817530117081515,
-                        "fator": 1.0096,
-                        "valor": 0.96,
-                        "nome": "IGP-M",
-                        "id": 762
-                },
-                {
-                        "data": "2021-01-01 00:00:00.0",
-                        "acumulado": 1.3148222394102218,
-                        "fator": 1.0258,
-                        "valor": 2.58,
-                        "nome": "IGP-M",
-                        "id": 763
-                },
-                {
-                        "data": "2021-02-01 00:00:00.0",
-                        "acumulado": 1.3480872420673005,
-                        "fator": 1.0253,
-                        "valor": 2.53,
-                        "nome": "IGP-M",
-                        "id": 764
+                        "fator": 1.00449891,
+                        "nome": "INDICE-TJ",
+                        "id": 672
                 }
         ]
 }

@@ -203,10 +203,17 @@ export class CalcComponent implements OnInit {
     let days2003 = 0
     let fator = 0;
     let dtIni2: Date;
-    dtIni = this.formCalc.get("fcDtIniLanca")?.value;
-    dtFim = this.formCalc.get("fcDtFimLanca")?.value;
-    dtIni2 = this.formCalc.get("fcDtIniLanca")?.value;
+    let data_ini = ""
+    let data_fim = ""
+
+    let dt1 = (this.formCalc.get("fcDtIniLanca")?.value);
+    let dt2 = (this.formCalc.get("fcDtFimLanca")?.value);
+
+    data_ini = moment(dt1).format('YYYY-MM-DD 00:00:00.0');
+    data_fim = moment(dt2).format('DD-MM-YYYY');
+
     // Função para calcular calcular juros anteriores e posteriores a 2003
+    
     if (this.formCalc.get("FcJuros")?.value == true) {
       if (dtIni < "2003-01-10") {
         let dd = (((0.06) / 360) * this.days360(dtIni, "2003-01-10"));
@@ -218,19 +225,20 @@ export class CalcComponent implements OnInit {
         Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
       }
     }
+    
     let day = this.days360(dtIni, dtFim);
     let respIndice;
 
     let total = 0;
     let total2 = 0;
 
-
+    // P
     data.map((x: any) => {
       total = total + x.valor;
-      dtIni = dtIni + " 00:00:00.0"
-      console.log("dtIni",dtIni2)
+      //dtIni = dtIni + " 00:00:00.0"
+      console.log("dtIni",data_ini)
       console.log("xdata",x.data)
-      if(x.data === dtIni)  {
+      if(x.data === data_ini)  {
         maior = x.acumulado;
         respIndice = x.nome;
         fator = x.fator;
@@ -246,7 +254,7 @@ export class CalcComponent implements OnInit {
       dias: day,
       valor: this.formCalc.get("fcValorLanca")?.value,
       juros: Juros,
-      valorCorr: (fator * this.formCalc.get("fcValorLanca")?.value) + Juros
+      valorCorr: (fator * this.formCalc.get("fcValorLanca")?.value) //+ Juros
     });
 
     this.SumTotal = 0;
