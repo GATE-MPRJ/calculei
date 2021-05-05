@@ -17,6 +17,7 @@ import { NgxCurrencyModule } from 'ngx-currency';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeBr from '@angular/common/locales/pt';
+import { FrmRelatorioComponent } from './frm-relatorio/frm-relatorio.component';
 registerLocaleData(localeBr, 'pt');
 
 registerLocaleData(ptBr);
@@ -37,6 +38,7 @@ export const customCurrencyMaskConfig = {
     AppComponent,
     CalcComponent,
     ToolbarComponent,
+    FrmRelatorioComponent,
     
   ],
   imports: [

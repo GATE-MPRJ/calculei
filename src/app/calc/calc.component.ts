@@ -22,6 +22,12 @@ pdfMakeX.vfs = pdfFontsX.pdfMake.vfs;
 import * as pdfMake from 'pdfmake/build/pdfmake';
 const dateFormat = require('dateformat');
 const moment = require('moment');
+var htmlToPdfmake = require("html-to-pdfmake");
+
+//import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+
+//import htmlToPdfmake from "html-to-pdfmake";
 
 
 import { responseIndice } from '../model/responseIndice.model'
@@ -39,9 +45,10 @@ import { IfStmt } from '@angular/compiler';
 
 
 export class CalcComponent implements OnInit {
-
+  @ViewChild('pdfTable') pdfTable!: ElementRef;
   constructor(public service: CalcService) { }
   //  public users: User[] = [];
+  //@ViewChild(ChildDirective) child!: ChildDirective;
 
   public formCalc = new FormGroup({
     //Lançmentos
@@ -210,7 +217,7 @@ export class CalcComponent implements OnInit {
     let dt2 = (this.formCalc.get("fcDtFimLanca")?.value);
 
     data_ini = moment(dt1).format('YYYY-MM-DD 00:00:00.0');
-    data_fim = moment(dt2).format('DD-MM-YYYY');
+    data_fim = moment(dt2).format('YYYY-MM-DD 00:00:00.0');
 
     // Função para calcular calcular juros anteriores e posteriores a 2003
     
@@ -226,7 +233,7 @@ export class CalcComponent implements OnInit {
       }
     }
     
-    let day = this.days360(dtIni, dtFim);
+    let day = this.days360(data_ini, data_fim);
     let respIndice;
 
     let total = 0;
@@ -367,6 +374,39 @@ export class CalcComponent implements OnInit {
     pdfMake.createPdf(docDefinition).open({});
 
   }
+  
+  generatePDF() {
+    const data2 = document.getElementById('htmlData') as HTMLElement;
+    html2canvas(data2).then(canvas => {
+      var imgWidth = 208;
+      var imgHeight = canvas.height * imgWidth / canvas.width;
+      const contentDataURL = canvas.toDataURL('image/png')
+      let pdf = new jsPDF('p', 'mm', 'a4');
+      var position = 0;
+      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight)
+      pdf.save('newPDF.pdf');
+    });
+  }
+  
+ public downloadAsPDF() {
+
+ // window.open('repot.html','_blank','status=0,scrollbars=1,resizable=1,location=1');
+
+  
+  const doc = new jsPDF();
+  //get table html
+  const data2 = document.getElementById('pdfTable1') as HTMLElement;
+  const pdfTable = this.pdfTable.nativeElement;
+  //html to pdf format
+  console.log('PDF',pdfTable)
+  var html = htmlToPdfmake(data2.innerHTML);
+  console.log('html',html)
+  const documentDefinition = { content: html };
+  
+  pdfMake.createPdf(documentDefinition).open();
+  
+
+}
 
 }
 export interface Element {
