@@ -163,7 +163,7 @@ export class CalcComponent implements OnInit {
 
   public addTbl() {
 
-
+    console.log(this.formCalc.controls.fcTipos);
     const INDICES = this.formCalc.get("fcIndiceLanca")?.value;
     moment.locale('pt-BR');
     const dat = responseIndice;
