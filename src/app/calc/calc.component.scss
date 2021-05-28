@@ -136,3 +136,10 @@ label {
 .width-fit-content {
   width: fit-content;
 }
+.scrolling {
+  height: 230px;
+  overflow-y: scroll;
+}
+::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
+  background-color: #702826 !important;
+}

@@ -8,19 +8,20 @@
                     <div>
                         <form id="htmlData" [formGroup]="formCalc">
                             <div class="flexbox">
-                                <div><h2>CORREÇÃO MONETÁRIA</h2></div>
-                                <div><button mat-button (click)="isActive = !isActive">
-                                    <mat-icon>
-                                        tips_and_updates
-                                    </mat-icon>
-                                </button>
+                                <div><mat-card-title>CALCULADORA DE CORREÇÃO MONETÁRIA</mat-card-title></div>
+                                <div>
+                                    <button mat-button (click)="isActive = !isActive" aria-label="Orientações de preenchimento." style="margin-top: -10px;">
+                                        <mat-icon>
+                                            tips_and_updates
+                                        </mat-icon>
+                                    </button>
                                 </div>
                             </div>
                             <div class="flexbox">
                                 <div fxLayoutGap="15px">
                                     <label>Tipo de cálculo</label>
                                     <mat-form-field appearance="outline">
-                                        <mat-select formControlName="fcTipos">
+                                        <mat-select formControlName="fcTipos" required>
                                             <!-- Nâo aparecer 6.899/81 -->
                                             <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
                                             <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
@@ -34,7 +35,7 @@
                                 <div>
                                     <label>Índice</label>
                                     <mat-form-field appearance="outline">
-                                        <mat-select formControlName="fcIndiceLanca">
+                                        <mat-select formControlName="fcIndiceLanca" required>
                                             <mat-option value="IPCA-E">IPCA-E</mat-option>
                                             <mat-option value="IGP-M">IGP-M</mat-option>
                                             <mat-option value="TR">TR</mat-option>
@@ -85,37 +86,51 @@
                             </div>
                         </form>
                     </div>
-                    <div class="ui-overlaypanel" [hidden]="!isActive">
-                        <div class="header" class="mat-elevation-z8">
-                            <h1>Lançamentos</h1>
+                    <mat-card class="ui-overlaypanel" [hidden]="!isActive">
+                                <mat-card-subtitle>
+                                    <mat-icon>
+                                        tips_and_updates 
+                                    </mat-icon>
+                                    Orientações de preenchimento
+                                </mat-card-subtitle>
                             <div class="separator"></div>
-                        </div>
-                        <div class="contente">
-                            <div style="padding-top: 10px;">
-                                Lançamentos podem ser de 2 tipos, lançamentos de crédito ou pagamento.
+                            <div class="scrolling">
+                                <!--p>pode-se assim sintetizar a orientação do STF quanto aos índices de juros de mora e atualização monetária aplicáveis aos débitos da Fazenda Pública:
+                                <p>
+                                a) até 29/06/2009: a atualização monetária e incidência de juros moratórios contra a
+                                Fazenda Pública seguiria a legislação vigente à época, ou seja: <br />
+                                    a1: atualização com base nos índices fornecidos pelos Tribunais (organizados no Manual de Cálculos da Justiça Federal, cuja correção foi reconhecida pelo STJ)17;<br />
+                                    a.2: juros de mora de 1% ao mês a partir de 11/01/2003 e juros de 0,5% ao mês até 10/01/2003 (ante o advento do código civil de 2002).
+                                </p>
+                                <p>
+                                    b) a partir de 30/06/2009 a 25/03/2015: (Data da entrada em vigor da Lei nº 11.960/09, art.1º-F):<br />
+                                        b.1: a atualização monetária deverá ser realizada pela TR; e<br />
+                                        b.2: juros moratórios nos mesmos moldes aplicados à caderneta de poupança. 
+                                </p>
+                                <p>
+                                    c) a partir de 26/03/2015: (Termo inicial da modulação dos efeitos das ADIs nº 4357
+                                    e nº 4425 pelo STF): <br />
+                                    c.1: atualização monetária corrigidos pelo Índice de Preços ao Consumidor Amplo Especial (IPCA-E); <br />
+                                    c.2: juros moratórios nos débitos não tributários: Poupança; e <br />
+                                    c.3: juros moratórios dos débitos tributários: SELIC  <br />
+                                </p-->
+                                <a href="http://apps.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
                             </div>
-                            <div style="padding-top: 10px;">
-                                Lançamentos de crédito correspondem aos valores oriundos de decisões judiciais, custas,
-                                despesas etc, que eventualmente podem
-                                ser corrigidas por um determinado período de tempo.
-                            </div>
-    
-                        </div>
-                    </div>
+                    </mat-card>
                 </div>
                 <div class="container flexbox">
                     <div>
-                        <button	 mat-raised-button color="warn" (click)="addTbl()"
+                        <button	 mat-raised-button color="warn" style="background-color:#702826;" (click)="addTbl()"
                            >Calcular <mat-icon>calculate</mat-icon>
                         </button>
                     </div>
-                    <!--div>
-                        <button mat-raised-button color="primary" style="background-color: rgb(0 0 0);" (click)="openPDF()">Detalhar cálculo
+                    <div>
+                        <button mat-raised-button color="primary" style="background-color: #00afaa;" (click)="openPDF()" [hidden]="!dataSourceLanca.data.length > 0">Detalhar cálculo
                             <mat-icon>visibility</mat-icon>
                         </button>
-                    </div-->
+                    </div>
                     <div>
-                        <button mat-raised-button color="primary" style="background-color: #3099FF;" (click)="openPDF()">Relatório
+                        <button mat-raised-button color="primary" style="background-color: #198cbb;" (click)="openPDF()" [hidden]="!dataSourceLanca.data.length > 0">Relatório
                             <mat-icon>print</mat-icon>
                         </button>
                     </div>
@@ -196,7 +211,7 @@
                         </ng-container>
                         <ng-container matColumnDef="noData">
                             <mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumnsLanc.length">
-                                Nenhum lançamento calculado.
+                                Nenhum lançamento cadastrado.
                             </mat-footer-cell>
                         </ng-container>
                         <ng-container matColumnDef="check" class="coluna">
