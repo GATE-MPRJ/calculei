@@ -8,7 +8,7 @@
                     <div>
                         <form id="htmlData" [formGroup]="formCalc">
                             <div class="flexbox">
-                                <div><mat-card-title>CALCULADORA DE CORREÇÃO MONETÁRIA</mat-card-title></div>
+                                <div><mat-card-title>CALCULADORA</mat-card-title></div>
                                 <!--div>
                                     <button mat-button (click)="isActive = !isActive" aria-label="Orientações de preenchimento." style="margin-top: -10px;">
                                         <mat-icon>
@@ -23,32 +23,16 @@
                                     <mat-form-field appearance="outline">
                                         <mat-select formControlName="fcTipos" required>
                                             <!-- Nâo aparecer 6.899/81 -->
-                                            <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
-                                            <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
+                                            <mat-option value="debitos">Débitos / créditos entre particulares</mat-option>
+                                            <mat-option value="tributado">Débitos da Fazenda Pública - tributários</mat-option>
                                             <!-- Aparecer todos os índices -->
-                                            <mat-option value="Ntributado">Débitos contra fazenda pública - não tributários</mat-option>
+                                            <mat-option value="Ntributado">Débitos da Fazenda Pública - não tributários</mat-option>
+                                            <mat-option value="Ctributado">Créditos da Fazenda Pública</mat-option>
                                             <!-- Nâo aparecer 11.960/2009 -->
                                             <mat-option value="abatimentos">Abatimentos</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
-                                <div>
-                                    <label>Índice</label>
-                                    <mat-form-field appearance="outline">
-                                        <mat-select formControlName="fcIndiceLanca" required>
-                                            <mat-option value="IPCA-E">IPCA-E</mat-option>
-                                            <mat-option value="IGP-M">IGP-M</mat-option>
-                                            <mat-option value="TR">TR</mat-option>
-                                            <mat-option value="SELIC">SELIC</mat-option>
-                                            <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
-                                                TJ/RJ LEI 11.960/2009</mat-option>
-                                            <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
-                                                TJ/RJ LEI 6.899/81</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <div class="flexbox">
                                 <div>
                                     <label for="valor">Valor</label>
                                     <mat-form-field appearance="outline">
@@ -56,6 +40,24 @@
                                             [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
                                     </mat-form-field>
                                 </div>
+                            </div>
+                            <div class="flexbox">
+                                <div>
+                                    <label>Índice de correção monetária</label>
+                                    <mat-form-field appearance="outline">
+                                        <mat-select formControlName="fcIndiceLanca" required>
+                                            <mat-option value="IPCA-E">IPCA-E</mat-option>
+                                            <mat-option value="IGP-M">IGP-M</mat-option>
+                                            <mat-option value="TR">TR</mat-option>
+                                            <mat-option value="SELIC">SELIC</mat-option>
+                                            <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
+                                                TJ/RJ LEI 11.960/2009 (ORTN-OTN-BTN- TR-UFIR-IPCA-E)</mat-option>
+                                            <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
+                                                TJ/RJ LEI 6.899/81 (UFIR-RJ)</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
                                 <div class="flexbox">
                                     <div>
                                         <label for="dataDeInicio">Início</label>
@@ -116,6 +118,11 @@
                                     c.2: juros moratórios nos débitos não tributários: Poupança; e <br />
                                     c.3: juros moratórios dos débitos tributários: SELIC  <br />
                                 </p-->
+                                <p>
+                                Lançamentos de crédito correspondem aos valores oriundos de decisões judiciais, custas,
+                                despesas etc, que eventualmente podem
+                                ser corrigidas por um determinado período de tempo.
+                                </p>
                                 <a href="http://apps.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
                             </div>
                     </mat-card>
