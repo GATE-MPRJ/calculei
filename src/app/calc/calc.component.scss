@@ -138,8 +138,35 @@ label {
 }
 .scrolling {
   height: 230px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 ::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
   background-color: #702826 !important;
+}
+
+.mat-select-big-width {
+  mat-select {
+    width: fit-content !important;
+    min-width: 100%;
+  }
+
+  ::ng-deep .mat-form-field-infix {
+    min-width: 75px !important;
+    width: fit-content !important;
+  }
+
+  ::ng-deep mat-select .mat-select-value {
+    width: fit-content;
+    min-width: 400px;
+    max-width: 25ch;
+  }
+
+  ::ng-deep mat-select .mat-select-panel {
+    min-width: 300px;
+  }
+
+  ::ng-deep mat-select .mat-select-placeholder {
+    width: fit-content;
+    min-width: 10ch;
+  }
 }

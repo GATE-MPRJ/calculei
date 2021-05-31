@@ -9,16 +9,16 @@
                         <form id="htmlData" [formGroup]="formCalc">
                             <div class="flexbox">
                                 <div><mat-card-title>CALCULADORA DE CORREÇÃO MONETÁRIA</mat-card-title></div>
-                                <div>
+                                <!--div>
                                     <button mat-button (click)="isActive = !isActive" aria-label="Orientações de preenchimento." style="margin-top: -10px;">
                                         <mat-icon>
                                             tips_and_updates
                                         </mat-icon>
                                     </button>
-                                </div>
+                                </div-->
                             </div>
                             <div class="flexbox">
-                                <div fxLayoutGap="15px">
+                                <div class="mat-select-big-width">
                                     <label>Tipo de cálculo</label>
                                     <mat-form-field appearance="outline">
                                         <mat-select formControlName="fcTipos" required>
@@ -86,13 +86,15 @@
                             </div>
                         </form>
                     </div>
-                    <mat-card class="ui-overlaypanel" [hidden]="!isActive">
-                                <mat-card-subtitle>
-                                    <mat-icon>
-                                        tips_and_updates 
-                                    </mat-icon>
-                                    Orientações de preenchimento
-                                </mat-card-subtitle>
+                    <mat-card class="ui-overlaypanel" [nothidden]="!isActive">
+                        <div class="flexbox">
+                            <mat-icon>
+                                tips_and_updates 
+                            </mat-icon>
+                            <mat-card-subtitle>
+                                Orientações de preenchimento
+                            </mat-card-subtitle>
+                        </div>
                             <div class="separator"></div>
                             <div class="scrolling">
                                 <!--p>pode-se assim sintetizar a orientação do STF quanto aos índices de juros de mora e atualização monetária aplicáveis aos débitos da Fazenda Pública:
