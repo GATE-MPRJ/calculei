@@ -2,301 +2,323 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-
-
-
 <mat-card>
-
     <mat-card-content>
-        <div>
-            <form class="container" [formGroup]="formCalc">
-                <div fxLayoutGap="15px">
-                    <label>Tipos</label>
-                    <mat-form-field style="width: 25%;" appearance="outline">
-                        <mat-select formControlName="fcTipos">
-                            <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
-                            <!-- Nâo aparecer 6.899/81 -->
-                            <mat-option value="Ntributado">Débitos contra fazenda pública - não tributários</mat-option>
-                            <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
-                            <!-- Nâo aparecer 11.960/2009 -->
-                            <mat-option value="abatimentos">Abatimentos</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <div class="ui-overlaypanel" [hidden]="!isActive">
-                        <div class="header" class="mat-elevation-z8">
-                            <h1>Lançamentos</h1>
+                <div class="container flexbox">
+                    <div>
+                        <form id="htmlData" [formGroup]="formCalc">
+                            <div class="flexbox">
+                                <div><mat-card-title>CALCULADORA DE CORREÇÃO MONETÁRIA</mat-card-title></div>
+                                <!--div>
+                                    <button mat-button (click)="isActive = !isActive" aria-label="Orientações de preenchimento." style="margin-top: -10px;">
+                                        <mat-icon>
+                                            tips_and_updates
+                                        </mat-icon>
+                                    </button>
+                                </div-->
+                            </div>
+                            <div class="flexbox">
+                                <div class="mat-select-big-width">
+                                    <label>Tipo de cálculo</label>
+                                    <mat-form-field appearance="outline">
+                                        <mat-select formControlName="fcTipos" required>
+                                            <!-- Nâo aparecer 6.899/81 -->
+                                            <mat-option value="debitos">Débitos / Créditos entre particulares</mat-option>
+                                            <mat-option value="tributado">Débitos contra fazenda pública - tributários</mat-option>
+                                            <!-- Aparecer todos os índices -->
+                                            <mat-option value="Ntributado">Débitos contra fazenda pública - não tributários</mat-option>
+                                            <!-- Nâo aparecer 11.960/2009 -->
+                                            <mat-option value="abatimentos">Abatimentos</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div>
+                                    <label>Índice</label>
+                                    <mat-form-field appearance="outline">
+                                        <mat-select formControlName="fcIndiceLanca" required>
+                                            <mat-option value="IPCA-E">IPCA-E</mat-option>
+                                            <mat-option value="IGP-M">IGP-M</mat-option>
+                                            <mat-option value="TR">TR</mat-option>
+                                            <mat-option value="SELIC">SELIC</mat-option>
+                                            <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
+                                                TJ/RJ LEI 11.960/2009</mat-option>
+                                            <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
+                                                TJ/RJ LEI 6.899/81</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="flexbox">
+                                <div>
+                                    <label for="valor">Valor</label>
+                                    <mat-form-field appearance="outline">
+                                        <input formControlName="fcValorLanca" matInput currencyMask
+                                            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
+                                    </mat-form-field>
+                                </div>
+                                <div class="flexbox">
+                                    <div>
+                                        <label for="dataDeInicio">Início</label>
+                                        <mat-form-field appearance="outline">
+                                        <input formControlName="fcDtIniLanca" matInput type="date" id="dataDeInicio"
+                                            name="dataDeInicio" />
+                                        </mat-form-field>
+                                    </div>
+                                    <div>
+                                        <label for="dataDeTermino">Término</label>
+                                        <mat-form-field appearance="outline">
+                                        <input formControlName="fcDtFimLanca" matInput type="date" id="dataDeTermino"
+                                            name="dataDeTermino" />
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="flexbox">
+                                <div>
+                                    <label>Incidir juros</label>
+                                </div>
+                                <div>
+                                    <mat-slide-toggle color="warn" [(ngModel)]="ngmJuros" formControlName="FcJuros"></mat-slide-toggle>
+                                </div>
+                            </div>
+                            <div  class="flexbox">
+                                <mat-hint>Percentual de juros até 10/01/2003: 6% ao ano ou 0,5% ao mês.<BR /> Percentual de juros a partir de 10/01/2003 12% ao ano ou 1% ao mês </mat-hint>
+                            </div>
+                        </form>
+                    </div>
+                    <mat-card class="ui-overlaypanel" [nothidden]="!isActive">
+                        <div class="flexbox">
+                            <mat-icon>
+                                tips_and_updates 
+                            </mat-icon>
+                            <mat-card-subtitle>
+                                Orientações de preenchimento
+                            </mat-card-subtitle>
+                        </div>
                             <div class="separator"></div>
-                        </div>
-                        <div class="contente">
-
-                            <div style="padding-top: 10px;">
-                                Lançamentos podem ser de 2 tipos, lançamentos de crédito ou pagamento.
+                            <div class="scrolling">
+                                <!--p>pode-se assim sintetizar a orientação do STF quanto aos índices de juros de mora e atualização monetária aplicáveis aos débitos da Fazenda Pública:
+                                <p>
+                                a) até 29/06/2009: a atualização monetária e incidência de juros moratórios contra a
+                                Fazenda Pública seguiria a legislação vigente à época, ou seja: <br />
+                                    a1: atualização com base nos índices fornecidos pelos Tribunais (organizados no Manual de Cálculos da Justiça Federal, cuja correção foi reconhecida pelo STJ)17;<br />
+                                    a.2: juros de mora de 1% ao mês a partir de 11/01/2003 e juros de 0,5% ao mês até 10/01/2003 (ante o advento do código civil de 2002).
+                                </p>
+                                <p>
+                                    b) a partir de 30/06/2009 a 25/03/2015: (Data da entrada em vigor da Lei nº 11.960/09, art.1º-F):<br />
+                                        b.1: a atualização monetária deverá ser realizada pela TR; e<br />
+                                        b.2: juros moratórios nos mesmos moldes aplicados à caderneta de poupança. 
+                                </p>
+                                <p>
+                                    c) a partir de 26/03/2015: (Termo inicial da modulação dos efeitos das ADIs nº 4357
+                                    e nº 4425 pelo STF): <br />
+                                    c.1: atualização monetária corrigidos pelo Índice de Preços ao Consumidor Amplo Especial (IPCA-E); <br />
+                                    c.2: juros moratórios nos débitos não tributários: Poupança; e <br />
+                                    c.3: juros moratórios dos débitos tributários: SELIC  <br />
+                                </p-->
+                                <a href="http://apps.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
                             </div>
-                            <div style="padding-top: 10px;">
-                                Lançamentos de crédito correspondem aos valores oriundos de decisões judiciais, custas,
-                                despesas etc, que eventualmente podem
-                                ser corrigidas por um determinado período de tempo.
-                            </div>
-
-                        </div>
-                    </div>
-                    <button mat-button (click)="isActive = !isActive">
-                        <span class="material-icons">
-                            info
-                        </span>
-                    </button>
+                    </mat-card>
                 </div>
-                <br>
-
-                <section>
-                    <pre>LANÇAMENTOS</pre>
-
-                    <div fxLayout="row" fxLayoutGap="15px" class="lancamentos">
-                        <div>
-                            <div>
-                                <label>Índice</label>
-                                <mat-form-field appearance="outline">
-                                    <mat-select formControlName="fcIndiceLanca">
-                                        <mat-option value="IPCA-E">IPCA-E</mat-option>
-                                        <mat-option value="IGP-M">IGP-M</mat-option>
-                                        <mat-option value="TR">TR</mat-option>
-                                        <mat-option value="SELIC">SELIC</mat-option>
-                                        <mat-option value="TJ11960"
-                                            [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
-                                            TJ/RJ LEI 11.960/2009</mat-option>
-                                        <mat-option value="TJ899"
-                                            [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
-                                            TJ/RJ LEI 6.899/81</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                            <div>
-                                <label for="valor">Valor</label>
-                                <mat-form-field appearance="outline">
-                                    <input formControlName="fcValorLanca" matInput currencyMask
-                                        [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
-                                </mat-form-field>
-                            </div>
-                        </div>
-                        <div>
-                            <label style="margin-left: 50%;">Período </label>
-
-                            <div style="margin-left: 15%;" fxLayout="row" fxLayoutGap="5px">
-                                <div>
-                                    <label for="dataDeInicio">Início </label>
-                                    <input formControlName="fcDtIniLanca" type="date" id="dataDeInicio"
-                                        name="dataDeInicio" />
-                                </div>
-                                <div>
-                                    <label for="dataDeTermino">Término </label>
-                                    <input formControlName="fcDtFimLanca" type="date" id="dataDeTermino"
-                                        name="dataDeTermino" />
-                                </div>
-                            </div>
-                        </div>
-
+                <div class="container flexbox">
+                    <div>
+                        <button	 mat-raised-button color="warn" style="background-color:#702826;" (click)="addTbl()"
+                           >Calcular <mat-icon>calculate</mat-icon>
+                        </button>
                     </div>
-
-                    <div fxLayout="row" fxLayoutGap="20px">
-                        <div>
-                            <br>
-                            <label>O cálculo será acrescido de juros? </label>
-                            <mat-checkbox class="example-margin" [(ngModel)]="ngmJuros" formControlName="FcJuros">
-                            </mat-checkbox>
-                            <br>
-                            <mat-hint>Percentual de juros até 10/01/2003: 6% ao ano ou 0,5% ao mês</mat-hint>
-                            <br>
-                            <mat-hint>Percentual de juros a partir de 10/01/2003 12% ao ano ou 1% ao mês </mat-hint>
-                        </div>
-                        <div>
-                            <button mat-raised-button color="primary" (click)="addTbl()"
-                                style="background-color: #3099FF;margin-left: 80%;">Calcular (+)
-                            </button>
-                        </div>
+                    <div>
+                        <button mat-raised-button color="primary" style="background-color: #00afaa;" (click)="openPDF()" [hidden]="!dataSourceLanca.data.length > 0">Detalhar cálculo
+                            <mat-icon>visibility</mat-icon>
+                        </button>
                     </div>
-                    <div class="separator"></div>
-                    <br>
+                    <div>
+                        <button mat-raised-button color="primary" style="background-color: #198cbb;" (click)="downloadAsPDF()" [hidden]="!dataSourceLanca.data.length > 0">Relatório
+                            <mat-icon>print</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            <div class="container">
+                <div class="">
 
-                    <div class="example-container ">
+                    <mat-table #table [dataSource]="dataSourceLanca" class="mat-elevation-z8">
+                        <ng-container matColumnDef="select" class="coluna">
+                            <mat-header-cell *matHeaderCellDef>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> </mat-cell>
+                            <mat-footer-cell *matFooterCellDef class="footerBold"></mat-footer-cell>
+                        </ng-container>
 
-                        <mat-table #table [dataSource]="dataSourceLanca" class="mat-elevation-z8">
-                            <ng-container matColumnDef="select" class="coluna">
-                                <mat-header-cell *matHeaderCellDef>
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> </mat-cell>
-                                <mat-footer-cell *matFooterCellDef class="footerBold"></mat-footer-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="delete" class="coluna">
-                                <mat-header-cell *matHeaderCellDef class="coluna">Excluir
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row">
-                                    <img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab"
-                                        title="Clique para excluir" (click)="$event.stopPropagation(); 
+                        <ng-container matColumnDef="delete" class="coluna">
+                            <mat-header-cell *matHeaderCellDef class="coluna">Excluir
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab"
+                                    title="Clique para excluir" (click)="$event.stopPropagation(); 
                                         $event ? selection.toggle(row) : null;
                                         selection.isSelected(row);
                                         removeSelectedRows('ServTec') ">
-                                </mat-cell>
-                                <mat-footer-cell *matFooterCellDef style="font-weight: bold;">Total</mat-footer-cell>
-                            </ng-container>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef style="font-weight: bold;">Total</mat-footer-cell>
+                        </ng-container>
 
-                            <ng-container matColumnDef="position" class="coluna">
-                                <mat-header-cell *matHeaderCellDef class="coluna"> Nº
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                            </ng-container>
+                        <ng-container matColumnDef="position" class="coluna">
+                            <mat-header-cell *matHeaderCellDef class="coluna"> Nº
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
 
-                            <ng-container matColumnDef="indice">
-                                <mat-header-cell *matHeaderCellDef> Índice de correção monetária</mat-header-cell>
-                                <mat-cell *matCellDef="let element"> {{element.indice}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef class="footerBold"></mat-footer-cell>
-                            </ng-container>
+                        <ng-container matColumnDef="indice">
+                            <mat-header-cell *matHeaderCellDef> Índice de correção monetária</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.indice}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef class="footerBold"></mat-footer-cell>
+                        </ng-container>
 
-                            <ng-container matColumnDef="dtIni">
-                                <mat-header-cell *matHeaderCellDef> Data Inicio </mat-header-cell>
-                                <mat-cell *matCellDef="let element"> {{element.dtIni | date: 'dd/MM/yyyy'}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                            </ng-container>
+                        <ng-container matColumnDef="dtIni">
+                            <mat-header-cell *matHeaderCellDef> Data Inicio </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dtIni | date: 'dd/MM/yyyy'}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
 
-                            <ng-container matColumnDef="dtFim">
-                                <mat-header-cell *matHeaderCellDef> Data Fim </mat-header-cell>
-                                <mat-cell *matCellDef="let element"> {{element.dtFim | date: 'dd/MM/yyyy'}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                            </ng-container>
-                            <ng-container></ng-container>
-                            <ng-container matColumnDef="dias">
-                                <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
-                                <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                            </ng-container>
+                        <ng-container matColumnDef="dtFim">
+                            <mat-header-cell *matHeaderCellDef> Data Fim </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dtFim | date: 'dd/MM/yyyy'}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container></ng-container>
+                        <ng-container matColumnDef="dias">
+                            <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="juros" [hidden]="formCalc.controls.FcJuros.value == true">
+                            <mat-header-cell *matHeaderCellDef> Juros </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.juros| currency:'BRL'}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="valor">
+                            <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.valor | currency:'BRL'}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef style="font-weight: 700;">
+                                {{this.SumTotalCorr  | currency:'BRL'}}</mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="valorCorr">
+                            <mat-header-cell *matHeaderCellDef> Valor Total </mat-header-cell>
+                            <mat-cell *matCellDef="let element;">
+                                {{element.valorCorr | currency:'BRL'}} </mat-cell>
+                            <mat-footer-cell *matFooterCellDef style="margin-left: -30%; font-weight: 700;">
+                                {{this.SumTotal | currency:'BRL'}}</mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="noData">
+                            <mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumnsLanc.length">
+                                Nenhum lançamento cadastrado.
+                            </mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="check" class="coluna">
+                            <mat-header-cell *matHeaderCellDef class="coluna">
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <mat-icon class="iconValidTab" *ngIf="element.position > 0">done
+                                </mat-icon>
+                            </mat-cell>
+                        </ng-container>
+                        <!--
 
+                        <ng-container matColumnDef="header-row-first-group">
+                            <mat-header-cell *matHeaderCellDef 
+                                [style.text-align]="center" [attr.colspan]="2">  </mat-header-cell>
+                          </ng-container>
+                          
+                          
+                          <ng-container matColumnDef="header-row-second-group">
+                            <mat-header-cell *matHeaderCellDef [attr.colspan]="2" style="margin-left: 40px;"> Second group </mat-header-cell>
+                          </ng-container>
+                        
+                          <ng-container matColumnDef="header-row-tre-group">
+                            <mat-header-cell *matHeaderCellDef [attr.colspan]="2"> Tree group </mat-header-cell>
+                          </ng-container>
+                           
+                          <mat-header-row *matHeaderRowDef="['header-row-first-group', 'header-row-second-group','header-row-tre-group']"></mat-header-row>
 
-                            <ng-container matColumnDef="juros" [hidden]="formCalc.controls.FcJuros.value == true">
-                                <mat-header-cell *matHeaderCellDef> Juros </mat-header-cell>
-                                <mat-cell *matCellDef="let element">
-                                    {{element.juros| currency:'BRL'}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                            </ng-container>
+                          <mat-footer-row  *matFooterRowDef="['select','delete','position','indice','dtIni','dtFim','dias','juros', 'valor','valorCorr']; sticky: true">
+                          -->
 
-                            <ng-container matColumnDef="valor">
-                                <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
-                                <mat-cell *matCellDef="let element">
-                                    {{element.valor | currency:'BRL'}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef style="font-weight: 700;">
-                                    {{this.SumTotalCorr  | currency:'BRL'}}</mat-footer-cell>
-                            </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumnsLanc"></mat-header-row>
+                        <!--
+                            <mat-footer-row *matFooterRowDef="['noData']" [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"></mat-footer-row>
+                            <mat-footer-row  *matFooterRowDef="['select','delete','position','indice','dtIni','dtFim','dias','juros','valorCorr', 'valor']"></mat-footer-row>      
+                            <mat-footer-row  *matFooterRowDef="['select','delete','juros','valorCorr', 'valor']"></mat-footer-row>      
+                            <mat-footer-row  *matFooterRowDef="displayedColumnsLanc"></mat-footer-row>      
+                        -->
+                        <!-- <mat-footer-row  *matFooterRowDef="['select','delete','indice','juros','valorCorr', 'valor']; sticky: true" ></mat-footer-row>  -->
+                        <mat-footer-row
+                            *matFooterRowDef="['select','delete','position','dtFim','dias','juros','valorCorr', 'valor']; sticky: true">
+                        </mat-footer-row>
+                        <mat-footer-row *matFooterRowDef="['noData']"
+                            [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"></mat-footer-row>
 
-                            <ng-container matColumnDef="valorCorr">
-                                <mat-header-cell *matHeaderCellDef> Valor Total </mat-header-cell>
-                                <mat-cell *matCellDef="let element;">
-                                    {{element.valorCorr | currency:'BRL'}} </mat-cell>
-                                <mat-footer-cell *matFooterCellDef style="margin-left: -30%; font-weight: 700;">
-                                    {{this.SumTotal | currency:'BRL'}}</mat-footer-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="noData">
-                                <mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumnsLanc.length">
-                                    Nenhum lançamento cadastrado.
-                                </mat-footer-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="check" class="coluna">
-                                <mat-header-cell *matHeaderCellDef class="coluna">
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let element">
-                                    <mat-icon class="iconValidTab" *ngIf="element.position > 0">done
-                                    </mat-icon>
-                                </mat-cell>
-                            </ng-container>
-
-                            <mat-header-row *matHeaderRowDef="displayedColumnsLanc"></mat-header-row>
-
-                            <mat-footer-row
-                                *matFooterRowDef="['select','delete','position','dtFim','dias','juros','valorCorr', 'valor']; sticky: true">
-                            </mat-footer-row>
-                            <mat-footer-row *matFooterRowDef="['noData']"
-                                [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"></mat-footer-row>
-
-                            <mat-row *matRowDef="let row; columns: displayedColumnsLanc;"
-                                (click)="selection.toggle(row)">
-                            </mat-row>
-
-
-
-
-                        </mat-table>
-
+                        <mat-row *matRowDef="let row; columns: displayedColumnsLanc;" (click)="selection.toggle(row)">
+                        </mat-row>
+                    </mat-table>
+                    <div>
+                        <div>
+                            <!--p>{{ datahoje }}</p-->
+                        </div>
                     </div>
+                </div>
+            </div>
 
+            <br> <br>
+        
+            <div>
+                <p>{{ datahoje }}</p>
+            </div>
 
-                </section>
-
-            </form>
+    
+        <div class="container" >
+    
+            <div class="col-md-8" id="pdfTable" #pdfTable>
+                <ul>
+                    <li *ngFor="let element of dataTableLanca; let i = index" >
+                        <h5>{{i + 1}} - {{element.indice}}  de {{element.dtIni}} até {{element.dtFim}} </h5>
+                            <p>Valor: {{element.valor | currency:'BRL'}}</p>
+                            <p>Valor Corrigido: {{element.valorCorr | currency:'BRL'}}</p>
+                    </li>
+                  </ul>   
+             
+                <span style="page-break-before: always;" ></span>
+                <div  style="margin-top: 29cm;"></div>
+                <div  style="margin-top: 29cm;">
+                    <header style="font-weight: bold;">
+                        Memoria de Calculo
+                    </header>
+                </div>
+                <br>
+                <table class="table table-bordered" >
+    
+                    <tr class="table-primary">
+                        <td>Nº</td>
+                        <td>Indice</td>
+                        <td>Data</td>
+                        <td>Fator </td>
+                        <td>Acumulado </td>
+                        <td>Valor Corrigido </td>
+                    </tr>
+                    <tr *ngFor="let element of dataTableRelatorio; let i = index">
+                        <td>{{i + 1}}</td>
+                        <td>{{element.indice}}</td>
+                        <td>{{element.data | date: 'dd/MM/yyyy'}}</td>
+                        <td>{{element.valor }}</td>
+                        <td >{{element.acumulado}}</td>
+                        <td>{{element.result | currency:'BRL'}}</td>
+                    </tr>
+                </table>
+                
+            </div>
+    
         </div>
 
     </mat-card-content>
-    <div style="text-align: center;">
-
-        <br>
-        <br>
-        <div>
-            <button mat-raised-button color="primary" style="background-color: #3099FF;"
-                (click)="downloadAsPDF()">Visualizar
-                <mat-icon>visibility</mat-icon>
-            </button>
-        </div>
-
-
-        <br> <br>
-        
-        <div>
-            <p>{{ datahoje }}</p>
-        </div>
-    </div>
-
-    <div class="container" >
-
-        <div class="col-md-8" id="pdfTable" #pdfTable>
-            <ul>
-                <li *ngFor="let element of dataTableLanca; let i = index" >
-                    <h5>{{i + 1}} - {{element.indice}}  de {{element.dtIni}} até {{element.dtFim}} </h5>
-                        <p>Valor: {{element.valor | currency:'BRL'}}</p>
-                        <p>Valor Corrigido: {{element.valorCorr | currency:'BRL'}}</p>
-                </li>
-              </ul>   
-         
-            <span style="page-break-before: always;" ></span>
-            <div  style="margin-top: 29cm;"></div>
-            <div  style="margin-top: 29cm;">
-                <header style="font-weight: bold;">
-                    Memoria de Calculo
-                </header>
-            </div>
-            <br>
-            <table class="table table-bordered" >
-
-                <tr class="table-primary">
-                    <td>Nº</td>
-                    <td>Indice</td>
-                    <td>Data</td>
-                    <td>Fator </td>
-                    <td>Acumulado </td>
-                    <td>Valor Corrigido </td>
-                </tr>
-                <tr *ngFor="let element of dataTableRelatorio; let i = index">
-                    <td>{{i + 1}}</td>
-                    <td>{{element.indice}}</td>
-                    <td>{{element.data | date: 'dd/MM/yyyy'}}</td>
-                    <td>{{element.valor }}</td>
-                    <td >{{element.acumulado}}</td>
-                    <td>{{element.result | currency:'BRL'}}</td>
-                </tr>
-            </table>
-            
-        </div>
-
-    </div>
-    
-    <!--
- -->
 </mat-card>
