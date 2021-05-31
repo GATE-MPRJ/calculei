@@ -5,10 +5,10 @@
 
 
 
-<mat-card >
+<mat-card>
 
-    <mat-card-content id="pdfTable1">
-        <div id="pdfTable" #pdfTable>
+    <mat-card-content>
+        <div>
             <form class="container" [formGroup]="formCalc">
                 <div fxLayoutGap="15px">
                     <label>Tipos</label>
@@ -208,35 +208,9 @@
                                     </mat-icon>
                                 </mat-cell>
                             </ng-container>
-                            <!--
-
-                        <ng-container matColumnDef="header-row-first-group">
-                            <mat-header-cell *matHeaderCellDef 
-                                [style.text-align]="center" [attr.colspan]="2">  </mat-header-cell>
-                          </ng-container>
-                          
-                          
-                          <ng-container matColumnDef="header-row-second-group">
-                            <mat-header-cell *matHeaderCellDef [attr.colspan]="2" style="margin-left: 40px;"> Second group </mat-header-cell>
-                          </ng-container>
-                        
-                          <ng-container matColumnDef="header-row-tre-group">
-                            <mat-header-cell *matHeaderCellDef [attr.colspan]="2"> Tree group </mat-header-cell>
-                          </ng-container>
-                           
-                          <mat-header-row *matHeaderRowDef="['header-row-first-group', 'header-row-second-group','header-row-tre-group']"></mat-header-row>
-
-                          <mat-footer-row  *matFooterRowDef="['select','delete','position','indice','dtIni','dtFim','dias','juros', 'valor','valorCorr']; sticky: true">
-                          -->
 
                             <mat-header-row *matHeaderRowDef="displayedColumnsLanc"></mat-header-row>
-                            <!--
-                            <mat-footer-row *matFooterRowDef="['noData']" [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"></mat-footer-row>
-                            <mat-footer-row  *matFooterRowDef="['select','delete','position','indice','dtIni','dtFim','dias','juros','valorCorr', 'valor']"></mat-footer-row>      
-                            <mat-footer-row  *matFooterRowDef="['select','delete','juros','valorCorr', 'valor']"></mat-footer-row>      
-                            <mat-footer-row  *matFooterRowDef="displayedColumnsLanc"></mat-footer-row>      
-                        -->
-                            <!-- <mat-footer-row  *matFooterRowDef="['select','delete','indice','juros','valorCorr', 'valor']; sticky: true" ></mat-footer-row>  -->
+
                             <mat-footer-row
                                 *matFooterRowDef="['select','delete','position','dtFim','dias','juros','valorCorr', 'valor']; sticky: true">
                             </mat-footer-row>
@@ -256,125 +230,7 @@
 
 
                 </section>
-                <br>
-                <!--
-            <pre>JUROS</pre>
-            <div fxLayout="row" fxLayoutGap="20px">
 
-
-                <label>Periodicidade</label>
-                <mat-form-field appearance="outline">
-                    <mat-select formControlName="fcPeriodoJuros">
-                        <mat-option value="dd">Diario</mat-option>
-                        <mat-option value="mm">Mensal</mat-option>
-                        <mat-option value="yyyy">Anual</mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-
-                <label>Índice</label>
-                <mat-form-field appearance="outline">
-                    <mat-select formControlName="fcIndiceJuros">
-                        <mat-option>SELIC</mat-option>
-                        <mat-option>POUPANÇA(Atual)</mat-option>
-                        <mat-option>POUPANÇA(Antiga)</mat-option>
-                        <mat-option>Código Civil 6% / 0,5 % ao mês</mat-option>
-                        <mat-option>Código Civil 12% / 6 % ao mes</mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-            </div>
-
-            <div fxLayout="row" fxLayoutGap="20px">
-
-                <label for="dataDeInicio">Data de Início</label>
-                <input formControlName="fcDtIniJuros" type="date" id="dataDeInicio" name="dataDeInicio" />
-                <label for="dataDeTermino">Data de Término</label>
-                <input formControlName="fcDtFimJuros" type="date" id="dataDeTermino" name="dataDeTermino" />
-                <button mat-raised-button color="primary" style="background-color: #3099FF;"
-                    onClick="addEntry()">Incluir Lançamento (+)</button>
-
-            </div>
-            <br>
-            <div class="example-container mat-elevation-z2">
-
-                <mat-table #table [dataSource]="dataSourceJuros">
-                    <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef>
-
-                        </mat-header-cell>
-
-                        <mat-cell *matCellDef="let row">
-
-                        </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="delete" class="coluna">
-                        <mat-header-cell *matHeaderCellDef class="coluna">Excluir
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab" title="Clique para excluir"
-                                (click)="$event.stopPropagation(); 
-                                    $event ? selection.toggle(row) : null;
-                                    selection.isSelected(row);
-                                    removeSelectedRows('ServTec') ">
-
-                        </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="position" class="coluna">
-                        <mat-header-cell *matHeaderCellDef class="coluna"> Nº
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
-                    </ng-container>
-
-
-
-                    <ng-container matColumnDef="indice">
-                        <mat-header-cell *matHeaderCellDef> Indice</mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.indice}} </mat-cell>
-                    </ng-container>
-
-
-                    <ng-container matColumnDef="dtIni">
-                        <mat-header-cell *matHeaderCellDef> Data Inicio </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.dtIni}} </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="dtFim">
-                        <mat-header-cell *matHeaderCellDef> Data Fim </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.dtFim}} </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="dias">
-                        <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="valor">
-                        <mat-header-cell *matHeaderCellDef> Valor </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.valor}} </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="check" class="coluna">
-                        <mat-header-cell *matHeaderCellDef class="coluna">
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let element">
-                            <mat-icon class="iconValidTab" *ngIf="element.position > 0">done
-                            </mat-icon>
-                        </mat-cell>
-                    </ng-container>
-
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
-                    </mat-row>
-
-                </mat-table>
-
-                <div *ngIf="this.dataSourceJuros.data.length == 0">
-                    Nenhuma taxa de juros cadastrada.
-                </div>
-            </div>
-            -->
             </form>
         </div>
 
@@ -392,8 +248,55 @@
 
 
         <br> <br>
+        
         <div>
             <p>{{ datahoje }}</p>
         </div>
     </div>
+
+    <div class="container" >
+
+        <div class="col-md-8" id="pdfTable" #pdfTable>
+            <ul>
+                <li *ngFor="let element of dataTableLanca; let i = index" >
+                    <h5>{{i + 1}} - {{element.indice}}  de {{element.dtIni}} até {{element.dtFim}} </h5>
+                        <p>Valor: {{element.valor | currency:'BRL'}}</p>
+                        <p>Valor Corrigido: {{element.valorCorr | currency:'BRL'}}</p>
+                </li>
+              </ul>   
+         
+            <span style="page-break-before: always;" ></span>
+            <div  style="margin-top: 29cm;"></div>
+            <div  style="margin-top: 29cm;">
+                <header style="font-weight: bold;">
+                    Memoria de Calculo
+                </header>
+            </div>
+            <br>
+            <table class="table table-bordered" >
+
+                <tr class="table-primary">
+                    <td>Nº</td>
+                    <td>Indice</td>
+                    <td>Data</td>
+                    <td>Fator </td>
+                    <td>Acumulado </td>
+                    <td>Valor Corrigido </td>
+                </tr>
+                <tr *ngFor="let element of dataTableRelatorio; let i = index">
+                    <td>{{i + 1}}</td>
+                    <td>{{element.indice}}</td>
+                    <td>{{element.data | date: 'dd/MM/yyyy'}}</td>
+                    <td>{{element.valor }}</td>
+                    <td >{{element.acumulado}}</td>
+                    <td>{{element.result | currency:'BRL'}}</td>
+                </tr>
+            </table>
+            
+        </div>
+
+    </div>
+    
+    <!--
+ -->
 </mat-card>

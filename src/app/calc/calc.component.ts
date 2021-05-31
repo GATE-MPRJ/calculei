@@ -23,8 +23,10 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 const dateFormat = require('dateformat');
 const moment = require('moment');
 var htmlToPdfmake = require("html-to-pdfmake");
-
-//import pdfFonts from 'pdfmake/build/vfs_fonts';
+// const jsdom = require("jsdom");
+// const { JSDOM } = jsdom;
+// var { window } = new JSDOM("")
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 
 //import htmlToPdfmake from "html-to-pdfmake";
@@ -34,6 +36,7 @@ import { responseIndice } from '../model/responseIndice.model'
 import { Observable } from 'rxjs';
 import { validateHorizontalPosition } from '@angular/cdk/overlay';
 import { IfStmt } from '@angular/compiler';
+import { style } from '@angular/animations';
 
 @Injectable()
 @Component({
@@ -45,7 +48,9 @@ import { IfStmt } from '@angular/compiler';
 
 
 export class CalcComponent implements OnInit {
-  @ViewChild('pdfTable') pdfTable!: ElementRef;
+   // @ViewChild('pdfTable') pdfTable!: ElementRef;
+  // @ViewChild('htmlData') htmlData!: ElementRef;
+
   constructor(public service: CalcService) { }
   //  public users: User[] = [];
   //@ViewChild(ChildDirective) child!: ChildDirective;
@@ -100,6 +105,9 @@ export class CalcComponent implements OnInit {
   SumTotal = 0;
   public SumTotalCorr = 0;
   dataTableLanca = [];
+
+  dataTableRelatorio: any = [];
+
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca);
   displayedColumnsLanc = [
     "select",
@@ -181,21 +189,22 @@ export class CalcComponent implements OnInit {
 
     this.service.getIndice(INDICES, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
       this.ResponseIndice = res.content
+      console.log(this.ResponseIndice)
     })
-    
+
     if (this.ResponseIndice.length > 0) {
 
       if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
         console.log("IF ===", INDICES)
         this.setCalcTj(this.ResponseIndice)
         //this.setCalc(this.ResponseIndice);
-      }else{
+      } else {
         console.log("IF !==", INDICES)
         //this.setCalcTj(this.ResponseIndice)
         this.setCalc(this.ResponseIndice);
       }
-    
-      
+
+
     }
 
   }
@@ -220,7 +229,7 @@ export class CalcComponent implements OnInit {
     data_fim = moment(dt2).format('YYYY-MM-DD 00:00:00.0');
 
     // Função para calcular calcular juros anteriores e posteriores a 2003
-    
+
     if (this.formCalc.get("FcJuros")?.value == true) {
       if (dtIni < "2003-01-10") {
         let dd = (((0.06) / 360) * this.days360(dtIni, "2003-01-10"));
@@ -232,7 +241,7 @@ export class CalcComponent implements OnInit {
         Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
       }
     }
-    
+
     let day = this.days360(data_ini, data_fim);
     let respIndice;
 
@@ -243,13 +252,13 @@ export class CalcComponent implements OnInit {
     data.map((x: any) => {
       total = total + x.valor;
       //dtIni = dtIni + " 00:00:00.0"
-      console.log("dtIni",data_ini)
-      console.log("xdata",x.data)
-      if(x.data === data_ini)  {
+      console.log("dtIni", data_ini)
+      console.log("xdata", x.data)
+      if (x.data === data_ini) {
         maior = x.acumulado;
         respIndice = x.nome;
         fator = x.fator;
-        console.log("fator",x.fator)
+        console.log("fator", x.fator)
       }
 
     })
@@ -317,6 +326,17 @@ export class CalcComponent implements OnInit {
       }
 
     })
+    this.ResponseIndice.map((x: any) => {
+      this.dataTableRelatorio.push({
+        indice: x.nome,
+        data: x.data,
+        fato: x.fato,
+        valor: x.valor,
+        acumulado: x.acumulado,
+        result: x.acumulado * this.formCalc.get("fcValorLanca")?.value
+      })
+    })
+    console.log('DAta REL', this.dataTableRelatorio)
 
     this.dados.push({
       dtIni: dtIni,
@@ -325,15 +345,15 @@ export class CalcComponent implements OnInit {
       dias: day,
       valor: this.formCalc.get("fcValorLanca")?.value,
       juros: Juros,
-      valorCorr: (maior * this.formCalc.get("fcValorLanca")?.value) + Juros
+      valorCorr: (maior * this.formCalc.get("fcValorLanca")?.value) + Juros,
+      correcao: ((maior * this.formCalc.get("fcValorLanca")?.value) + Juros) - (this.formCalc.get("fcValorLanca")?.value)
     });
 
     this.SumTotal = 0;
     this.SumTotalCorr = 0;
-    console.log("Dados", this.dados)
+
     this.dataTableLanca = this.dados
     this.dataTableLanca.map((x: any) => {
-
       this.SumTotal = this.SumTotal + x.valor
       this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
     });
@@ -341,71 +361,72 @@ export class CalcComponent implements OnInit {
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
 
   }
+    
+  public downloadAsPDF() {
 
-  public openPDF(): void {
-    const data = this.datahoje.toString();
-    const docDefinition = {
+    const data2 = document.getElementById('pdfTable') as HTMLElement;
+    // var win = window.open('', '_blank');
 
-      content: [
-        {
-          table: {
-            headerRows: 1,
-            widths: ['*', 'auto', 100, '*'],
-            body: [
-              ['First', 'Second', 'Third', 'Последняя'],
-              ['R$ 12223,88', 'Value 2', 'Value 3', 'Value 4'],
-              ['R$ 12223,88', 'Value 2', 'Value 3', 'Value 4'],
-              [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val4']
-            ]
-          },
+    var html = htmlToPdfmake(data2.innerHTML );
+    
+    const documentDefinition = {content: html}
+    
+    // Abri o 
+    // pdfMake.createPdf(documentDefinition).print({}, win); 
 
-        },
+    pdfMake.createPdf(documentDefinition).open();
 
-      ],
-
-      info: {
-        title: 'Calculo Judicial',
-        author: 'Anderson Pires Valgas',
-        keywords: 'keywords for document',
-
-      }
-    };
-
-    pdfMake.createPdf(docDefinition).open({});
 
   }
-  
-  generatePDF() {
-    const data2 = document.getElementById('htmlData') as HTMLElement;
-    html2canvas(data2).then(canvas => {
-      var imgWidth = 208;
-      var imgHeight = canvas.height * imgWidth / canvas.width;
-      const contentDataURL = canvas.toDataURL('image/png')
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      var position = 0;
-      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight)
-      pdf.save('newPDF.pdf');
+  public makePDF() {
+
+    var quotes = document.getElementById('pdfTable') as HTMLElement;
+
+    html2canvas(quotes).then(canvas => {
+        
+
+        //! MAKE YOUR PDF
+        var pdf = new jsPDF('p', 'pt', 'letter');
+
+        for (var i = 0; i <= quotes.clientHeight/980; i++) {
+            //! This is all just html2canvas stuff
+            var srcImg  = canvas;
+            var sX      = 0;
+            var sY      = 980*i; // start 980 pixels down for every new page
+            var sWidth  = 900;
+            var sHeight = 980;
+            var dX      = 0;
+            var dY      = 0;
+            var dWidth  = 900;
+            var dHeight = 980;
+
+            //window.'' = document.createElement("canvas");
+            canvas.setAttribute('width', '900');
+            canvas.setAttribute('height', '980');
+            var ctx = canvas.getContext('2d');
+            // details on this usage of this function: 
+            // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#Slicing
+            //ctx.drawImage(srcImg,sX,sY,sWidth,sHeight,dX,dY,dWidth,dHeight);
+
+            // document.body.appendChild(canvas);
+            var canvasDataURL = canvas.toDataURL("image/png", 1.0);
+
+            var width         = canvas.width;
+            var height        = canvas.clientHeight;
+
+            //! If we're on anything other than the first page,
+            // add another page
+            
+            //! now we declare that we're working on that page
+            //pdf.setPage(i+1);
+            //! now we add content to that page!
+            pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width*.62), (height*.62));
+
+        }
+        //! after the for loop is finished running, we save the pdf.
+        pdf.save('test.pdf');
     });
-  }
   
- public downloadAsPDF() {
-
- // window.open('repot.html','_blank','status=0,scrollbars=1,resizable=1,location=1');
-
-  
-  const doc = new jsPDF();
-  //get table html
-  const data2 = document.getElementById('pdfTable1') as HTMLElement;
-  const pdfTable = this.pdfTable.nativeElement;
-  //html to pdf format
-  console.log('PDF',pdfTable)
-  var html = htmlToPdfmake(data2.innerHTML);
-  console.log('html',html)
-  const documentDefinition = { content: html };
-  
-  pdfMake.createPdf(documentDefinition).open();
-  
-
 }
 
 }
@@ -426,3 +447,74 @@ export interface ElementLanc {
   valor: number
 
 }
+
+/*
+
+function makePDF () {
+  var doc = new jsPDF('p', 'pt', 'a4');
+      var specialElementHandlers = {
+
+      };
+doc.fromHTML(document.getElementById('content'), 15, 15, {
+          'width': 250,
+          'margin': 1,
+          'pagesplit': true,
+          'elementHandlers': specialElementHandlers
+        });
+
+        doc.save('sample-file.pdf');
+}
+function makeMultiPage() {
+
+        var quotes = document.getElementById('content');
+
+        html2canvas(quotes, {
+            onrendered: function(canvas) {
+
+            //! MAKE YOUR PDF
+            var pdf = new jsPDF('p', 'pt', 'letter');
+
+            for (var i = 0; i <= quotes.clientHeight/980; i++) {
+                //! This is all just html2canvas stuff
+                var srcImg  = canvas;
+                var sX      = 0;
+                var sY      = 980*i; // start 980 pixels down for every new page
+                var sWidth  = 900;
+                var sHeight = 980;
+                var dX      = 0;
+                var dY      = 0;
+                var dWidth  = 900;
+                var dHeight = 980;
+
+                window.onePageCanvas = document.createElement("canvas");
+                onePageCanvas.setAttribute('width', 900);
+                onePageCanvas.setAttribute('height', 980);
+                var ctx = onePageCanvas.getContext('2d');
+                // details on this usage of this function: 
+                // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#Slicing
+                ctx.drawImage(srcImg,sX,sY,sWidth,sHeight,dX,dY,dWidth,dHeight);
+
+                // document.body.appendChild(canvas);
+                var canvasDataURL = onePageCanvas.toDataURL("image/png", 1.0);
+
+                var width         = onePageCanvas.width;
+                var height        = onePageCanvas.clientHeight;
+
+                //! If we're on anything other than the first page,
+                // add another page
+                if (i > 0) {
+                    pdf.addPage(612, 791); //8.5" x 11" in pts (in*72)
+                }
+                //! now we declare that we're working on that page
+                pdf.setPage(i+1);
+                //! now we add content to that page!
+                pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width*.62), (height*.62));
+
+            }
+            //! after the for loop is finished running, we save the pdf.
+            pdf.save('Test.pdf');
+        }
+      });
+    }
+
+*/
