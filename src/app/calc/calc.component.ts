@@ -82,7 +82,7 @@ export class CalcComponent implements OnInit {
 
   //datahoje = dateFormat(Date.now(), "dddd  mmm  yyyy, hh:MM:ss");
 
-  datahoje = dateFormat(Date.now(), "dddd  mmm  yyyy, hh:MM:ss");
+  datahoje = dateFormat(Date.now(), "dddd  mmmm  yyyy, hh:MM:ss");
 
   firstFormGroup: FormGroup = this.formCalc;
   dataTableJuros = [];
@@ -171,7 +171,7 @@ export class CalcComponent implements OnInit {
 
   public addTbl() {
 
-    console.log(this.formCalc.controls.fcTipos);
+
     const INDICES = this.formCalc.get("fcIndiceLanca")?.value;
     moment.locale('pt-BR');
     const dat = responseIndice;
@@ -330,10 +330,12 @@ export class CalcComponent implements OnInit {
       this.dataTableRelatorio.push({
         indice: x.nome,
         data: x.data,
-        fato: x.fato,
+        fato: x.fator,
         valor: x.valor,
-        acumulado: x.acumulado,
-        result: x.acumulado * this.formCalc.get("fcValorLanca")?.value
+        acumulado:  x.acumulado,        
+        result: x.acumulado * this.formCalc.get("fcValorLanca")?.value,
+        var:(x.acumulado * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
+        vardc: (x.fator *  this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value
       })
     })
     console.log('DAta REL', this.dataTableRelatorio)
