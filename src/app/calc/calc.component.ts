@@ -48,7 +48,7 @@ import { style } from '@angular/animations';
 
 
 export class CalcComponent implements OnInit {
-   // @ViewChild('pdfTable') pdfTable!: ElementRef;
+  // @ViewChild('pdfTable') pdfTable!: ElementRef;
   // @ViewChild('htmlData') htmlData!: ElementRef;
 
   constructor(public service: CalcService) { }
@@ -85,9 +85,9 @@ export class CalcComponent implements OnInit {
   //moment.locale('pt-BR');
   // myFormattedDate = moment(Date.now()).format()
   // console.log(this.pipe)
-  
+
   datahoje = dateFormat(Date.now(), "dddd  mmmm  yyyy, hh:MM:ss");
-  
+
   firstFormGroup: FormGroup = this.formCalc;
   dataTableJuros = [];
   dataSourceJuros = new MatTableDataSource<Element>(this.dataTableJuros);
@@ -131,6 +131,9 @@ export class CalcComponent implements OnInit {
 
 
   ngOnInit(): void {
+    moment.locale('pt-BR');
+
+    let dateh = new Date;
     console.log("OOOO", this.dataSourceJuros.data.length)
     console.log("OOOO", this.dataSourceLanca.data.length)
   }
@@ -188,7 +191,33 @@ export class CalcComponent implements OnInit {
     data_ini = moment(dt1).format('DD-MM-YYYY');
     data_fim = moment(dt2).format('DD-MM-YYYY');
 
+    // insere abatimentos Falta inser regras de data..
+    let abat = false;
+    if ((this.formCalc.get("fcTipos")?.value === "abatimentos") && (this.dataSourceLanca.data.length > 0)) {
+      this.dados.push({
+        dtIni: dt1,
+        dtFim: dt1,
+        indice: "ABATIMENTO",
+        dias: 0,
+        valor: - (this.formCalc.get("fcValorLanca")?.value),
+        juros: 0,
+        valorCorr: -(this.formCalc.get("fcValorLanca")?.value),
+        correcao: - (this.formCalc.get("fcValorLanca")?.value)
+      });
 
+      abat = true;
+
+      this.SumTotal = 0;
+      this.SumTotalCorr = 0;
+
+      this.dataTableLanca = this.dados
+      this.dataTableLanca.map((x: any) => {
+        this.SumTotal = this.SumTotal + x.valor
+        this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
+      });
+
+      this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
+    }
 
     this.service.getIndice(INDICES, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
       this.ResponseIndice = res.content
@@ -202,15 +231,16 @@ export class CalcComponent implements OnInit {
         } else {
           console.log("IF !==", INDICES)
           //this.setCalcTj(this.ResponseIndice)
-          this.setCalc(this.ResponseIndice);
+          if (abat == false) {
+            this.setCalc(this.ResponseIndice);
+          }
         }
-  
-  
+
+
       }
     })
     /*
     if (this.ResponseIndice.length > 0) {
-
       if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
         console.log("IF ===", INDICES)
         this.setCalcTj(this.ResponseIndice)
@@ -350,10 +380,10 @@ export class CalcComponent implements OnInit {
         data: x.data,
         fato: x.fator,
         valor: x.valor,
-        acumulado:  x.acumulado,        
+        acumulado: x.acumulado,
         result: x.acumulado * this.formCalc.get("fcValorLanca")?.value,
-        var:(x.acumulado * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
-        vardc: (x.fator *  this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value
+        var: (x.acumulado * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
+        vardc: (x.fator * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value
       })
     })
     console.log('DAta REL', this.dataTableRelatorio)
@@ -379,18 +409,18 @@ export class CalcComponent implements OnInit {
     });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
-    console.log('dataSourceLanca',this.dataSourceLanca)
+    console.log('dataSourceLanca', this.dataSourceLanca)
   }
-    
+
   public downloadAsPDF() {
 
     const data2 = document.getElementById('pdfTable') as HTMLElement;
     // var win = window.open('', '_blank');
 
-    var html = htmlToPdfmake(data2.innerHTML );
-    
-    const documentDefinition = {content: html}
-    
+    var html = htmlToPdfmake(data2.innerHTML);
+
+    const documentDefinition = { content: html }
+
     // Abri o 
     // pdfMake.createPdf(documentDefinition).print({}, win); 
 
@@ -403,51 +433,51 @@ export class CalcComponent implements OnInit {
     var quotes = document.getElementById('pdfTable') as HTMLElement;
 
     html2canvas(quotes).then(canvas => {
-        
 
-        //! MAKE YOUR PDF
-        var pdf = new jsPDF('p', 'pt', 'letter');
 
-        for (var i = 0; i <= quotes.clientHeight/980; i++) {
-            //! This is all just html2canvas stuff
-            var srcImg  = canvas;
-            var sX      = 0;
-            var sY      = 980*i; // start 980 pixels down for every new page
-            var sWidth  = 900;
-            var sHeight = 980;
-            var dX      = 0;
-            var dY      = 0;
-            var dWidth  = 900;
-            var dHeight = 980;
+      //! MAKE YOUR PDF
+      var pdf = new jsPDF('p', 'pt', 'letter');
 
-            //window.'' = document.createElement("canvas");
-            canvas.setAttribute('width', '900');
-            canvas.setAttribute('height', '980');
-            var ctx = canvas.getContext('2d');
-            // details on this usage of this function: 
-            // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#Slicing
-            //ctx.drawImage(srcImg,sX,sY,sWidth,sHeight,dX,dY,dWidth,dHeight);
+      for (var i = 0; i <= quotes.clientHeight / 980; i++) {
+        //! This is all just html2canvas stuff
+        var srcImg = canvas;
+        var sX = 0;
+        var sY = 980 * i; // start 980 pixels down for every new page
+        var sWidth = 900;
+        var sHeight = 980;
+        var dX = 0;
+        var dY = 0;
+        var dWidth = 900;
+        var dHeight = 980;
 
-            // document.body.appendChild(canvas);
-            var canvasDataURL = canvas.toDataURL("image/png", 1.0);
+        //window.'' = document.createElement("canvas");
+        canvas.setAttribute('width', '900');
+        canvas.setAttribute('height', '980');
+        var ctx = canvas.getContext('2d');
+        // details on this usage of this function: 
+        // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#Slicing
+        //ctx.drawImage(srcImg,sX,sY,sWidth,sHeight,dX,dY,dWidth,dHeight);
 
-            var width         = canvas.width;
-            var height        = canvas.clientHeight;
+        // document.body.appendChild(canvas);
+        var canvasDataURL = canvas.toDataURL("image/png", 1.0);
 
-            //! If we're on anything other than the first page,
-            // add another page
-            
-            //! now we declare that we're working on that page
-            //pdf.setPage(i+1);
-            //! now we add content to that page!
-            pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width*.62), (height*.62));
+        var width = canvas.width;
+        var height = canvas.clientHeight;
 
-        }
-        //! after the for loop is finished running, we save the pdf.
-        pdf.save('test.pdf');
+        //! If we're on anything other than the first page,
+        // add another page
+
+        //! now we declare that we're working on that page
+        //pdf.setPage(i+1);
+        //! now we add content to that page!
+        pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width * .62), (height * .62));
+
+      }
+      //! after the for loop is finished running, we save the pdf.
+      pdf.save('test.pdf');
     });
-  
-}
+
+  }
 
 }
 export interface Element {
@@ -510,7 +540,7 @@ function makeMultiPage() {
                 onePageCanvas.setAttribute('width', 900);
                 onePageCanvas.setAttribute('height', 980);
                 var ctx = onePageCanvas.getContext('2d');
-                // details on this usage of this function: 
+                // details on this usage of this function:
                 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#Slicing
                 ctx.drawImage(srcImg,sX,sY,sWidth,sHeight,dX,dY,dWidth,dHeight);
 

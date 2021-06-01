@@ -30,18 +30,11 @@
                                             <mat-option value="Ctributado">Créditos da Fazenda Pública</mat-option>
                                             <!-- Nâo aparecer 11.960/2009 -->
                                             <mat-option value="abatimentos">Abatimentos</mat-option>
+                                            <!-- Incluir Calculos de Multa em Salarios minimos -->
+                                            <mat-option value="Multa">Multa em Salários (desenvolvimento)</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
-                                <div>
-                                    <label for="valor">Valor</label>
-                                    <mat-form-field appearance="outline">
-                                        <input formControlName="fcValorLanca" matInput currencyMask
-                                            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <div class="flexbox">
                                 <div>
                                     <label>Índice de correção monetária</label>
                                     <mat-form-field appearance="outline">
@@ -57,6 +50,16 @@
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
+                                
+                            </div>
+                            <div class="flexbox">
+                                <div>
+                                    <label for="valor">Valor</label>
+                                    <mat-form-field appearance="outline">
+                                        <input formControlName="fcValorLanca" matInput currencyMask
+                                            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" />
+                                    </mat-form-field>
+                                </div>
 
                                 <div class="flexbox">
                                     <div>
@@ -69,10 +72,11 @@
                                     <div>
                                         <label for="dataDeTermino">Término</label>
                                         <mat-form-field appearance="outline">
-                                        <input formControlName="fcDtFimLanca" matInput type="date" id="dataDeTermino"
+                                        <input formControlName="fcDtFimLanca" matInput type="date" [min]="formCalc.controls.fcDtIniLanca.value"  id="dataDeTermino"
                                             name="dataDeTermino" />
                                         </mat-form-field>
                                     </div>
+                                    <!--placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31"-->
                                 </div>
                             </div>
                             <div  class="flexbox">
