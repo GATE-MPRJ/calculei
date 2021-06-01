@@ -28,7 +28,7 @@ var htmlToPdfmake = require("html-to-pdfmake");
 // var { window } = new JSDOM("")
 // import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-
+moment.locale('pt-BR');
 //import htmlToPdfmake from "html-to-pdfmake";
 
 
@@ -81,9 +81,13 @@ export class CalcComponent implements OnInit {
 
 
   //datahoje = dateFormat(Date.now(), "dddd  mmm  yyyy, hh:MM:ss");
-
+  pipe = new DatePipe('pt')
+  //moment.locale('pt-BR');
+  // myFormattedDate = moment(Date.now()).format()
+  // console.log(this.pipe)
+  
   datahoje = dateFormat(Date.now(), "dddd  mmmm  yyyy, hh:MM:ss");
-
+  
   firstFormGroup: FormGroup = this.formCalc;
   dataTableJuros = [];
   dataSourceJuros = new MatTableDataSource<Element>(this.dataTableJuros);
@@ -171,7 +175,6 @@ export class CalcComponent implements OnInit {
 
   public addTbl() {
 
-
     const INDICES = this.formCalc.get("fcIndiceLanca")?.value;
     moment.locale('pt-BR');
     const dat = responseIndice;
@@ -190,8 +193,22 @@ export class CalcComponent implements OnInit {
     this.service.getIndice(INDICES, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
       this.ResponseIndice = res.content
       console.log(this.ResponseIndice)
-    })
+      if (this.ResponseIndice.length > 0) {
 
+        if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
+          console.log("IF ===", INDICES)
+          this.setCalcTj(this.ResponseIndice)
+          //this.setCalc(this.ResponseIndice);
+        } else {
+          console.log("IF !==", INDICES)
+          //this.setCalcTj(this.ResponseIndice)
+          this.setCalc(this.ResponseIndice);
+        }
+  
+  
+      }
+    })
+    /*
     if (this.ResponseIndice.length > 0) {
 
       if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
@@ -206,6 +223,7 @@ export class CalcComponent implements OnInit {
 
 
     }
+    */
 
   }
   // Acertar esse para fazer os calculos usando dados do TJ
@@ -361,7 +379,7 @@ export class CalcComponent implements OnInit {
     });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
-
+    console.log('dataSourceLanca',this.dataSourceLanca)
   }
     
   public downloadAsPDF() {
