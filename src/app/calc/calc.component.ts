@@ -114,9 +114,7 @@ export class CalcComponent implements OnInit {
 
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca);
   displayedColumnsLanc = [
-    "select",
     "position",
-    "delete",
     "dtIni",
     "dtFim",
     "indice",
@@ -124,7 +122,7 @@ export class CalcComponent implements OnInit {
     "valor",
     "juros",
     "valorCorr",
-    "check",
+    "delete",
   ];
 
   displayedColumnsF = ['indice', 'valor'];
@@ -170,7 +168,7 @@ export class CalcComponent implements OnInit {
   lastDayOfFebruary(date: any) {
 
     var lastDay = new Date(date.getFullYear(), 2, 1);
-    console.log("Last Dau", lastDay)
+    console.log("Last Day", lastDay)
     return date.getDate() == lastDay;
   }
 
@@ -300,8 +298,8 @@ export class CalcComponent implements OnInit {
     data.map((x: any) => {
       total = total + x.valor;
       //dtIni = dtIni + " 00:00:00.0"
-      console.log("dtIni", data_ini)
-      console.log("xdata", x.data)
+      //console.log("dtIni", data_ini)
+      //console.log("xdata", x.data)
       if (x.data === data_ini) {
         maior = x.acumulado;
         respIndice = x.nome;
@@ -310,7 +308,21 @@ export class CalcComponent implements OnInit {
       }
 
     })
-
+console.log(this.ResponseIndice);
+    this.ResponseIndice.map((x: any) => {
+      this.dataTableRelatorio.push({
+        indice: x.nome,
+        data: x.data,
+        fator: x.fator,
+        valor: x.valor,
+        acumulado: x.acumulado,
+        result: x.acumulado * this.formCalc.get("fcValorLanca")?.value,
+        var: (x.acumulado * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
+        vardc: (x.fator * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value
+      })
+    })
+    console.log('DAta REL', this.dataTableRelatorio)
+    
     this.dados.push({
       dtIni: dtIni,
       dtFim: dtFim,
@@ -333,8 +345,7 @@ export class CalcComponent implements OnInit {
     });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
-
-
+    console.log('dataSourceLanca', this.dataSourceLanca)
   }
 
   setCalc(data: any) {
@@ -375,6 +386,7 @@ export class CalcComponent implements OnInit {
       }
 
     })
+    
     this.ResponseIndice.map((x: any) => {
       this.dataTableRelatorio.push({
         indice: x.nome,
