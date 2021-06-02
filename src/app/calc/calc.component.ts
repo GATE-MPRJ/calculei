@@ -270,11 +270,11 @@ export class CalcComponent implements OnInit {
     let data_ini = ""
     let data_fim = ""
 
-    let dt1 = (this.formCalc.get("fcDtIniLanca")?.value);
-    let dt2 = (this.formCalc.get("fcDtFimLanca")?.value);
+    dtIni = (this.formCalc.get("fcDtIniLanca")?.value);
+    dtFim = (this.formCalc.get("fcDtFimLanca")?.value);
 
-    data_ini = moment(dt1).format('YYYY-MM-DD 00:00:00.0');
-    data_fim = moment(dt2).format('YYYY-MM-DD 00:00:00.0');
+    data_ini = moment(dtIni).format('YYYY-MM-DD 00:00:00.0');
+    data_fim = moment(dtFim).format('YYYY-MM-DD 00:00:00.0');
 
     // Função para calcular calcular juros anteriores e posteriores a 2003
 
@@ -318,7 +318,8 @@ export class CalcComponent implements OnInit {
       dias: day,
       valor: this.formCalc.get("fcValorLanca")?.value,
       juros: Juros,
-      valorCorr: (fator * this.formCalc.get("fcValorLanca")?.value) //+ Juros
+      valorCorr: (fator * this.formCalc.get("fcValorLanca")?.value) + Juros,
+      correcao: ((maior * this.formCalc.get("fcValorLanca")?.value) + Juros) - (this.formCalc.get("fcValorLanca")?.value)
     });
 
     this.SumTotal = 0;
@@ -378,7 +379,7 @@ export class CalcComponent implements OnInit {
       this.dataTableRelatorio.push({
         indice: x.nome,
         data: x.data,
-        fato: x.fator,
+        fator: x.fator,
         valor: x.valor,
         acumulado: x.acumulado,
         result: x.acumulado * this.formCalc.get("fcValorLanca")?.value,

@@ -141,7 +141,25 @@ label {
   overflow-y: auto;
 }
 ::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
-  background-color: #702826 !important;
+  background-color: #702826;
+}
+::ng-deep .mat-flat-button.mat-warn,
+.mat-raised-button.mat-warn,
+.mat-fab.mat-warn,
+.mat-mini-fab.mat-warn {
+  background-color: #702826;
+}
+::ng-deep ::ng-deep .mat-flat-button.mat-primary.mat-button-disabled,
+.mat-flat-button.mat-warn.mat-button-disabled,
+.mat-flat-button.mat-button-disabled.mat-button-disabled,
+.mat-raised-button.mat-warn.mat-button-disabled,
+.mat-raised-button.mat-button-disabled.mat-button-disabled,
+.mat-fab.mat-warn.mat-button-disabled,
+.mat-fab.mat-button-disabled.mat-button-disabled,
+.mat-mini-fab.mat-warn.mat-button-disabled,
+.mat-mini-fab.mat-button-disabled.mat-button-disabled {
+  color: #fff;
+  background-color: #7028268f !important;
 }
 
 .mat-select-big-width {
@@ -168,5 +186,18 @@ label {
   ::ng-deep mat-select .mat-select-placeholder {
     width: fit-content;
     min-width: 10ch;
+  }
+}
+.print-only {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+
+  .print-only {
+    display: block;
   }
 }
