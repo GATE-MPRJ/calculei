@@ -1,8 +1,8 @@
 {
     "/api/*": {
         "changeOrigin": true,
-        "target": "http://localhost:8082/calculos",
-        "pathRewrite": {"^/calculos" : ""},
+        "target": "http://d-calculos-front-gate-stage.apps.ocp.mprj.mp.br/calc",
+        "pathRewrite": {"^/calc" : ""},
         "logLevel": "debug",
         "secure": false
     }
