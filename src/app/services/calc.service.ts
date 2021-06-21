@@ -9,7 +9,7 @@ import { retry, catchError } from 'rxjs/operators';
 export class CalcService {
 
   baseUrl  = 'calc/'; // api rest fake
-  
+  //baseUrl  = 'http://localhost:8090/calc/'; // api rest fake
   //https://h-gateprodata.mprj.mp.br/gate/api/Cidadao/teste
   constructor(private httpClient: HttpClient) { }
   httpOptions = {

@@ -294,17 +294,13 @@ export class CalcComponent implements OnInit {
     let total = 0;
     let total2 = 0;
 
-    // P
+    
     data.map((x: any) => {
       total = total + x.valor;
-      //dtIni = dtIni + " 00:00:00.0"
-      //console.log("dtIni", data_ini)
-      //console.log("xdata", x.data)
-      if (x.data === data_ini) {
+      if (x.acumulado > maior) {
         maior = x.acumulado;
         respIndice = x.nome;
-        fator = x.fator;
-        console.log("fator", x.fator)
+
       }
 
     })
@@ -314,14 +310,14 @@ console.log(this.ResponseIndice);
         indice: x.nome,
         data: x.data,
         fator: x.fator,
-        valor: x.valor,
+        respIndice: x.nome,
         acumulado: x.acumulado,
         result: x.acumulado * this.formCalc.get("fcValorLanca")?.value,
         var: (x.acumulado * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
         vardc: (x.fator * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value
       })
     })
-    console.log('DAta REL', this.dataTableRelatorio)
+    console.log('DATA REL', this.dataTableRelatorio)
     
     this.dados.push({
       dtIni: dtIni,
@@ -330,10 +326,10 @@ console.log(this.ResponseIndice);
       dias: day,
       valor: this.formCalc.get("fcValorLanca")?.value,
       juros: Juros,
-      valorCorr: (fator * this.formCalc.get("fcValorLanca")?.value) + Juros,
+      valorCorr: (maior * this.formCalc.get("fcValorLanca")?.value) + Juros,
       correcao: ((maior * this.formCalc.get("fcValorLanca")?.value) + Juros) - (this.formCalc.get("fcValorLanca")?.value)
     });
-
+    console.log('Dados REL', this.dados)
     this.SumTotal = 0;
     this.SumTotalCorr = 0;
     console.log("Dados", this.dados)
