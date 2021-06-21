@@ -343,7 +343,6 @@ console.log(this.ResponseIndice);
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
     console.log('dataSourceLanca', this.dataSourceLanca)
   }
-
   setCalc(data: any) {
     let maior = 0
     let dtIni = "";
