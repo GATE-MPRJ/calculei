@@ -58,6 +58,7 @@ export class CalcComponent implements OnInit {
   public formCalc = new FormGroup({
     //Lançmentos
     fcLancametos: new FormControl(""),
+    fcListaLancamento: new FormControl(""),
     fcDtIniLanca: new FormControl(""),
     fcDtFimLanca: new FormControl(""),
     fcValorLanca: new FormControl(""),

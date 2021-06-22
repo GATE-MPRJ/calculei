@@ -50,7 +50,17 @@
                                 </mat-select>
                             </mat-form-field>
                         </div>
-                        
+                    </div>
+                    <div class="flexbox" >
+                        <div [hidden]="formCalc.controls.fcTipos.value != 'abatimentos'">
+                            <label>Lançamento</label>
+                            <mat-form-field appearance="outline">
+                                <mat-select formControlName="fcListaLancamento">
+                                    <!-- Nâo aparecer 6.899/81 -->
+                                    <mat-option value="1">Lançamento 1</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
                     </div>
                     <div class="flexbox">
                         <div>
@@ -79,13 +89,30 @@
                             <!--placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31"-->
                         </div>
                     </div>
-                    <div  class="flexbox">
+                    <div class="flexbox" style="margin-bottom:1.34375em;">
                         <div>
-                            <label>Incidir juros</label>
-                        </div>
-                        <div>
+                            <label labelPlacement="top">Incidir juros</label>
                             <mat-slide-toggle color="warn" [(ngModel)]="ngmJuros" formControlName="FcJuros"></mat-slide-toggle>
                         </div>
+                        <div [hidden]="!formCalc.controls.FcJuros.value">
+                            <label>Índice dos juros</label>
+                            <mat-form-field appearance="outline">
+                                <mat-select formControlName="fcIndiceLanca" required>
+                                    <mat-option value="IPCA-E">IPCA-E</mat-option>
+                                    <mat-option value="IGP-M">IGP-M</mat-option>
+                                    <mat-option value="TR">TR</mat-option>
+                                    <mat-option value="SELIC">SELIC</mat-option>
+                                    <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'debitos'">
+                                        TJ/RJ LEI 11.960/2009 (ORTN-OTN-BTN- TR-UFIR-IPCA-E)</mat-option>
+                                    <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
+                                        TJ/RJ LEI 6.899/81 (UFIR-RJ)</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="flexbox">
+
+
                     </div>
                     <div  class="flexbox">
                         <mat-hint>Percentual de juros até 10/01/2003: 6% ao ano ou 0,5% ao mês.<BR /> Percentual de juros a partir de 10/01/2003 12% ao ano ou 1% ao mês </mat-hint>
@@ -121,7 +148,7 @@
                             c.1: atualização monetária corrigidos pelo Índice de Preços ao Consumidor Amplo Especial (IPCA-E); <br />
                             c.2: juros moratórios nos débitos não tributários: Poupança; e <br />
                             c.3: juros moratórios dos débitos tributários: SELIC  <br />
-                        </p-->
+                        </p --> 
                         <p>
                         Lançamentos de crédito correspondem a valores de decisões judiciais, custas, despesas etc que eventualmente podem
                         ser corrigidas por um determinado período de tempo.
