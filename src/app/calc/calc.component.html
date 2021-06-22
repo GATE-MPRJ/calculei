@@ -130,7 +130,7 @@
                             <li>Todos os valores estão Reais (R$)</li>
                             <li>A presente calculadora virtual não substitui o cálculo realizado e homologado judicialmente.</li>
                         </ul>
-                        <a href="http://apps.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
+                        <a href="http://apps.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618" tabindex="-1">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
                     </div>
             </mat-card>
         </div>
@@ -166,10 +166,7 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab"
-                                title="Clique para excluir" (click)="$event.stopPropagation(); 
-                                    $event ? selection.toggle(row) : null;
-                                    selection.isSelected(row);
-                                    removeSelectedRows('ServTec') ">
+                                title="Clique para excluir" (click)="this.removeRow(index)">
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef class="footerBold"></mat-footer-cell>
                     </ng-container>
@@ -272,7 +269,7 @@
                     <mat-footer-row *matFooterRowDef="['noData']"
                         [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"></mat-footer-row>
 
-                    <mat-row *matRowDef="let row; columns: displayedColumnsLanc;" (click)="selection.toggle(row)">
+                    <mat-row *matRowDef="let row; columns: displayedColumnsLanc;" >
                     </mat-row>
                 </mat-table>
                 <div clas="flexbox" [hidden]="!isActive">
@@ -339,7 +336,7 @@
                         <td style="text-align: center;">{{element.valor | number:'1.0-2' }}</td>
                         <td >{{element.vardc | number:'1.0-2'}}</td>
                         <td >{{element.var | number:'1.0-2'}}</td>
-                        <td>{{element.result | currency:'BRL'}}</td>
+                        <td>{{element.result | number:'1.0-2'}}</td>
                     </tr>
                 </table>
             </div>

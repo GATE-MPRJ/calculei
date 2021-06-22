@@ -172,7 +172,22 @@ export class CalcComponent implements OnInit {
     return date.getDate() == lastDay;
   }
 
+  public removeRow(index: number) {
+    if(confirm("Deseja EXCLUIR o lançamento?")) {
+      this.dataSourceLanca.data.splice(index, 1);
+      this.dataSourceLanca._updateChangeSubscription();
+      this.calcSumTotals();
+    }
+  }
 
+  public calcSumTotals(){
+    this.SumTotal = 0;
+    this.SumTotalCorr = 0;
+    this.dataTableLanca.map((x: any) => {
+      this.SumTotal = this.SumTotal + x.valor
+      this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
+    });
+  }
 
   public addTbl() {
 
@@ -205,14 +220,7 @@ export class CalcComponent implements OnInit {
 
       abat = true;
 
-      this.SumTotal = 0;
-      this.SumTotalCorr = 0;
-
       this.dataTableLanca = this.dados
-      this.dataTableLanca.map((x: any) => {
-        this.SumTotal = this.SumTotal + x.valor
-        this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
-      });
 
       this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
     }
@@ -221,8 +229,11 @@ export class CalcComponent implements OnInit {
       this.ResponseIndice = res.content
       console.log(this.ResponseIndice)
       if (this.ResponseIndice.length > 0) {
+        this.setCalc(this.ResponseIndice);
+        this.calcSumTotals();
 
-        if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
+
+       /* if (this.formCalc.get("fcIndiceLanca")?.value === "TJ899" || this.formCalc.get("fcIndiceLanca")?.value === "TJ11960") {
           console.log("IF ===", INDICES)
           this.setCalcTj(this.ResponseIndice)
           //this.setCalc(this.ResponseIndice);
@@ -233,7 +244,7 @@ export class CalcComponent implements OnInit {
             this.setCalc(this.ResponseIndice);
           }
         }
-
+*/
 
       }
     })
@@ -343,6 +354,7 @@ console.log(this.ResponseIndice);
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
     console.log('dataSourceLanca', this.dataSourceLanca)
   }
+
   setCalc(data: any) {
     let maior = 0
     let dtIni = "";
@@ -377,7 +389,6 @@ console.log(this.ResponseIndice);
       if (x.acumulado > maior) {
         maior = x.acumulado;
         respIndice = x.nome;
-
       }
 
     })
@@ -407,14 +418,7 @@ console.log(this.ResponseIndice);
       correcao: ((maior * this.formCalc.get("fcValorLanca")?.value) + Juros) - (this.formCalc.get("fcValorLanca")?.value)
     });
 
-    this.SumTotal = 0;
-    this.SumTotalCorr = 0;
-
     this.dataTableLanca = this.dados
-    this.dataTableLanca.map((x: any) => {
-      this.SumTotal = this.SumTotal + x.valor
-      this.SumTotalCorr = this.SumTotalCorr + x.valorCorr
-    });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dataTableLanca)
     console.log('dataSourceLanca', this.dataSourceLanca)
