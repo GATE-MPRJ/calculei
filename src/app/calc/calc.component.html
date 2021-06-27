@@ -154,6 +154,7 @@
         </div>
         <div class="container">
             <div class="">
+            <!-- INCLUIR INDICE NA TABELA -->
                 <mat-table #table [dataSource]="dataSourceLanca" class="mat-elevation-z8">
                     <ng-container matColumnDef="select" class="coluna">
                         <mat-header-cell *matHeaderCellDef>
@@ -289,7 +290,7 @@
                                     <td>{{i+1}}</td>
                                     <td>{{detalhamento.data | date: 'dd/MM/yyyy'}}</td>
                                     <td>{{element.indice}}</td>                        
-                                    <td style="text-align: center;">aa{{detalhamento.valorIndice | number:'1.0-2' }}</td>
+                                    <td style="text-align: center;">{{detalhamento.valorIndice | number:'1.0-8' }}</td>
                                     <td >{{detalhamento.valorCorrecao | number:'1.0-2'}}</td>
                                     <td >{{detalhamento.valorCorrecaoAcumulado | number:'1.0-2'}}</td>
                                     <td>{{detalhamento.result | currency:'BRL'}}</td>
