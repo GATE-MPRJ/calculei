@@ -70,7 +70,8 @@ export class CalcComponent implements OnInit {
     fcDtFimJuros: new FormControl(""),
     fcValorJuros: new FormControl(""),
     fcIndiceJuros: new FormControl(""),
-    fcPeriodoJuros: new FormControl(""),
+    fcTaxaJuros: new FormControl(""),
+    //fcPeriodoJuros: new FormControl(""),
 
 
   })
@@ -114,13 +115,14 @@ export class CalcComponent implements OnInit {
 
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
   displayedColumnsLanc = [
-    "position",
+  //  "position",
     "dtIni",
+    "principal",
     "dtFim",
     "indice",
+    "valorAtualizado",
     "dias",
-    "principal",
-    "juros",
+    "jurosValorTotal",
     "valorCorr",
     "delete",
   ];
@@ -129,11 +131,11 @@ export class CalcComponent implements OnInit {
 
 
   ngOnInit(): void {
-    moment.locale('pt-BR');
 
-    let dateh = new Date;
-    console.log("OOOO", this.dataSourceJuros.data.length)
-    console.log("OOOO", this.dataSourceLanca.data.length)
+  }
+
+  ngAfterViewInit(): void {
+
   }
 
   // Função para Converter ano em ano 360 dias
@@ -166,9 +168,7 @@ export class CalcComponent implements OnInit {
   }
 
   lastDayOfFebruary(date: any) {
-
     var lastDay = new Date(date.getFullYear(), 2, 1);
-    console.log("Last Day", lastDay)
     return date.getDate() == lastDay;
   }
 
@@ -230,10 +230,8 @@ export class CalcComponent implements OnInit {
       data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
     }
 
-
     this.service.getIndice(INDICES, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
       this.ResponseIndice = res.content
-      console.log(this.ResponseIndice)
       if (this.ResponseIndice.length > 0) {
         this.setCalc(this.ResponseIndice);
         this.calcSumTotals();
@@ -243,29 +241,46 @@ export class CalcComponent implements OnInit {
 
   }
 
+  calcTaxa(taxa:number, dias:number){
+    return ((taxa / 360) * dias);
+  }
+
+  calcJuros(valor:number, taxa:number, dias:number){
+    return this.calcTaxa(taxa, dias) * valor;
+  }
+
 
   setCalc(data: any) {
-    let maior = 0
+    let maior = 0;
     let dtIni = this.formCalc.get("fcDtIniLanca")?.value;
     let dtFim = this.formCalc.get("fcDtFimLanca")?.value;
-    let Juros = 0
-    let days2003 = 0
-    let day = this.days360(dtIni, dtFim);
+    let juros = [];
+    let jurosDtPoupanca = 0;
+    let jurosDias = 0;
+    let jurosTaxa = 0;
+    let jurosTaxaAcumulada = 0;
+    let jurosTaxaTotal = 0;
+    let jurosValor = 0;
+    let jurosValorTotal = 0;
+    let dias = this.days360(dtIni, dtFim);
     let respIndice;
-    let fatores;
+    let fatores = [];
     let fatorMax: number;
     let fatorMin: number;
     let fatorIni: number;
     let fatorFim: number;
     let fatorDivisao: number;
     let fatorCalculo: number;
+    let fatorCalculoMemoria: number;
     let acumuladoFim: number;
+    let valorAtualizado: number;
 
     fatores = data.map((d: any) => d.fator);
     fatorMax = Math.max(...fatores);
     fatorMin = Math.min(...fatores);
     fatorIni = fatores[0];
     fatorFim = fatores[fatores.length - 1];
+
     //Verificar se a data fim não é superior ao último índice
     if (this.formCalc.get("fcIndiceLanca")?.value.includes('TJ899') && dtFim >= '2021-01-01'){
       fatorFim = 1.0000000000;
@@ -273,6 +288,9 @@ export class CalcComponent implements OnInit {
     fatorDivisao = fatorIni / fatorFim;
     //fatorDivisao = 2.02941176;
     acumuladoFim = data[data.length - 1].acumulado;
+    fatorCalculo = data[0].valor ? acumuladoFim : fatorDivisao;
+    valorAtualizado = fatorCalculo * this.formCalc.get("fcValorLanca")?.value,
+
     respIndice = data[0].nome;
     console.log(respIndice, data[0].data, fatorIni, data[data.length - 1].data, fatorFim, fatorDivisao, acumuladoFim);
     this.dataTableRelatorio = [];
@@ -280,59 +298,87 @@ export class CalcComponent implements OnInit {
     // Função para calcular calcular juros anteriores e posteriores a 2003
     // deve considerar ambos em função da data.
     if (this.formCalc.get("FcJuros")?.value == true) {
-      if (dtIni < "2003-01-10") {
-        let dd = (((0.06) / 360) * this.days360(dtIni, "2003-01-10"));
-        Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
-        console.log('juros 6%');
-
+      if (this.formCalc.get("fcIndiceJuros")?.value == 'poupanca') {
+        if(dtIni <= "2003-01-10"){
+          jurosTaxa = 0.06;
+          jurosDtPoupanca = dtFim < '2003-01-10' ? dtFim : '2003-01-10';
+          jurosDias = this.days360(dtIni, jurosDtPoupanca);
+          jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
+          jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
+          jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
+          jurosValorTotal = jurosValorTotal + jurosValor;
+          juros.push({
+            jurosValor: jurosValor,
+            jurosTaxa: jurosTaxa,
+            dias: jurosDias,
+            dtIni: dtIni,
+            dtFim: jurosDtPoupanca
+          })
+        }
+        if(dtFim >= "2003-01-11"){
+          jurosTaxa = 0.12;
+          jurosDtPoupanca = dtIni > '2003-01-11' ? dtIni : '2003-01-11';
+          jurosDias = this.days360(jurosDtPoupanca, dtFim);
+          jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
+          jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
+          jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
+          jurosValorTotal = jurosValorTotal + jurosValor;
+          juros.push({
+            jurosValor: this.calcJuros(valorAtualizado, jurosTaxa, jurosDias),
+            jurosTaxa: this.calcTaxa(jurosTaxa, jurosDias),
+            dias: jurosDias,
+            dtIni: jurosDtPoupanca,
+            dtFim: dtFim
+          })
+        }
       }
-
-      if (dtIni > "2003-01-10") {
-        let dd = (((0.12) / 360) * this.days360(dtIni, dtFim));
-        Juros = (dd) * this.formCalc.get("fcValorLanca")?.value
-        console.log('juros 12%');
-
+      if (this.formCalc.get("fcIndiceJuros")?.value == 'especificar') {
+        jurosTaxa = this.formCalc.get("fcTaxaJuros")?.value;
+        jurosDias = this.days360(dtIni, dtFim);
+        jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
+        jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
+        jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
+        jurosValorTotal = jurosValorTotal + jurosValor;
+        juros.push({
+          jurosValor: this.calcJuros(valorAtualizado, jurosTaxa, jurosDias),
+          jurosTaxa: this.calcTaxa(jurosTaxa, jurosDias),
+          dias: jurosDias,
+          dtIni: dtIni,
+          dtFim: dtFim
+        })
       }
     }
 
-
+    //Memória de Calculos
+    //@todo refazer, incluir juros.
     data.map((x: any) => {
-      
-      /* Considerava o maior acumulado contudo existem acumulados que sofrem retração ex igpm 12/08 -> 03/09
-      if (x.acumulado > maior) {
-        maior = x.acumulado;
-        respIndice = x.nome;
-      }*/
-
-      fatorCalculo = x.valor ? x.acumulado : fatorDivisao;
-
+      fatorCalculoMemoria = x.valor ? x.acumulado : fatorDivisao;
       this.dataTableRelatorio.push({
         //indice: x.nome,
         data: x.data,
         fator: x.fator,
         valorIndice: x.valor ? x.valor : fatorDivisao,
         acumulado: x.acumulado,
-        fatorUsed: fatorCalculo,
+        fatorUsed: fatorCalculoMemoria,
         valorCorrecao: (x.fator * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
-        valorCorrecaoAcumulado: (fatorCalculo * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
-        result: fatorCalculo * this.formCalc.get("fcValorLanca")?.value
+        valorCorrecaoAcumulado: (fatorCalculoMemoria * this.formCalc.get("fcValorLanca")?.value) - this.formCalc.get("fcValorLanca")?.value,
+        result: fatorCalculoMemoria * this.formCalc.get("fcValorLanca")?.value
       })
-
     })
-    
-    fatorCalculo = data[0].valor ? acumuladoFim : fatorDivisao;
 
     this.dados.push({
       dtIni: dtIni,
       dtFim: dtFim,
       indice: respIndice,
-      dias: day,
+      dias: dias,
       principal: this.formCalc.get("fcValorLanca")?.value, //valor do índice
-      juros: Juros,
-      fatorUsed: fatorCalculo,
-      valorCorr: (fatorCalculo * this.formCalc.get("fcValorLanca")?.value) + Juros,
-      correcao: ((fatorCalculo * this.formCalc.get("fcValorLanca")?.value) + Juros) - (this.formCalc.get("fcValorLanca")?.value),
-      memoria: this.dataTableRelatorio
+      jurosValorTotal: jurosValorTotal,
+      fatorAplicado: fatorCalculo,
+      valorAtualizado: valorAtualizado,
+      valorCorr: (fatorCalculo * this.formCalc.get("fcValorLanca")?.value) + jurosValorTotal,
+      correcao: ((fatorCalculo * this.formCalc.get("fcValorLanca")?.value) + jurosValorTotal) - (this.formCalc.get("fcValorLanca")?.value),
+      memoria: this.dataTableRelatorio,
+      juros: juros
     });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados)
