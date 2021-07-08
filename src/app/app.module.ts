@@ -7,10 +7,13 @@ import { CalcComponent } from './calc/calc.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 
 import ptBr from '@angular/common/locales/pt';
-import { MatSliderModule } from '@angular/material/slider';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from './material/material.module';
+import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatSliderModule } from '@angular/material/slider';
 import { NgxCurrencyModule } from 'ngx-currency';
 
 
@@ -46,7 +49,10 @@ export const customCurrencyMaskConfig = {
     AppRoutingModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
-    MaterialModule,  
+    MaterialModule,
+    MatMomentDateModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     NgxCurrencyModule,
     HttpClientModule, 
     ReactiveFormsModule,

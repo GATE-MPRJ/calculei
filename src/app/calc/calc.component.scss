@@ -1,4 +1,8 @@
 /*
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
 .mat-card {
   width: 100%;
 }
@@ -121,25 +125,6 @@ h6 {
 
 */
 
-.flexbox {
-  display: flex;
-}
-.flexbox > div {
-  margin-right: 2vw;
-}
-label {
-  display: flex;
-}
-.container {
-  margin-bottom: 3vh;
-}
-.width-fit-content {
-  width: fit-content;
-}
-.scrolling {
-  max-height: 320px;
-  overflow-y: auto;
-}
 ::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
   background-color: #702826;
 }
@@ -187,6 +172,29 @@ label {
     width: fit-content;
     min-width: 10ch;
   }
+}
+
+.flexbox {
+  display: flex;
+}
+.flexbox > div {
+  margin-right: 2vw;
+}
+label {
+  display: flex;
+}
+.container {
+  margin-bottom: 3vh;
+}
+.width-fit-content {
+  width: fit-content;
+}
+.scrolling {
+  max-height: 380px;
+  overflow-y: auto;
+}
+mat-card {
+  margin-bottom: 2vh;
 }
 .print-only {
   display: none;

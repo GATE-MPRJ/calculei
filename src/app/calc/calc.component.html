@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<div class="flexbox">
 <mat-card>
     <mat-card-content>
         <div class="container flexbox">
@@ -10,110 +11,188 @@
                     <div class="flexbox">
                         <div><mat-card-title>CALCULADORA</mat-card-title></div>
                     </div>
-                    <div class="flexbox">
-                        <div class="mat-select-big-width">
-                            <label>Tipo de cálculo</label>
-                            <mat-form-field appearance="outline">
-                                <mat-select formControlName="fcTipos" required>
-                                    <!-- Nâo aparecer 6.899/81 -->
-                                    <mat-option value="particular">Débitos / créditos entre particulares</mat-option>
-                                    <mat-option value="tributado">Débitos da Fazenda Pública - tributários</mat-option>
-                                    <!-- Aparecer todos os índices -->
-                                    <mat-option value="Ntributado">Débitos da Fazenda Pública - não tributários</mat-option>
-                                    <mat-option value="Ctributado">Créditos da Fazenda Pública</mat-option>
-                                    <!-- Nâo aparecer 11.960/2009 -->
-                                    <mat-option value="abatimentos">Abatimentos (desenvolvimento)</mat-option>
-                                    <!-- Incluir Calculos de Multa em Salarios minimos -->
-                                    <mat-option value="Multa">Multa em Salários (desenvolvimento)</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                    <mat-card>
+                        <div class="flexbox">
+                            <div class="mat-select-big-width">
+                                <label>Tipo de cálculo</label>
+                                <mat-form-field appearance="outline">
+                                    <mat-select formControlName="fcTipos" required>
+                                        <!-- Nâo aparecer 6.899/81 -->
+                                        <mat-option value="particular">Débitos / créditos entre particulares</mat-option>
+                                        <mat-option value="tributado">Débitos da Fazenda Pública - tributários</mat-option>
+                                        <!-- Aparecer todos os índices -->
+                                        <mat-option value="Ntributado">Débitos da Fazenda Pública - não tributários</mat-option>
+                                        <mat-option value="Ctributado">Créditos da Fazenda Pública</mat-option>
+                                        <!-- Nâo aparecer 11.960/2009 -->
+                                        <!--mat-option value="abatimentos">Abatimentos (desenvolvimento)</mat-option-->
+                                        <!-- Incluir Calculos de Multa em Salarios minimos -->
+                                        <mat-option value="Multa">Multa em Salários (desenvolvimento)</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div [hidden]="formCalc.controls.fcTipos.value == 'abatimentos'">
+                                <label>Índice de correção monetária</label>
+                                <mat-form-field appearance="outline">
+                                    <mat-select formControlName="fcIndiceLanca" required>
+                                        <mat-option value="IPCA-E">IPCA-E</mat-option>
+                                        <mat-option value="IGP-M">IGP-M</mat-option>
+                                        <mat-option value="TR">TR</mat-option>
+                                        <mat-option value="SELIC">SELIC</mat-option>
+                                        <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'particular'" title="TJ/RJ LEI 11.960/2009 (ORTN-OTN-BTN- TR-UFIR-IPCA-E)">
+                                            TJ/RJ LEI 11.960/2009 (ORTN-OTN-BTN- TR-UFIR-IPCA-E)</mat-option>
+                                        <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
+                                            TJ/RJ LEI 6.899/81 (UFIR-RJ)</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
                         </div>
-                        <div [hidden]="formCalc.controls.fcTipos.value == 'abatimentos'">
-                            <label>Índice de correção monetária</label>
-                            <mat-form-field appearance="outline">
-                                <mat-select formControlName="fcIndiceLanca" required>
-                                    <mat-option value="IPCA-E">IPCA-E</mat-option>
-                                    <mat-option value="IGP-M">IGP-M</mat-option>
-                                    <mat-option value="TR">TR</mat-option>
-                                    <mat-option value="SELIC">SELIC</mat-option>
-                                    <mat-option value="TJ11960" [hidden]="formCalc.controls.fcTipos.value == 'particular'">
-                                        TJ/RJ LEI 11.960/2009 (ORTN-OTN-BTN- TR-UFIR-IPCA-E)</mat-option>
-                                    <mat-option value="TJ899" [hidden]="formCalc.controls.fcTipos.value == 'tributado'">
-                                        TJ/RJ LEI 6.899/81 (UFIR-RJ)</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                        <div class="flexbox" >
+                            <div [hidden]="formCalc.controls.fcTipos.value != 'abatimentos'">
+                                <label >Lançamento</label>
+                                    <mat-hint *ngIf="dataSourceLanca.data.length == 0">Nenhum lançamento cadastrado</mat-hint >
+                                <mat-form-field appearance="outline" *ngIf="dataSourceLanca.data.length > 0" >
+                                    <mat-select formControlName="fcListaLancamento" style="width:100%;">
+                                        <!-- Nâo aparecer 6.899/81 -->
+                                        <mat-option *ngFor="let element of dataSourceLanca.data; let i = index" [value]="i">{{element.dtIni | date: 'dd/MM/yyyy'}} | {{element.principal  | currency:'BRL'}} ({{element.indice}}) </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flexbox" >
-                        <div [hidden]="formCalc.controls.fcTipos.value != 'abatimentos'">
-                            <label >Lançamento</label>
-                                <mat-hint *ngIf="dataSourceLanca.data.length == 0">Nenhum lançamento cadastrado</mat-hint >
-                            <mat-form-field appearance="outline" *ngIf="dataSourceLanca.data.length > 0" >
-                                <mat-select formControlName="fcListaLancamento" style="width:100%;">
-                                    <!-- Nâo aparecer 6.899/81 -->
-                                    <mat-option *ngFor="let element of dataSourceLanca.data; let i = index" [value]="i">{{element.dtIni | date: 'dd/MM/yyyy'}} | {{element.principal  | currency:'BRL'}} ({{element.indice}}) </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="flexbox">
-                        <div>
-                            <label for="valor">Valor</label>
-                            <mat-form-field appearance="outline">
-                                <input formControlName="fcValorLanca" matInput currencyMask
-                                    [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" min=1 />
-                            </mat-form-field>
-                        </div>
-
                         <div class="flexbox">
                             <div>
-                                <label for="dataDeInicio">Data inicial</label>
+                                <label for="valor">Valor</label>
                                 <mat-form-field appearance="outline">
-                                <input formControlName="fcDtIniLanca" matInput type="date" id="dataDeInicio"
-                                    name="dataDeInicio" required/>
+                                    <input formControlName="fcValorLanca" matInput currencyMask
+                                        [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" min=1 />
+                                </mat-form-field>
+                            </div>
+
+                            <div class="flexbox">
+                                <div>
+                                    <label for="dataDeInicio">Data inicial</label>
+                                    <mat-form-field appearance="outline">
+                                    <input formControlName="fcDtIniLanca" matInput type="date" id="dataDeInicio"
+                                        name="dataDeInicio" required/>
+                                    </mat-form-field>
+                                </div>
+                                <div>
+                                    <label for="dataDeTermino">Data do cálculo</label>
+                                    <mat-form-field appearance="outline">
+                                    <input formControlName="fcDtFimLanca" matInput type="date" [min]="formCalc.controls.fcDtIniLanca.value"  id="dataDeTermino"
+                                        name="dataDeTermino" required/>
+                                    </mat-form-field>
+                                </div>
+                                <!--placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31"-->
+                            </div>
+                        </div>
+                    </mat-card>
+                    <mat-card>
+                        <div class="flexbox">
+                            <div>
+                                <label labelPlacement="top" for="fcJuros">Incidir juros</label>
+                                <mat-slide-toggle color="warn" formControlName="fcJuros" (click)="this.formCalc.controls.fcIndiceJuros.setValue('codigo_civil');"></mat-slide-toggle>
+                            </div>
+                            <div *ngIf="formCalc.controls.fcJuros.value">
+                                <label>Índice de juros</label>
+                                <mat-form-field appearance="outline">
+                                    <mat-select formControlName="fcIndiceJuros" required>
+                                        <mat-option value="codigo_civil" title="Juros do Código Civil - Lei nº 10406/02 (6% a.a. até 10/01/2003 e 12% a.a. a partir de 10/01/2003 a.a.)">Juros do Código Civil - Lei nº 10406/02 (6% e 12% a.a.)</mat-option>
+                                        <mat-option value="simples_6" (click)="this.formCalc.controls.fcTaxaJuros.setValue(0.06);">Juros Simples 6% a.a.</mat-option>
+                                        <mat-option value="simples_12" (click)="this.formCalc.controls.fcTaxaJuros.setValue(0.12);">Juros Simples 12% a.a.</mat-option>
+                                        <mat-option value="especificar">Especificar Taxa</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div *ngIf="formCalc.controls.fcJuros.value && formCalc.controls.fcIndiceJuros.value == 'codigo_civil'">
+                                <mat-hint >Percentual de juros até 10/01/2003:<BR />  6% ao ano ou 0,5% ao mês.<BR /> Percentual de juros a partir de 10/01/2003:<BR />  12% ao ano ou 1% ao mês </mat-hint>
+                            </div>
+                            <div [hidden]="!formCalc.controls.fcJuros.value || formCalc.controls.fcIndiceJuros.value == 'codigo_civil'">
+                                <label for="fcTaxaJuros">Taxa de juros</label>
+                                <mat-form-field appearance="outline">
+                                    <input formControlName="fcTaxaJuros" matInput currencyMask
+                                        [options]="{ prefix: '', suffix: ' a.a.', thousands: '.', decimal: ',' }" min=1 placeholder="0.12" />
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="flexbox" *ngIf="formCalc.controls.fcJuros.value">
+                            <div>
+                                <label for="fcDtIniJuros">Data de início dos juros</label>
+                                <mat-form-field appearance="outline">
+                                <input formControlName="fcDtIniJuros" matInput type="date" id="fcDtIniJuros"
+                                    name="fcDtIniJuros" required/>
                                 </mat-form-field>
                             </div>
                             <div>
-                                <label for="dataDeTermino">Data do cálculo</label>
+                                <label for="fcDtFimJuros">Aplicar juros até </label>
                                 <mat-form-field appearance="outline">
-                                <input formControlName="fcDtFimLanca" matInput type="date" [min]="formCalc.controls.fcDtIniLanca.value"  id="dataDeTermino"
-                                    name="dataDeTermino" required/>
+                                <input formControlName="fcDtFimJuros" matInput type="date" id="fcDtFimJuros"
+                                    name="fcDtFimJuros" required/>
                                 </mat-form-field>
                             </div>
-                            <!--placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31"-->
+                            <div>
+                                <button	type="button" mat-raised-button color="warn"  (click)="setJuros()" 
+                                    >Juros <mat-icon>add_circle</mat-icon>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flexbox" style="margin-bottom:1.34375em;">
-                        <div>
-                            <label labelPlacement="top">Incidir juros</label>
-                            <mat-slide-toggle color="warn" formControlName="FcJuros"></mat-slide-toggle>
+                        <div class="flexbox" *ngIf="formCalc.controls.fcJuros.value && dataTableJuros.length > 0">
+                            <table class="table table-bordered">
+                                <tr class="table-primary">
+                                    <td>Data inicio</td>
+                                    <td>Data fim</td>
+                                    <td>taxa</td>
+                                </tr>
+                                <tbody *ngFor="let element of dataTableJuros; let i = index">
+                                <tr>
+                                    <td>{{element.dtIni | date: 'dd/MM/yyyy'}}</td>
+                                    <td>{{element.dtFim | date: 'dd/MM/yyyy'}}</td>
+                                    <td>{{element.taxa || element.indice}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div *ngIf="formCalc.controls.FcJuros.value">
-                            <label>Índice de juros</label>
-                            <mat-form-field appearance="outline">
-                                <mat-select formControlName="fcIndiceJuros" required>
-                                    <mat-option value="poupanca">POUPANCA</mat-option>
-                                    <mat-option value="especificar">DEFINIR TAXA</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                    </mat-card>
+                    <mat-card>
+                        <div class="flexbox">
+                            <div>
+                                <label labelPlacement="top" for="fcAbatimentos">Incluir abatimento</label>
+                                <mat-slide-toggle color="warn" formControlName="fcAbatimentos"></mat-slide-toggle>
+                            </div>
+                            <div *ngIf="formCalc.controls.fcAbatimentos.value">
+                                <label for="fcDtAbatimento">Data do abatimento</label>
+                                <mat-form-field appearance="outline">
+                                <input formControlName="fcDtAbatimento" matInput type="date" id="fcDtAbatimento"
+                                    name="fcDtAbatimento" required/>
+                                </mat-form-field>
+                            </div>
+                            <div  *ngIf="formCalc.controls.fcAbatimentos.value">
+                                <label for="fcValorAbatimento">Valor do abatimento</label>
+                                <mat-form-field appearance="outline">
+                                    <input formControlName="fcValorAbatimento" matInput currencyMask
+                                        [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" min=1 />
+                                </mat-form-field>
+                            </div>
+                            <div  *ngIf="formCalc.controls.fcAbatimentos.value">
+                                <button	type="button" mat-raised-button color="warn"  (click)="setAbatimento()" 
+                                    >Abatimento <mat-icon>attach_money</mat-icon>
+                                </button>
+                            </div>
                         </div>
-                        <div *ngIf="formCalc.controls.FcJuros.value && formCalc.controls.fcIndiceJuros.value == 'poupanca'">
-                            <mat-hint >Percentual de juros até 10/01/2003:<BR />  6% ao ano ou 0,5% ao mês.<BR /> Percentual de juros a partir de 10/01/2003:<BR />  12% ao ano ou 1% ao mês </mat-hint>
+                        <div class="flexbox" *ngIf="formCalc.controls.fcAbatimentos.value && dataTableAbatimentos.length > 0">
+                            <table class="table table-bordered">
+                                <tr class="table-primary">
+                                    <td>Data</td>
+                                    <td>Valor</td>
+                                </tr>
+                                <tbody *ngFor="let element of dataTableAbatimentos; let i = index">
+                                <tr>
+                                    <td>{{element.data | date: 'dd/MM/yyyy'}}</td>
+                                    <td>{{element.valor | currency :'BRL'}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div *ngIf="formCalc.controls.FcJuros.value && formCalc.controls.fcIndiceJuros.value == 'especificar'">
-                            <label for="fcTaxaJuros">Taxa de juros</label>
-                            <mat-form-field appearance="outline">
-                                <input formControlName="fcTaxaJuros" matInput currencyMask
-                                    [options]="{ prefix: '', suffix: ' a.a.', thousands: '.', decimal: ',' }" min=1 placeholder="0,12" required/>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="flexbox">
-
-
-                    </div>
-                    <div  class="flexbox">
-                    </div>
+                    </mat-card>
                 </form>
             </div>
             <mat-card class="ui-overlaypanel" nothidden="!isActive">
@@ -136,7 +215,7 @@
                             <li>A presente calculadora virtual não substitui o cálculo realizado e homologado judicialmente.</li>
                         </ul>
                         <p>Os calculos realizados seguem as definições disponíveis na diretriz técnica abaixo relacionada.</p>
-                        <a href="http://apps.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618" tabindex="-1">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
+                        <a href="https://gateprodata.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618" tabindex="-1">DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069 </a>
                     </div>
             </mat-card>
         </div>
@@ -290,7 +369,7 @@
                 <div>
                     <h2>Ministério Público do Estado do Rio de Janeiro</h2>
                     <h2>GATE - Grupo de Apoio Técnico Especializado</h2>
-                    <p>{{ datahoje | date:'longDate'}}.</p>
+                    <p>{{ dataHoje | date:'longDate'}}.</p>
                 </div>
                 <h5 style="font-weight: bold;">
                     Lançamentos
@@ -339,3 +418,4 @@
         </div>
     </mat-card-content>
 </mat-card>
+</div>
