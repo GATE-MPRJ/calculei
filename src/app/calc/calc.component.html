@@ -195,7 +195,7 @@
                     </mat-card>
                 </form>
             </div>
-            <mat-card class="ui-overlaypanel" nothidden="!isActive">
+            <mat-card class="ui-overlaypanel">
                 <div class="flexbox">
                     <mat-icon>
                         tips_and_updates 
@@ -225,11 +225,11 @@
                     >Calcular <mat-icon>calculate</mat-icon>
                 </button>
             </div>
-            <!--div>
+            <div>
                 <button mat-raised-button color="primary" style="background-color: #00afaa;" (click)="isActive = !isActive" [hidden]="dataSourceLanca.data.length == 0">Memória de cálculo
                     <mat-icon>visibility</mat-icon>
                 </button>
-            </div-->
+            </div>
             <div>
                 <button mat-raised-button color="primary" style="background-color: #198cbb;" (click)="downloadAsPDF()" [hidden]="dataSourceLanca.data.length == 0">Relatório
                     <mat-icon>print</mat-icon>

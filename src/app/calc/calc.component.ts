@@ -113,7 +113,7 @@ export class CalcComponent implements OnInit {
   })
 
   // @ViewChild('htmlData') htmlData:ElementRef;
-
+  // Mostrar memória de cálculo
   isActive = false;
 
   //datahoje = dateFormat(Date.now(), "dddd  mmm  yyyy, hh:MM:ss");
@@ -308,6 +308,77 @@ export class CalcComponent implements OnInit {
     this.dataTableAbatimentos = [];
   }
 
+  setCalcJuros(valorAtualizado:number, dataJuros:any){
+    let juros: any = [];
+    let jurosDtPoupanca = 0;
+    let jurosDias = 0;
+    let jurosTaxa = 0;
+    let jurosTaxaAcumulada = 0;
+    let jurosTaxaTotal = 0;
+    let jurosValor = 0;
+    //let jurosValorTotal = 0;
+    dataJuros.map((j: any) => {
+      switch (j.indice) {
+        case 'codigo_civil':
+          if(j.dtIni <= "2003-01-10"){
+            jurosTaxa = 0.06;
+            jurosDtPoupanca = j.dtFim < '2003-01-10' ? j.dtFim : '2003-01-10';
+            jurosDias = this.days360(j.dtIni, jurosDtPoupanca);
+            jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
+            jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
+            jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
+            //jurosValorTotal = jurosValorTotal + jurosValor;
+            juros.push({
+              valor: jurosValor,
+              indice: j.indice,
+              taxa: jurosTaxa,
+              taxaAcumulada: jurosTaxaAcumulada,
+              dias: jurosDias,
+              dtIni: j.dtIni,
+              dtFim: jurosDtPoupanca
+            })
+          }
+          if(j.dtFim >= "2003-01-11"){
+            jurosTaxa = 0.12;
+            jurosDtPoupanca = j.dtIni > '2003-01-11' ? j.dtIni : '2003-01-11';
+            jurosDias = this.days360(jurosDtPoupanca, j.dtFim);
+            jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
+            jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
+            jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
+            //jurosValorTotal = jurosValorTotal + jurosValor;
+            juros.push({
+              valor: jurosValor,
+              indice: j.indice,
+              taxa: jurosTaxa,
+              taxaAcumulada: jurosTaxaAcumulada,
+              dias: jurosDias,
+              dtIni: jurosDtPoupanca,
+              dtFim: j.dtFim
+            })
+          }
+        break;
+        default:
+          jurosTaxa = j.taxa;
+          jurosDias = this.days360(j.dtIni, j.dtFim);
+          jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
+          jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
+          jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
+          //jurosValorTotal = jurosValorTotal + jurosValor;
+          juros.push({
+            valor: jurosValor,
+            indice: j.indice,
+            taxa: jurosTaxa,
+            taxaAcumulada: jurosTaxaAcumulada,
+            dias: jurosDias,
+            dtIni: j.dtIni,
+            dtFim: j.dtFim
+          })
+          break;
+      } 
+    });
+    return juros;
+  }
+
   /*
   * @Todo Refactor 
   */
@@ -316,12 +387,6 @@ export class CalcComponent implements OnInit {
     let dtIni = this.formCalc.get("fcDtIniLanca")?.value;
     let dtFim = this.formCalc.get("fcDtFimLanca")?.value;
     let juros: any = [];
-    let jurosDtPoupanca = 0;
-    let jurosDias = 0;
-    let jurosTaxa = 0;
-    let jurosTaxaAcumulada = 0;
-    let jurosTaxaTotal = 0;
-    let jurosValor = 0;
     let jurosValorTotal = 0;
     let dias = this.days360(dtIni, dtFim);
     let respIndice;
@@ -357,71 +422,16 @@ export class CalcComponent implements OnInit {
     this.dataTableRelatorio = [];
 
     //Abatimentos
-    this.dataTableAbatimentos.map((a: any) =>{
+    if (this.formCalc.get("fcAbatimentos")?.value == true) {
+      this.dataTableAbatimentos.map((a: any) =>{
 
-    })
+      })
+    }
 
     //Juros
     if (this.formCalc.get("fcJuros")?.value == true) {
-      this.dataTableJuros.map((j: any) => {
-        switch (j.indice) {
-          case 'codigo_civil':
-            if(j.dtIni <= "2003-01-10"){
-              jurosTaxa = 0.06;
-              jurosDtPoupanca = j.dtFim < '2003-01-10' ? j.dtFim : '2003-01-10';
-              jurosDias = this.days360(j.dtIni, jurosDtPoupanca);
-              jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
-              jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
-              jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
-              jurosValorTotal = jurosValorTotal + jurosValor;
-              juros.push({
-                valor: jurosValor,
-                indice: j.indice,
-                taxa: jurosTaxa,
-                taxaAcumulada: jurosTaxaAcumulada,
-                dias: jurosDias,
-                dtIni: j.dtIni,
-                dtFim: jurosDtPoupanca
-              })
-            }
-            if(j.dtFim >= "2003-01-11"){
-              jurosTaxa = 0.12;
-              jurosDtPoupanca = j.dtIni > '2003-01-11' ? j.dtIni : '2003-01-11';
-              jurosDias = this.days360(jurosDtPoupanca, j.dtFim);
-              jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
-              jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
-              jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
-              jurosValorTotal = jurosValorTotal + jurosValor;
-              juros.push({
-                valor: jurosValor,
-                indice: j.indice,
-                taxa: jurosTaxa,
-                taxaAcumulada: jurosTaxaAcumulada,
-                dias: jurosDias,
-                dtIni: jurosDtPoupanca,
-                dtFim: j.dtFim
-              })
-            }
-          break;
-          default:
-            jurosTaxa = j.taxa;
-            jurosDias = this.days360(dtIni, dtFim);
-            jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
-            jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
-            jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
-            jurosValorTotal = jurosValorTotal + jurosValor;
-            juros.push({
-              valor: jurosValor,
-              indice: j.indice,
-              taxa: jurosTaxa,
-              taxaAcumulada: jurosTaxaAcumulada,
-              dias: jurosDias,
-              dtIni: j.dtIni,
-              dtFim: j.dtFim
-            })
-            break;
-        } 
-      })
+        juros = this.setCalcJuros(valorAtualizado, this.dataTableJuros );
+        jurosValorTotal = juros.reduce(function(jurosAcc:number, jurosCurr:any){ return jurosAcc + jurosCurr.valor;}, 0);
     }
 
     //Memória de Calculos
