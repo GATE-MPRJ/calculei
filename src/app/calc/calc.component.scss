@@ -199,6 +199,9 @@ mat-card {
 .print-only {
   display: none;
 }
+.iconDeleteTab {
+  cursor: pointer;
+}
 
 @media print {
   .no-print {

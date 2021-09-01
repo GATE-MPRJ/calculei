@@ -184,6 +184,7 @@ export class CalcComponent implements OnInit {
   }
 
   // Função para Converter ano em ano 360 dias
+  // @Todo Em casos específicos está "roubando" 1 dia
   days360(dateA: any, dateB: any) {
 
     dateA = new Date(dateA);
@@ -218,6 +219,21 @@ export class CalcComponent implements OnInit {
       this.dataSourceLanca._updateChangeSubscription();
       this.calcSumTotals();
     }
+  }
+
+  public removeRowJuros(index: number) {
+    if(confirm("Deseja EXCLUIR o juros aplicado no período?")) {
+      this.dataTableJuros.splice(index, 1);
+      //this.dataSourceJuros.data.splice(index, 1);
+      //this.dataSourceJuros._updateChangeSubscription();
+      //this.calcSumTotals();
+    }
+  }
+
+  public clearForm() {
+    this.formCalc.reset();
+    this.dataTableJuros = [];
+    this.dataTableAbatimentos = [];
   }
 
   public calcSumTotals(){
@@ -302,12 +318,7 @@ export class CalcComponent implements OnInit {
     return this.calcTaxa(taxa, dias) * valor;
   }
 
-  public clearForm() {
-    this.formCalc.reset();
-    this.dataTableJuros = [];
-    this.dataTableAbatimentos = [];
-  }
-
+  //@Todo incluir selic, caderneta de poupança
   setCalcJuros(valorAtualizado:number, dataJuros:any){
     let juros: any = [];
     let jurosDtPoupanca = 0;
@@ -358,7 +369,7 @@ export class CalcComponent implements OnInit {
           }
         break;
         default:
-          jurosTaxa = j.taxa;
+          jurosTaxa = j.taxa * 0.01;
           jurosDias = this.days360(j.dtIni, j.dtFim);
           jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
           jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
@@ -388,6 +399,7 @@ export class CalcComponent implements OnInit {
     let dtFim = this.formCalc.get("fcDtFimLanca")?.value;
     let juros: any = [];
     let jurosValorTotal = 0;
+    let jurosDiasTotal = 0;
     let dias = this.days360(dtIni, dtFim);
     let respIndice;
     let fatores = [];
@@ -432,6 +444,7 @@ export class CalcComponent implements OnInit {
     if (this.formCalc.get("fcJuros")?.value == true) {
         juros = this.setCalcJuros(valorAtualizado, this.dataTableJuros );
         jurosValorTotal = juros.reduce(function(jurosAcc:number, jurosCurr:any){ return jurosAcc + jurosCurr.valor;}, 0);
+        jurosDiasTotal = juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0)
     }
 
     //Memória de Calculos
@@ -458,6 +471,7 @@ export class CalcComponent implements OnInit {
       dias: dias,
       principal: this.formCalc.get("fcValorLanca")?.value, //valor do índice
       jurosValorTotal: jurosValorTotal,
+      jurosDiasTotal: jurosDiasTotal,
       fatorAplicado: fatorCalculo,
       valorAtualizado: valorAtualizado,
       valorCorr: (fatorCalculo * this.formCalc.get("fcValorLanca")?.value) + jurosValorTotal,

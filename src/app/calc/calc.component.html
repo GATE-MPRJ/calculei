@@ -26,7 +26,7 @@
                                         <!-- Nâo aparecer 11.960/2009 -->
                                         <!--mat-option value="abatimentos">Abatimentos (desenvolvimento)</mat-option-->
                                         <!-- Incluir Calculos de Multa em Salarios minimos -->
-                                        <mat-option value="Multa">Multa em Salários (desenvolvimento)</mat-option>
+                                        <mat-option value="Multa" disabled>Multa em Salários (em desenvolvimento)</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
@@ -97,8 +97,8 @@
                                 <mat-form-field appearance="outline">
                                     <mat-select formControlName="fcIndiceJuros" required>
                                         <mat-option value="codigo_civil" title="Juros do Código Civil - Lei nº 10406/02 (6% a.a. até 10/01/2003 e 12% a.a. a partir de 10/01/2003 a.a.)">Juros do Código Civil - Lei nº 10406/02 (6% e 12% a.a.)</mat-option>
-                                        <mat-option value="simples_6" (click)="this.formCalc.controls.fcTaxaJuros.setValue(0.06);">Juros Simples 6% a.a.</mat-option>
-                                        <mat-option value="simples_12" (click)="this.formCalc.controls.fcTaxaJuros.setValue(0.12);">Juros Simples 12% a.a.</mat-option>
+                                        <mat-option value="simples_6" (click)="this.formCalc.controls.fcTaxaJuros.setValue(6);">Juros Simples 6% a.a.</mat-option>
+                                        <mat-option value="simples_12" (click)="this.formCalc.controls.fcTaxaJuros.setValue(12);">Juros Simples 12% a.a.</mat-option>
                                         <mat-option value="especificar">Especificar Taxa</mat-option>
                                     </mat-select>
                                 </mat-form-field>
@@ -110,7 +110,7 @@
                                 <label for="fcTaxaJuros">Taxa de juros</label>
                                 <mat-form-field appearance="outline">
                                     <input formControlName="fcTaxaJuros" matInput currencyMask
-                                        [options]="{ prefix: '', suffix: ' a.a.', thousands: '.', decimal: ',' }" min=1 placeholder="0.12" />
+                                        [options]="{ prefix: '', suffix: '% a.a.', thousands: '.', decimal: ',' }" min=1 placeholder="0.12" />
                                 </mat-form-field>
                             </div>
                         </div>
@@ -136,23 +136,25 @@
                             </div>
                         </div>
                         <div class="flexbox" *ngIf="formCalc.controls.fcJuros.value && dataTableJuros.length > 0">
-                            <table class="table table-bordered">
-                                <tr class="table-primary">
-                                    <td>Data inicio</td>
-                                    <td>Data fim</td>
-                                    <td>taxa</td>
-                                </tr>
+                            <table class="table">
+                                <thead>
+                                    <th class="mat-header-cell cdk-header-cell">Data inicio</th>
+                                    <th class="mat-header-cell cdk-header-cell">Data fim</th>
+                                    <th class="mat-header-cell cdk-header-cell">Taxa</th>
+                                </thead>
                                 <tbody *ngFor="let element of dataTableJuros; let i = index">
                                 <tr>
-                                    <td>{{element.dtIni | date: 'dd/MM/yyyy'}}</td>
-                                    <td>{{element.dtFim | date: 'dd/MM/yyyy'}}</td>
-                                    <td>{{element.taxa || element.indice}}</td>
+                                    <td class="mat-cell cdk-cell">{{element.dtIni | date: 'dd/MM/yyyy'}}</td>
+                                    <td class="mat-cell cdk-cell">{{element.dtFim | date: 'dd/MM/yyyy'}}</td>
+                                    <td class="mat-cell cdk-cell">{{element.taxa || element.indice}}% a.a.</td>
+                                    <td class="mat-cell cdk-cell"><img src="/assets/imgs/icon_delete.svg" class="iconDeleteTab"
+                                title="Clique para excluir" (click)="this.removeRowJuros(i)"></td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
                     </mat-card>
-                    <mat-card>
+                    <!--mat-card>
                         <div class="flexbox">
                             <div>
                                 <label labelPlacement="top" for="fcAbatimentos">Incluir abatimento</label>
@@ -179,20 +181,20 @@
                             </div>
                         </div>
                         <div class="flexbox" *ngIf="formCalc.controls.fcAbatimentos.value && dataTableAbatimentos.length > 0">
-                            <table class="table table-bordered">
-                                <tr class="table-primary">
-                                    <td>Data</td>
-                                    <td>Valor</td>
-                                </tr>
+                            <table class="table">
+                                <thead class="">
+                                    <th class="mat-header-cell cdk-header-cell">Data</th>
+                                    <th class="mat-header-cell cdk-header-cell">Valor</th>
+                                </thead>
                                 <tbody *ngFor="let element of dataTableAbatimentos; let i = index">
                                 <tr>
-                                    <td>{{element.data | date: 'dd/MM/yyyy'}}</td>
-                                    <td>{{element.valor | currency :'BRL'}}</td>
+                                    <td class="mat-cell cdk-cell">{{element.data | date: 'dd/MM/yyyy'}}</td>
+                                    <td class="mat-cell cdk-cell">{{element.valor | currency :'BRL'}}</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
-                    </mat-card>
+                    </mat-card-->
                 </form>
             </div>
             <mat-card class="ui-overlaypanel">
@@ -297,8 +299,8 @@
                     </ng-container>
 
                     <ng-container matColumnDef="dias">
-                        <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.dias}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef> Período de Juros </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.jurosDiasTotal}} Dias</mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
