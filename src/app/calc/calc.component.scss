@@ -193,7 +193,8 @@ label {
   max-height: 380px;
   overflow-y: auto;
 }
-mat-card {
+mat-card,
+mat-table {
   margin-bottom: 2vh;
 }
 .print-only {
@@ -202,7 +203,13 @@ mat-card {
 .iconDeleteTab {
   cursor: pointer;
 }
-
+.footerBold {
+  font-weight: 700;
+}
+#pdfTable th.mat-header-cell {
+  text-align: center;
+  vertical-align: middle;
+}
 @media print {
   .no-print {
     display: none;
