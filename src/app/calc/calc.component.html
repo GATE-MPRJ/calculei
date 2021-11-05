@@ -36,10 +36,19 @@
                         >Créditos da Fazenda Pública</mat-option
                       >
                       <!-- Nâo aparecer 11.960/2009 -->
-                      <!--mat-option value="abatimentos">Abatimentos (desenvolvimento)</mat-option-->
+                      <mat-option value="abatimentos" disabled
+                        >Abatimentos (em desenvolvimento)</mat-option
+                      >
                       <!-- Incluir Calculos de Multa em Salarios minimos -->
                       <mat-option value="Multa" disabled
                         >Multa em Salários (em desenvolvimento)</mat-option
+                      >
+                      <!-- Incluir Calculos de Precatórios -->
+                      <mat-option value="precatorios" disabled
+                        >Precatórios - tributários</mat-option
+                      >
+                      <mat-option value="precatorios" disabled
+                        >Precatórios - não tributários</mat-option
                       >
                     </mat-select>
                   </mat-form-field>
@@ -201,6 +210,24 @@
                       <mat-option value="especificar"
                         >Especificar Taxa</mat-option
                       >
+                      <mat-option
+                        value="selic"
+                        disabled
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        >Selic (em desenvolvimento)</mat-option
+                      >
+                      <mat-option
+                        value="ufir"
+                        disabled
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        >Ufir (em desenvolvimento)</mat-option
+                      >
+                      <mat-option
+                        value="caderneta"
+                        disabled
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        >Caderneta de poupança (em desenvolvimento)</mat-option
+                      >
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -212,7 +239,7 @@
                 >
                   <mat-hint
                     >Percentual de juros até 10/01/2003:<BR /> 6% ao ano ou 0,5%
-                    ao mês.<BR /> Percentual de juros a partir de 10/01/2003:<BR />
+                    ao mês.<BR /> Percentual de juros a partir de 11/01/2003:<BR />
                     12% ao ano ou 1% ao mês
                   </mat-hint>
                 </div>
