@@ -23,7 +23,10 @@ export class CalcService {
   }
   
   getIndice(indice: string,startDate: any, endDate: any) {
-    return this.httpClient.get(this.baseUrl + indice +"/BetweenDates?startDate="+ startDate+ "&endDate=" + endDate,{ responseType: 'json' })            
+    return this.httpClient.get(this.baseUrl + indice +"/BetweenDates?startDate="+ startDate+ "&endDate=" + endDate,{ responseType: 'json' })      .pipe(
+      retry(2),
+      catchError(this.handleError)
+    )                
 
   }
 

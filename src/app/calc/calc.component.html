@@ -178,11 +178,12 @@
                   <mat-slide-toggle
                     color="warn"
                     formControlName="fcJuros"
-                    (click)="
+                    (change)="
                       this.formCalc.controls.fcIndiceJuros.setValue(
                         'codigo_civil'
                       )
                     "
+                    [disabled]="!formCalc.valid"
                   ></mat-slide-toggle>
                 </div>
                 <div *ngIf="formCalc.controls.fcJuros.value">
@@ -196,37 +197,33 @@
                         a.a.)</mat-option
                       >
                       <mat-option
-                        value="simples_6"
+                        value="especificar"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(6)"
                         >Juros Simples 6% a.a.</mat-option
                       >
                       <mat-option
-                        value="simples_12"
+                        value="especificar"
                         (click)="
                           this.formCalc.controls.fcTaxaJuros.setValue(12)
                         "
                         >Juros Simples 12% a.a.</mat-option
                       >
-                      <mat-option value="especificar"
-                        >Especificar Taxa</mat-option
-                      >
-                      <mat-option
-                        value="selic"
-                        disabled
-                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                      <mat-option value="SELIC"
                         >Selic (em desenvolvimento)</mat-option
                       >
+
                       <mat-option
-                        value="ufir"
-                        disabled
+                        value="TJ899"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
                         >Ufir (em desenvolvimento)</mat-option
                       >
                       <mat-option
-                        value="caderneta"
-                        disabled
+                        value="poupanca"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
                         >Caderneta de poupança (em desenvolvimento)</mat-option
+                      >
+                      <mat-option value="especificar"
+                        >Especificar Taxa</mat-option
                       >
                     </mat-select>
                   </mat-form-field>
@@ -244,9 +241,21 @@
                   </mat-hint>
                 </div>
                 <div
+                  *ngIf="
+                    formCalc.controls.fcJuros.value &&
+                    formCalc.controls.fcIndiceJuros.value == 'poupanca'
+                  "
+                >
+                  <mat-hint
+                    >Caderneta de poupança:<BR />
+                    Poupança Antiga e Poupança Atual a partir de 03/05/2012
+                  </mat-hint>
+                </div>
+                <div
                   [hidden]="
                     !formCalc.controls.fcJuros.value ||
-                    formCalc.controls.fcIndiceJuros.value == 'codigo_civil'
+                    formCalc.controls.fcIndiceJuros.value == 'codigo_civil' ||
+                    formCalc.controls.fcIndiceJuros.value != 'especificar'
                   "
                 >
                   <label for="fcTaxaJuros">Taxa de juros</label>
@@ -315,9 +324,11 @@
               >
                 <table class="table table-bordered">
                   <thead>
-                    <th class="mat-header-cell cdk-header-cell">Data inicio</th>
-                    <th class="mat-header-cell cdk-header-cell">Data fim</th>
+                    <th class="mat-header-cell cdk-header-cell">Data Inicio</th>
+                    <th class="mat-header-cell cdk-header-cell">Data Fim</th>
+                    <th class="mat-header-cell cdk-header-cell">Dias</th>
                     <th class="mat-header-cell cdk-header-cell">Taxa</th>
+                    <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
                   </thead>
                   <tbody *ngFor="let element of dataTableJuros; let i = index">
                     <tr>
@@ -328,7 +339,19 @@
                         {{ element.dtFim | date: "dd/MM/yyyy" }}
                       </td>
                       <td class="mat-cell cdk-cell">
-                        {{ element.taxa || element.indice }}% a.a.
+                        {{ element.dias }}
+                      </td>
+                      <td class="mat-cell cdk-cell">
+                        {{
+                          element.taxa * 100
+                            | number: "1.0-8" || element.indice
+                        }}% a.a.
+                      </td>
+                      <td class="mat-cell cdk-cell">
+                        {{
+                          element.taxaAcumulada * 100
+                            | number: "1.0-8" || element.indice
+                        }}% a.a.
                       </td>
                       <td class="mat-cell cdk-cell">
                         <img
@@ -425,7 +448,7 @@
             type="submit"
             mat-raised-button
             color="warn"
-            (click)="addTbl()"
+            (click)="addLancamento()"
             [disabled]="!formCalc.valid"
           >
             Calcular <mat-icon>calculate</mat-icon>
@@ -743,7 +766,7 @@
                 <td>{{ element.valorCorr | currency: "BRL":"":"" }}</td>
               </tr>
             </table>
-            <div *ngIf="element.juros.length > 0">
+            <div *ngIf="element.juros.length > 1">
               <b>JUROS</b>
               <table class="table table-bordered" style="text-align: center">
                 <thead>
