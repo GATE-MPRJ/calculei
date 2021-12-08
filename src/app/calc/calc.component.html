@@ -1,18 +1,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link
-  rel="stylesheet"
-  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"
-/>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <div class="flexbox">
-  <mat-card>
+  <div>
     <mat-card-content>
       <div class="container flexbox">
         <div>
           <form id="htmlData" [formGroup]="formCalc">
             <div class="flexbox">
-              <div><mat-card-title>CALCULADORA</mat-card-title></div>
+              <div><mat-card-title></mat-card-title></div>
             </div>
             <mat-card>
               <div class="flexbox">
@@ -22,34 +16,36 @@
                     <mat-select formControlName="fcTipos" required>
                       <!-- Nâo aparecer 6.899/81 -->
                       <mat-option value="particular"
-                        >Débitos / créditos entre particulares</mat-option
-                      >
-                      <mat-option value="tributado"
-                        >Débitos da Fazenda Pública - tributários</mat-option
-                      >
-                      <!-- Aparecer todos os índices -->
-                      <mat-option value="Ntributado"
-                        >Débitos da Fazenda Pública - não
-                        tributários</mat-option
+                        >Créditos / Débitos Entre Particulares</mat-option
                       >
                       <mat-option value="Ctributado"
                         >Créditos da Fazenda Pública</mat-option
                       >
-                      <!-- Nâo aparecer 11.960/2009 -->
+                      <mat-option value="tributado"
+                        >Débitos da Fazenda Pública - Tributários</mat-option
+                      >
+                      <!-- Aparecer todos os índices -->
+                      <mat-option value="Ntributado"
+                        >Débitos da Fazenda Pública - Não
+                        Tributários</mat-option
+                      >
+                      <!-- Nâo aparecer 11.960/2009 
                       <mat-option value="abatimentos" disabled
                         >Abatimentos (em desenvolvimento)</mat-option
-                      >
-                      <!-- Incluir Calculos de Multa em Salarios minimos -->
-                      <mat-option value="Multa" disabled
-                        >Multa em Salários (em desenvolvimento)</mat-option
-                      >
+                      >-->
                       <!-- Incluir Calculos de Precatórios -->
-                      <mat-option value="precatorios" disabled
-                        >Precatórios - tributários</mat-option
+                      <mat-option value="precatorios"
+                        >Precatórios - Tributários (em
+                        desenvolvimento)</mat-option
                       >
-                      <mat-option value="precatorios" disabled
-                        >Precatórios - não tributários</mat-option
+                      <mat-option value="precatorios"
+                        >Precatórios - Não Tributários (em
+                        desenvolvimento)</mat-option
                       >
+                      <!-- Incluir Calculos de Multa em Salarios minimos 
+                      <mat-option value="Multa" disabled
+                        >Multa em Salários</mat-option
+                      >-->
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -351,7 +347,7 @@
                         {{
                           element.taxaAcumulada * 100
                             | number: "1.0-8" || element.indice
-                        }}% a.a.
+                        }}%
                       </td>
                       <td class="mat-cell cdk-cell">
                         <img
@@ -471,7 +467,7 @@
             mat-raised-button
             color="primary"
             style="background-color: #198cbb"
-            (click)="downloadAsPDF()"
+            (click)="makePDF('myPdfTable')"
             [hidden]="dataSourceLanca.data.length == 0"
           >
             Relatório
@@ -502,9 +498,9 @@
 
             <ng-container matColumnDef="position" class="coluna">
               <mat-header-cell *matHeaderCellDef class="coluna">
-                Nº
+                #
               </mat-header-cell>
-              <mat-cell *matCellDef="let element; let i = index">
+              <mat-cell *matCellDef="let element; let i = dataIndex">
                 {{ i + 1 }}
               </mat-cell>
               <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -645,18 +641,24 @@
               [hidden]="dataSourceLanca && dataSourceLanca.data.length > 0"
             ></mat-footer-row>
 
-            <mat-row *matRowDef="let row; columns: displayedColumnsLanc">
+            <mat-row
+              *matRowDef="let row; columns: displayedColumnsLanc; let i = index"
+            >
             </mat-row>
           </mat-table>
         </div>
-        <mat-card clas="flexbox" id="pdfTable" #pdfTable [hidden]="!isActive">
+        <div clas="flexbox" id="pdfTable" #pdfTable [hidden]="!isActive">
           <div [hidden]="true">
             <!--img alt="MPRJ Logo" src="/assets/imgs/LOGO_MPRJ_GATE.png" /-->
             <ng-container>
-              <table class="table table-bordered" style="text-align: center">
+              <table
+                id="myPdfTable"
+                class="table table-bordered"
+                style="text-align: center"
+              >
                 <thead class="table-primary" align="center" valign="middle">
                   <tr>
-                    <th></th>
+                    <th>#</th>
                     <th class="mat-header-cell cdk-header-cell">
                       Data inicial
                     </th>
@@ -696,7 +698,9 @@
                     <td>{{ element.principal | currency: "BRL":"":"" }}</td>
                     <td>{{ element.dtFim | date: "dd/MM/yyyy" }}</td>
                     <td>
-                      {{ element.fatorAplicado | number: "1.0-8" }} <br />
+                      {{ element.fatorAplicado | number: "1.0-8" }} ({{
+                        element.indice
+                      }})<br />
                     </td>
                     <td>
                       {{ element.valorAtualizado | currency: "BRL":"":"" }}
@@ -730,111 +734,98 @@
           <ng-container
             *ngFor="let element of dataSourceLanca.data; let i = index"
           >
-            <b>
-              {{ i + 1 }} - VALOR PRINCIPAL
-              {{ element.principal | currency: "BRL" }} <br />
-              CORREÇÃO MONETÁRIA PELO {{ element.indice }} DE
-              {{ element.dtIni | date: "dd/MM/yyyy" }} A
-              {{ element.dtFim | date: "dd/MM/yyyy" }}
-            </b>
-            <table class="table table-bordered" style="text-align: center">
-              <thead class="table-primary" align="center" valign="middle">
-                <th class="mat-header-cell cdk-header-cell">
-                  Índice de correção monetária
-                </th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Valor Atualizado
-                  <p>(R$)</p>
-                </th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Período de Juros
-                </th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Juros
-                  <p>(R$)</p>
-                </th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Total devido
-                  <p>(R$)</p>
-                </th>
-              </thead>
-              <tr>
-                <td>{{ element.fatorAplicado | number: "1.0-8" }} <br /></td>
-                <td>{{ element.valorAtualizado | currency: "BRL":"":"" }}</td>
-                <td>{{ element.jurosDiasTotal }}</td>
-                <td>{{ element.jurosValorTotal | currency: "BRL":"":"" }}</td>
-                <td>{{ element.valorCorr | currency: "BRL":"":"" }}</td>
-              </tr>
-            </table>
             <div *ngIf="element.juros.length > 1">
               <b>JUROS</b>
               <table class="table table-bordered" style="text-align: center">
                 <thead>
-                  <th class="mat-header-cell cdk-header-cell">Período</th>
+                  <th class="mat-header-cell cdk-header-cell">#</th>
+                  <th class="mat-header-cell cdk-header-cell">
+                    Valor Atualizado
+                  </th>
+                  <th class="mat-header-cell cdk-header-cell">Data Inicio</th>
+                  <th class="mat-header-cell cdk-header-cell">Data Fim</th>
                   <th class="mat-header-cell cdk-header-cell">Dias</th>
                   <th class="mat-header-cell cdk-header-cell">Taxa</th>
-                  <th class="mat-header-cell cdk-header-cell">% acumulado</th>
-                  <th class="mat-header-cell cdk-header-cell">Valor (R$)</th>
+                  <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
+                  <th class="mat-header-cell cdk-header-cell">Juros (R$)</th>
                 </thead>
-                <tr *ngFor="let juros of element.juros; let i = index">
-                  <td>
-                    De {{ element.dtIni | date: "dd/MM/yyyy" }} a
-                    {{ element.dtFim | date: "dd/MM/yyyy" }}
-                  </td>
-                  <td>
-                    {{ juros.dias }}
-                  </td>
-                  <td>{{ juros.taxa * 100 | number: "1.0-2" }} % a.a.</td>
-                  <td>
-                    {{ juros.taxaAcumulada * 100 | number: "1.0-2" }}
-                  </td>
-                  <td>
-                    {{ juros.valor | currency: "BRL":"":"" }}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr *ngFor="let juros of element.juros; let j = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                      {{ element.valorAtualizado | currency: "BRL":"":"" }}
+                    </td>
+                    <td>
+                      {{ juros.dtIni | date: "dd/MM/yyyy" }}
+                    </td>
+                    <td>
+                      {{ juros.dtFim | date: "dd/MM/yyyy" }}
+                    </td>
+                    <td>
+                      {{ juros.dias }}
+                    </td>
+                    <td>{{ juros.taxa * 100 | number: "1.0-2" }} % a.a.</td>
+                    <td>{{ juros.taxaAcumulada * 100 | number: "1.0-2" }} %</td>
+                    <td>
+                      {{ juros.valor | currency: "BRL":"":"" }}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>{{ element.jurosDiasTotal }}</th>
+                    <th></th>
+                    <th></th>
+                    <th>{{ this.sumTotalJuros | currency: "BRL":"":"" }}</th>
+                  </tr>
+                </tfoot>
               </table>
             </div>
-            <b *ngIf="isActive">MEMÓRIA DE CÁLCULO</b>
-            <table
-              class="table table-bordered"
-              style="text-align: center"
-              *ngIf="isActive"
-            >
-              <tr class="table-primary">
-                <!--td>Nº</td-->
-                <th class="mat-header-cell cdk-header-cell">Data</th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Valor Índice (%)
-                </th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Valor de correção
-                </th>
-                <th class="mat-header-cell cdk-header-cell">
-                  Valor de correção <br />
-                  acumulado
-                </th>
-                <th class="mat-header-cell cdk-header-cell">Valor Corrigido</th>
-              </tr>
-              <tr
-                *ngFor="let detalhamento of element.memoria"
-                style="text-align: center"
-              >
-                <!--td>{{ i + 1 }}</td-->
-                <td>{{ detalhamento.data | date: "dd/MM/yyyy" }}</td>
-                <td style="text-align: center">
-                  {{ detalhamento.valorIndice | number: "1.0-8" }}
-                </td>
-                <td>{{ detalhamento.valorCorrecao | number: "1.0-2" }}</td>
-                <td>
-                  {{ detalhamento.valorCorrecaoAcumulado | number: "1.0-2" }}
-                </td>
-                <td>{{ detalhamento.result | currency: "BRL" }}</td>
-              </tr>
-            </table>
+            <mat-card *ngIf="isActive">
+              <b>MEMÓRIA DE CÁLCULO</b>
+              <table class="table table-bordered" style="text-align: center">
+                <tr class="table-primary">
+                  <!--td>Nº</td-->
+                  <th class="mat-header-cell cdk-header-cell">Data</th>
+                  <th class="mat-header-cell cdk-header-cell">
+                    Valor Índice (%)
+                  </th>
+                  <th class="mat-header-cell cdk-header-cell">
+                    Valor de correção
+                  </th>
+                  <th class="mat-header-cell cdk-header-cell">
+                    Valor de correção <br />
+                    acumulado
+                  </th>
+                  <th class="mat-header-cell cdk-header-cell">
+                    Valor Corrigido
+                  </th>
+                </tr>
+                <tr
+                  *ngFor="let detalhamento of element.memoria"
+                  style="text-align: center"
+                >
+                  <!--td>{{ i + 1 }}</td-->
+                  <td>{{ detalhamento.data | date: "dd/MM/yyyy" }}</td>
+                  <td style="text-align: center">
+                    {{ detalhamento.valorIndice | number: "1.0-8" }}
+                  </td>
+                  <td>{{ detalhamento.valorCorrecao | number: "1.0-2" }}</td>
+                  <td>
+                    {{ detalhamento.valorCorrecaoAcumulado | number: "1.0-2" }}
+                  </td>
+                  <td>{{ detalhamento.result | currency: "BRL" }}</td>
+                </tr>
+              </table>
+            </mat-card>
             <br />
           </ng-container>
-        </mat-card>
+        </div>
       </div>
     </mat-card-content>
-  </mat-card>
+  </div>
 </div>

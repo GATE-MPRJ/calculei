@@ -3,10 +3,10 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 67px;
   display: flex;
   align-items: center;
-  background-color: #702826;
+  background: #ffffff 0% 0% no-repeat padding-box;
   color: white;
   font-weight: 600;
 }
@@ -22,4 +22,13 @@
 
 .toolbar #twitter-logo:hover {
   opacity: 0.8;
+}
+
+.content {
+  display: flex;
+  margin: 32px auto 32px;
+  padding: 0 16px;
+  max-width: 960px;
+  flex-direction: column;
+  align-items: center;
 }
