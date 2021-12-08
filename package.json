@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "npx ng serve",
+    "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@angular/animations": "^11.2.14",
     "@angular/cdk": "^11.2.13",
+    "@angular/cli": "^11.2.15",
     "@angular/common": "^11.2.14",
     "@angular/compiler": "^11.2.14",
     "@angular/core": "^11.2.14",
