@@ -75,25 +75,36 @@ export interface ElementMemoria {
 
 
 export class CalcComponent implements OnInit {
-  // @ViewChild('pdfTable') pdfTable!: ElementRef;
-  // @ViewChild('htmlData') htmlData!: ElementRef;
+
   //minDate: Date;
   maxDate: Date;
+  // Mostrar memória de cálculo
+  isActive = false;
+  pipe = new DatePipe('pt');
+
+  myFormattedDate = moment(Date.now()).format('LL')
+  dataHoje = moment(Date.now()).format('YYYY-MM-DD');
+
+  public ResponseIndice: responseIndice[] = [];
+  //public ResponseIndice: Observable<responseIndice>;
+  //ResponseIndice = [];
+  public sumTotal = 0;
+  public sumTotalAtualizado = 0;
+  public sumTotalCorr = 0;
+  public sumTotalJuros = 0;
 
   constructor(public service: CalcService) { 
     const currentYear = new Date().getFullYear();
     //this.minDate = new Date(currentYear - 20, 0, 1);
     this.maxDate = new Date();
   }
-  //  public users: User[] = [];
-  //@ViewChild(ChildDirective) child!: ChildDirective;
 
   public formCalc = new FormGroup({
     //Lançamentos
     fcTipos: new FormControl(""),
     fcListaLancamento: new FormControl(""),
     fcDtIniLanca: new FormControl(""),
-    fcDtFimLanca: new FormControl(""),
+    fcDtFimLanca: new FormControl(this.dataHoje),
     fcValorLanca: new FormControl(""),
     fcIndiceLanca: new FormControl(""),
     //Juros
@@ -109,17 +120,6 @@ export class CalcComponent implements OnInit {
     fcValorAbatimento: new FormControl(""),
   })
 
-  // @ViewChild('htmlData') htmlData:ElementRef;
-  // Mostrar memória de cálculo
-  isActive = false;
-
-  //datahoje = dateFormat(Date.now(), "dddd  mmm  yyyy, hh:MM:ss");
-  pipe = new DatePipe('pt');
-   myFormattedDate = moment(Date.now()).format('LL')
-  // console.log(this.pipe)
-
-  dataHoje = dateFormat(Date.now(), "dddd  mmmm  yyyy, hh:MM:ss");
-
   firstFormGroup: FormGroup = this.formCalc;
   dados: any = [];
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
@@ -129,14 +129,6 @@ export class CalcComponent implements OnInit {
   dataTableAbatimentos: any = [];
   dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>(this.dataTableAbatimentos);
 
-    // 
-    public ResponseIndice: responseIndice[] = [];
-    //public ResponseIndice: Observable<responseIndice>;
-    //ResponseIndice = [];
-    public sumTotal = 0;
-    public sumTotalAtualizado = 0;
-    public sumTotalCorr = 0;
-    public sumTotalJuros = 0;
     
   displayedColumns = [
     "select",
@@ -286,7 +278,7 @@ export class CalcComponent implements OnInit {
     let jurosDtIni = moment(this.formCalc.get("fcDtIniJuros")?.value);
     let jurosDtFim = moment(this.formCalc.get("fcDtFimJuros")?.value);
 
-    let jurosDtPoupanca : any;
+    let jurosDt : any;
     let jurosDias = 0;
     let jurosTaxaAcumulada = 0;
     let jurosTaxaTotal = 0;
@@ -298,8 +290,8 @@ export class CalcComponent implements OnInit {
       case 'codigo_civil':
         if(jurosDtIni <= defDataCodigoCivil){
           jurosTaxa = 0.06;
-          jurosDtPoupanca = jurosDtFim > defDataCodigoCivil ? defDataCodigoCivil : jurosDtFim ;
-          jurosDias = this.days360(jurosDtIni, jurosDtPoupanca);
+          jurosDt = jurosDtFim > defDataCodigoCivil ? defDataCodigoCivil : jurosDtFim ;
+          jurosDias = this.days360(jurosDtIni, jurosDt);
           jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
           jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
           //jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
@@ -311,13 +303,13 @@ export class CalcComponent implements OnInit {
             taxaAcumulada: jurosTaxaAcumulada,
             dias: jurosDias,
             dtIni: jurosDtIni,
-            dtFim: jurosDtPoupanca
+            dtFim: jurosDt
           })
         }
         if(jurosDtFim >= defDataCodigoCivilFim){
           jurosTaxa = 0.12;
-          jurosDtPoupanca = jurosDtIni > defDataCodigoCivilFim ? jurosDtIni : defDataCodigoCivil;
-          jurosDias = this.days360(jurosDtPoupanca, jurosDtFim);
+          jurosDt = jurosDtIni > defDataCodigoCivilFim ? jurosDtIni : defDataCodigoCivil;
+          jurosDias = this.days360(jurosDt, jurosDtFim);
           jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
           jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
           //jurosValor = this.calcJuros(valorAtualizado, jurosTaxa, jurosDias);
@@ -328,7 +320,7 @@ export class CalcComponent implements OnInit {
             taxa: jurosTaxa,
             taxaAcumulada: jurosTaxaAcumulada,
             dias: jurosDias,
-            dtIni: jurosDtPoupanca,
+            dtIni: jurosDt,
             dtFim: jurosDtFim
           })
         }
@@ -355,8 +347,8 @@ export class CalcComponent implements OnInit {
             this.service.getIndice('POUPANTIGA', jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
               data = res.content
               if (data.length > 0) {
-                jurosDtPoupanca = jurosDtFim > defDataPoupanca ? defDataPoupanca : jurosDtFim ;
-                jurosDias = this.days360(jurosDtIni, jurosDtPoupanca);
+                jurosDt = jurosDtFim > defDataPoupanca ? defDataPoupanca : jurosDtFim ;
+                jurosDias = this.days360(jurosDtIni, jurosDt);
                 data.sort((a:any, b:any) => {
                   return new Date(b.data).getTime() - new Date(a.data).getTime();
                 });
@@ -370,7 +362,7 @@ export class CalcComponent implements OnInit {
                   taxaAcumulada: jurosTaxaAcumulada,
                   dias: jurosDias,
                   dtIni: jurosDtIni,
-                  dtFim: jurosDtFim
+                  dtFim: jurosDt
                 })
               }
             })
@@ -379,8 +371,8 @@ export class CalcComponent implements OnInit {
             this.service.getIndice('POUPNOVA', jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
               data = res.content
               if (data.length > 0) {
-                jurosDtPoupanca = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupanca;
-                jurosDias = this.days360(jurosDtPoupanca, jurosDtFim);
+                jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupanca;
+                jurosDias = this.days360(jurosDt, jurosDtFim);
                 data.sort((a:any, b:any) => {
                   return new Date(b.data).getTime() - new Date(a.data).getTime();
                 });
@@ -393,7 +385,7 @@ export class CalcComponent implements OnInit {
                   taxa: jurosTaxa,
                   taxaAcumulada: jurosTaxaAcumulada,
                   dias: jurosDias,
-                  dtIni: jurosDtIni,
+                  dtIni: jurosDt,
                   dtFim: jurosDtFim
                 })
               }
@@ -476,7 +468,6 @@ export class CalcComponent implements OnInit {
   }
 
   calcTaxa(taxa:number, dias:number){
-    //console.log('calcTaxa: ', 'taxa', taxa, 'dias', dias, 'return', ((taxa / 360) * dias));
     return ((taxa / 360) * dias);
   }
 
@@ -485,7 +476,6 @@ export class CalcComponent implements OnInit {
   }
 
   calcJuros(valor:number, taxa:number, dias:number){
-    console.log('calcJuros', 'valor', valor, 'taxa', taxa, 'dias',dias, 'return', this.calcTaxa(taxa, dias) * valor);
     return this.calcTaxa(taxa, dias) * valor;
   }
 

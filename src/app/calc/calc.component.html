@@ -35,12 +35,10 @@
                       >-->
                       <!-- Incluir Calculos de Precatórios -->
                       <mat-option value="precatorios"
-                        >Precatórios - Tributários (em
-                        desenvolvimento)</mat-option
+                        >Precatórios - Tributários</mat-option
                       >
                       <mat-option value="precatorios"
-                        >Precatórios - Não Tributários (em
-                        desenvolvimento)</mat-option
+                        >Precatórios - Não Tributários</mat-option
                       >
                       <!-- Incluir Calculos de Multa em Salarios minimos 
                       <mat-option value="Multa" disabled
@@ -58,7 +56,11 @@
                       <mat-option value="IPCA-E">IPCA-E</mat-option>
                       <mat-option value="IGP-M">IGP-M</mat-option>
                       <mat-option value="TR">TR</mat-option>
-                      <mat-option value="SELIC">SELIC</mat-option>
+                      <mat-option
+                        value="SELIC"
+                        (click)="this.formCalc.controls.fcJuros.setValue(false)"
+                        >SELIC</mat-option
+                      >
                       <mat-option
                         value="TJ11960"
                         [hidden]="
@@ -169,7 +171,7 @@
               <div class="flexbox">
                 <div>
                   <label labelPlacement="top" for="fcJuros"
-                    >Incidir juros</label
+                    >Incidir juros?</label
                   >
                   <mat-slide-toggle
                     color="warn"
@@ -179,7 +181,10 @@
                         'codigo_civil'
                       )
                     "
-                    [disabled]="!formCalc.valid"
+                    [disabled]="
+                      !formCalc.valid ||
+                      formCalc.controls.fcIndiceLanca.value === 'SELIC'
+                    "
                   ></mat-slide-toggle>
                 </div>
                 <div *ngIf="formCalc.controls.fcJuros.value">
@@ -204,19 +209,27 @@
                         "
                         >Juros Simples 12% a.a.</mat-option
                       >
-                      <mat-option value="SELIC"
-                        >Selic (em desenvolvimento)</mat-option
-                      >
+                      <mat-option value="SELIC">Selic</mat-option>
 
-                      <mat-option
+                      <!--mat-option
                         value="TJ899"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
                         >Ufir (em desenvolvimento)</mat-option
-                      >
+                      -->
                       <mat-option
                         value="poupanca"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
-                        >Caderneta de poupança (em desenvolvimento)</mat-option
+                        >Poupança (Antiga + Nova)</mat-option
+                      >
+                      <mat-option
+                        value="POUPANTIGA"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        >Poupança Antiga</mat-option
+                      >
+                      <mat-option
+                        value="POUPNOVA"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        >Poupança Nova</mat-option
                       >
                       <mat-option value="especificar"
                         >Especificar Taxa</mat-option
@@ -245,6 +258,13 @@
                   <mat-hint
                     >Caderneta de poupança:<BR />
                     Poupança Antiga e Poupança Atual a partir de 03/05/2012
+                  </mat-hint>
+                </div>
+                <div *ngIf="formCalc.controls.fcIndiceLanca.value === 'SELIC'">
+                  <mat-hint
+                    >SELIC já engloba juros e correção monetária. <BR /> Com sua
+                    incidência fica vedada a cumulação com quaisquer outros
+                    índices. <BR />
                   </mat-hint>
                 </div>
                 <div
@@ -308,7 +328,8 @@
                     color="warn"
                     (click)="setJuros()"
                   >
-                    Juros <mat-icon>add_circle</mat-icon>
+                    Aplicar Juros
+                    <!--mat-icon>add_circle</mat-icon-->
                   </button>
                 </div>
               </div>
@@ -660,15 +681,15 @@
                   <tr>
                     <th>#</th>
                     <th class="mat-header-cell cdk-header-cell">
-                      Data inicial
+                      Período de correção monetária
                     </th>
                     <th class="mat-header-cell cdk-header-cell">
                       Valor principal
                       <p>(R$)</p>
                     </th>
-                    <th class="mat-header-cell cdk-header-cell">
+                    <!--th class="mat-header-cell cdk-header-cell">
                       Data do cálculo
-                    </th>
+                    </th-->
                     <th class="mat-header-cell cdk-header-cell">
                       Índice de correção monetária
                     </th>
@@ -677,8 +698,9 @@
                       <p>(R$)</p>
                     </th>
                     <th class="mat-header-cell cdk-header-cell">
-                      Período de Juros
+                      Data Inicial de Juros
                     </th>
+                    <th class="mat-header-cell cdk-header-cell">Nº de dias</th>
                     <th class="mat-header-cell cdk-header-cell">
                       Juros
                       <p>(R$)</p>
@@ -694,9 +716,12 @@
                 >
                   <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ element.dtIni | date: "dd/MM/yyyy" }}</td>
+                    <td>
+                      {{ element.dtIni | date: "dd/MM/yyyy" }} à
+                      {{ element.dtFim | date: "dd/MM/yyyy" }}
+                    </td>
                     <td>{{ element.principal | currency: "BRL":"":"" }}</td>
-                    <td>{{ element.dtFim | date: "dd/MM/yyyy" }}</td>
+                    <!--td>{{ element.dtFim | date: "dd/MM/yyyy" }}</td-->
                     <td>
                       {{ element.fatorAplicado | number: "1.0-8" }} ({{
                         element.indice
@@ -705,6 +730,7 @@
                     <td>
                       {{ element.valorAtualizado | currency: "BRL":"":"" }}
                     </td>
+                    <td>{{ element.juros[0]?.dtIni | date: "dd/MM/yyyy" }}</td>
                     <td>{{ element.jurosDiasTotal }}</td>
                     <td>
                       {{ element.jurosValorTotal | currency: "BRL":"":"" }}
@@ -718,10 +744,10 @@
                     <th></th>
                     <th>{{ this.sumTotal | currency: "BRL":"":"" }}</th>
                     <th></th>
-                    <th></th>
                     <th>
                       {{ this.sumTotalAtualizado | currency: "BRL":"":"" }}
                     </th>
+                    <th></th>
                     <th></th>
                     <th>{{ this.sumTotalJuros | currency: "BRL":"":"" }}</th>
                     <th>{{ this.sumTotalCorr | currency: "BRL":"":"" }}</th>
