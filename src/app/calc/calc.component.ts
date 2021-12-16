@@ -350,7 +350,7 @@ export class CalcComponent implements OnInit {
                 jurosDt = jurosDtFim > defDataPoupanca ? defDataPoupanca : jurosDtFim ;
                 jurosDias = this.days360(jurosDtIni, jurosDt);
                 data.sort((a:any, b:any) => {
-                  return new Date(b.data).getTime() - new Date(a.data).getTime();
+                  return new Date(a.data).getTime() - new Date(b.data).getTime();
                 });
                 indiceAcumulados = data.map((d: any) => d.acumulado);
                 jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
@@ -374,7 +374,7 @@ export class CalcComponent implements OnInit {
                 jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupanca;
                 jurosDias = this.days360(jurosDt, jurosDtFim);
                 data.sort((a:any, b:any) => {
-                  return new Date(b.data).getTime() - new Date(a.data).getTime();
+                  return new Date(a.data).getTime() - new Date(b.data).getTime();
                 });
                 indiceAcumulados = data.map((d: any) => d.acumulado);
                 jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
@@ -401,7 +401,7 @@ export class CalcComponent implements OnInit {
               //jurosDtSelic = this.setWorkDay(jurosDtIni);
               //console.log(this.findIndexResponseByDate(jurosDtIni));
               data.sort((a:any, b:any) => {
-                return new Date(b.data).getTime() - new Date(a.data).getTime();
+                return new Date(a.data).getTime() - new Date(b.data).getTime();
               });
               indiceAcumulados = data.map((d: any) => d.acumulado);
               jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
