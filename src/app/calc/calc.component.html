@@ -166,19 +166,38 @@
                   <!--placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31"-->
                 </div>
               </div>
-              <!--div class="flexbox">
-                <div class="mat-input-big-width">
+              <div class="flexbox">
+                <div class="mat-select-big-width">
                   <label for="descricao">Descrição</label>
                   <mat-form-field appearance="outline">
+                    <mat-select formControlName="fcDescricao">
+                      <mat-option value="Ressarcimento"
+                        >Ressarcimento</mat-option
+                      >
+                      <mat-option value="Ressarcimento ao erário"
+                        >Ressarcimento ao erário</mat-option
+                      >
+                      <mat-option value="Multa Civil">Multa Civil</mat-option>
+                      <mat-option value="Honorários advocatícios"
+                        >Honorários advocatícios</mat-option
+                      >
+                      <mat-option value="Outros">Outros</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div [hidden]="formCalc.controls.fcDescricao.value != 'Outros'">
+                  <label>Especifique uma descrição</label>
+                  <mat-form-field appearance="outline">
                     <input
-                      type="text"
-                      name="descricao"
-                      formControlName="fcDescricao"
+                      formControlName="fcDescricaoOutros"
                       matInput
+                      type="text"
+                      placeholder="Multa administrativa"
+                      maxlength="100"
                     />
                   </mat-form-field>
                 </div>
-              </!--div-->
+              </div>
             </mat-card>
             <mat-card>
               <div class="flexbox">
@@ -560,7 +579,7 @@
               *matHeaderRowDef="displayedColumnsLanc; sticky: true"
             ></mat-header-row>
 
-            <ng-container matColumnDef="select" class="coluna">
+            <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef> </mat-header-cell>
               <mat-cell *matCellDef="let row"> </mat-cell>
               <mat-footer-cell *matFooterCellDef style="font-weight: bold"
@@ -568,12 +587,10 @@
               >
             </ng-container>
 
-            <ng-container matColumnDef="position" class="coluna">
-              <mat-header-cell *matHeaderCellDef class="coluna">
-                #
-              </mat-header-cell>
+            <ng-container matColumnDef="position">
+              <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
               <mat-cell *matCellDef="let element; let i = dataIndex">
-                {{ i + 1 }}
+                {{ i + 1 }}. <br />{{ element.descricao }}
               </mat-cell>
               <mat-footer-cell *matFooterCellDef></mat-footer-cell>
             </ng-container>
@@ -638,9 +655,7 @@
             </ng-container>
 
             <ng-container matColumnDef="dias">
-              <mat-header-cell *matHeaderCellDef>
-                Período de Juros
-              </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef> Dias </mat-header-cell>
               <mat-cell *matCellDef="let element">
                 {{ element.jurosDiasTotal }} Dias</mat-cell
               >
@@ -667,10 +682,8 @@
               >
             </ng-container>
 
-            <ng-container matColumnDef="delete" class="coluna">
-              <mat-header-cell *matHeaderCellDef class="coluna"
-                >Excluir
-              </mat-header-cell>
+            <ng-container matColumnDef="delete">
+              <mat-header-cell *matHeaderCellDef>Excluir </mat-header-cell>
               <mat-cell *matCellDef="let row; let i = index">
                 <img
                   src="/assets/imgs/icon_delete.svg"
@@ -690,13 +703,12 @@
                 *matFooterCellDef
                 [attr.colspan]="displayedColumnsLanc.length"
               >
-                Nenhum lançamento cadastrado.
+                Calcule o primeiro lançamento!
               </mat-footer-cell>
             </ng-container>
 
-            <ng-container matColumnDef="check" class="coluna">
-              <mat-header-cell *matHeaderCellDef class="coluna">
-              </mat-header-cell>
+            <ng-container matColumnDef="check">
+              <mat-header-cell *matHeaderCellDef> </mat-header-cell>
               <mat-cell *matCellDef="let element">
                 <mat-icon class="iconValidTab" *ngIf="element.position > 0"
                   >done
@@ -766,7 +778,7 @@
                   *ngFor="let element of dataSourceLanca.data; let i = index"
                 >
                   <tr>
-                    <td>{{ i + 1 }}</td>
+                    <td>{{ i + 1 }}. <br />{{ element.descricao }}</td>
                     <td>
                       {{ element.dtIni | date: "dd/MM/yyyy" }} a
                       {{ element.dtFim | date: "dd/MM/yyyy" }}
@@ -774,9 +786,9 @@
                     <td>{{ element.principal | currency: "BRL":"":"" }}</td>
                     <!--td>{{ element.dtFim | date: "dd/MM/yyyy" }}</td-->
                     <td>
-                      {{ element.fatorAplicado | number: "1.0-8" }} ({{
-                        element.indice
-                      }})<br />
+                      {{ element.fatorAplicado | number: "1.0-8" }} <br /><small
+                        >({{ element.indice }})</small
+                      >
                     </td>
                     <td>
                       {{ element.valorAtualizado | currency: "BRL":"":"" }}

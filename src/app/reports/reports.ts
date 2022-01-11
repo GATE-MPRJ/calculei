@@ -29,11 +29,13 @@ export class Reports {
     })
   }
 
-  async makePDF(id: string, date: string, headerImg:string) {
+  async makePDF(id: string, date: string, headerImg:string, format:any = 'p') {
 
     let imageData : any = await this.getBase64ImageFromUrl(headerImg);
 
-    const pdf = new jsPDF();
+    const pdf = new jsPDF(format, 'mm', [297, 210]); //portrait A4
+    //const pdf = new jsPDF('l', 'mm', [297, 210]); //landscape
+
  
     pdf.setFont("Garamond", "normal");
     pdf.setFontSize(12);

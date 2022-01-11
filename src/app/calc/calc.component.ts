@@ -108,10 +108,11 @@ export class CalcComponent implements OnInit {
     fcValorLanca: new FormControl(""),
     fcIndiceLanca: new FormControl(""),
     fcDescricao: new FormControl(""),
+    fcDescricaoOutros: new FormControl(""),
     //Juros
     fcJuros: new FormControl(""),
     fcDtIniJuros: new FormControl(""),
-    fcDtFimJuros: new FormControl(""),
+    fcDtFimJuros: new FormControl(this.dataHoje),
     fcValorJuros: new FormControl(""),
     fcIndiceJuros: new FormControl(""),
     fcTaxaJuros: new FormControl(""),
@@ -529,6 +530,7 @@ export class CalcComponent implements OnInit {
     let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
     let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
     let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+    let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
     let juros: any = [];
     let jurosValorTotal = 0;
     let jurosDiasTotal = 0;
@@ -604,7 +606,8 @@ export class CalcComponent implements OnInit {
       dtFim: dtFim,
       indice: respIndice,
       dias: dias,
-      principal: valorPrincipal, //valor do índice
+      principal: valorPrincipal, 
+      descricao: descricao,
       jurosValorTotal: jurosValorTotal,
       jurosDiasTotal: jurosDiasTotal,
       fatorAplicado: fatorCalculo,
@@ -624,7 +627,11 @@ export class CalcComponent implements OnInit {
     report.downloadAsPDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png');
   }
   makePDF(id: string){
-    report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png');
+    let format = 'p';
+    if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
+      format = 'l';	
+    }
+    report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format);
   }
   printHtml(id: string){
     report.printHtml(id);
