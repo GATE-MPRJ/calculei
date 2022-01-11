@@ -459,10 +459,11 @@ export class CalcComponent implements OnInit {
       this.clearForm();
     }else{
       //Fix initial date are not included in between statement
-      /*if (INDICES.includes('TJ')){
-        data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
+      if (indiceOption.includes('TJ')){
+        //data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
+        dtIni = moment(dtIni).startOf('month').format('DD-MM-YYYY');    
+
       }
-      */
       this.service.getIndice(indiceOption, moment(dtIni)?.format("DD-MM-YYYY").toString(), moment(dtFim)?.format("DD-MM-YYYY").toString()).subscribe((res: any) => {
         this.ResponseIndice = res.content
         if (this.ResponseIndice.length > 0) {
@@ -544,6 +545,8 @@ export class CalcComponent implements OnInit {
 
   setCalcCorrecao(valorPrincipal:number){
     let data :any = this.ResponseIndice;
+    let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
+    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
     let indice = data[0].nome;
     let correcao: any = [];
     let fatores = [];
@@ -566,9 +569,15 @@ export class CalcComponent implements OnInit {
     /*if (this.formCalc.get("fcIndiceLanca")?.value.includes('TJ899') && dtFim >= indiceDataAtualizacao){
       fatorFim = 1.0000000000;
     }*/
+    
     fatorDivisao = fatorIni / fatorFim;
     acumuladoFim = data[data.length - 1].acumulado;
-    fatorCalculo = data[0].valor ? acumuladoFim : fatorDivisao;
+    if (indiceOption.includes('TJ11960') && dtFim == this.dataHoje){    
+      fatorCalculo = data[0].fator;
+    }else{
+      fatorCalculo = data[0].valor ? acumuladoFim : fatorDivisao;
+    }
+    console.log(fatorCalculo);
     valorAtualizado = fatorCalculo * valorPrincipal;
     correcao = {
       indice: indice,
