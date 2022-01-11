@@ -166,6 +166,19 @@
                   <!--placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31"-->
                 </div>
               </div>
+              <!--div class="flexbox">
+                <div class="mat-input-big-width">
+                  <label for="descricao">Descrição</label>
+                  <mat-form-field appearance="outline">
+                    <input
+                      type="text"
+                      name="descricao"
+                      formControlName="fcDescricao"
+                      matInput
+                    />
+                  </mat-form-field>
+                </div>
+              </!--div-->
             </mat-card>
             <mat-card>
               <div class="flexbox">
@@ -383,47 +396,85 @@
                 </table>
               </div>
             </mat-card>
-            <!--mat-card>
-                        <div class="flexbox">
-                            <div>
-                                <label labelPlacement="top" for="fcAbatimentos">Incluir abatimento</label>
-                                <mat-slide-toggle color="warn" formControlName="fcAbatimentos"></mat-slide-toggle>
-                            </div>
-                            <div *ngIf="formCalc.controls.fcAbatimentos.value">
-                                <label for="fcDtAbatimento">Data do abatimento</label>
-                                <mat-form-field appearance="outline">
-                                <input formControlName="fcDtAbatimento" matInput type="date" id="fcDtAbatimento"
-                                    name="fcDtAbatimento" required/>
-                                </mat-form-field>
-                            </div>
-                            <div  *ngIf="formCalc.controls.fcAbatimentos.value">
-                                <label for="fcValorAbatimento">Valor do abatimento</label>
-                                <mat-form-field appearance="outline">
-                                    <input formControlName="fcValorAbatimento" matInput currencyMask
-                                        [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" min=1 />
-                                </mat-form-field>
-                            </div>
-                            <div  *ngIf="formCalc.controls.fcAbatimentos.value">
-                                <button	type="button" mat-raised-button color="warn"  (click)="setAbatimento()" 
-                                    >Abatimento <mat-icon>attach_money</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flexbox" *ngIf="formCalc.controls.fcAbatimentos.value && dataTableAbatimentos.length > 0">
-                            <table class="table">
-                                <thead class="">
-                                    <th class="mat-header-cell cdk-header-cell">Data</th>
-                                    <th class="mat-header-cell cdk-header-cell">Valor</th>
-                                </thead>
-                                <tbody *ngFor="let element of dataTableAbatimentos; let i = index">
-                                <tr>
-                                    <td class="mat-cell cdk-cell">{{element.data | date: 'dd/MM/yyyy'}}</td>
-                                    <td class="mat-cell cdk-cell">{{element.valor | currency :'BRL'}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </mat-card-->
+            <!--Abatimentos
+            <mat-card>
+              <div class="flexbox">
+                <div>
+                  <label labelPlacement="top" for="fcAbatimentos"
+                    >Abatimentos?</label
+                  >
+                  <mat-slide-toggle
+                    color="warn"
+                    formControlName="fcAbatimentos"
+                  ></mat-slide-toggle>
+                </div>
+                <div *ngIf="formCalc.controls.fcAbatimentos.value">
+                  <label for="fcDtAbatimento">Data do abatimento</label>
+                  <mat-form-field appearance="outline">
+                    <input
+                      formControlName="fcDtAbatimento"
+                      matInput
+                      type="date"
+                      id="fcDtAbatimento"
+                      name="fcDtAbatimento"
+                      required
+                    />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="formCalc.controls.fcAbatimentos.value">
+                  <label for="fcValorAbatimento">Valor do abatimento</label>
+                  <mat-form-field appearance="outline">
+                    <input
+                      formControlName="fcValorAbatimento"
+                      matInput
+                      currencyMask
+                      [options]="{
+                        prefix: 'R$ ',
+                        thousands: '.',
+                        decimal: ','
+                      }"
+                      min="1"
+                    />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="formCalc.controls.fcAbatimentos.value">
+                  <button
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="setAbatimento()"
+                  >
+                    Abatimento <mat-icon>attach_money</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="flexbox"
+                *ngIf="
+                  formCalc.controls.fcAbatimentos.value &&
+                  dataTableAbatimentos.length > 0
+                "
+              >
+                <table class="table">
+                  <thead class="">
+                    <th class="mat-header-cell cdk-header-cell">Data</th>
+                    <th class="mat-header-cell cdk-header-cell">Valor</th>
+                  </thead>
+                  <tbody
+                    *ngFor="let element of dataTableAbatimentos; let i = index"
+                  >
+                    <tr>
+                      <td class="mat-cell cdk-cell">
+                        {{ element.data | date: "dd/MM/yyyy" }}
+                      </td>
+                      <td class="mat-cell cdk-cell">
+                        {{ element.valor | currency: "BRL" }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </mat-card>-->
           </form>
         </div>
         <mat-card class="ui-overlaypanel">
@@ -700,7 +751,7 @@
                     <th class="mat-header-cell cdk-header-cell">
                       Data Inicial de Juros
                     </th>
-                    <th class="mat-header-cell cdk-header-cell">Nº de dias</th>
+                    <th class="mat-header-cell cdk-header-cell">Dias</th>
                     <th class="mat-header-cell cdk-header-cell">
                       Juros
                       <p>(R$)</p>
@@ -717,7 +768,7 @@
                   <tr>
                     <td>{{ i + 1 }}</td>
                     <td>
-                      {{ element.dtIni | date: "dd/MM/yyyy" }} à
+                      {{ element.dtIni | date: "dd/MM/yyyy" }} a
                       {{ element.dtFim | date: "dd/MM/yyyy" }}
                     </td>
                     <td>{{ element.principal | currency: "BRL":"":"" }}</td>

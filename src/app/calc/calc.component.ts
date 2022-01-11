@@ -107,6 +107,7 @@ export class CalcComponent implements OnInit {
     fcDtFimLanca: new FormControl(this.dataHoje),
     fcValorLanca: new FormControl(""),
     fcIndiceLanca: new FormControl(""),
+    fcDescricao: new FormControl(""),
     //Juros
     fcJuros: new FormControl(""),
     fcDtIniJuros: new FormControl(""),

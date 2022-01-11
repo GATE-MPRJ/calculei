@@ -8,6 +8,7 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 
 let htmlToPdfmake = require("html-to-pdfmake");
 
+const garamondFont = require('../../assets/fonts/Garamond-normal.js');
 
 export class Reports {
 
@@ -33,14 +34,43 @@ export class Reports {
     let imageData : any = await this.getBase64ImageFromUrl(headerImg);
 
     const pdf = new jsPDF();
-    pdf.setFontSize(12)
-    pdf.text(date, 15, 40)
+ 
+    pdf.setFont("Garamond", "normal");
+    pdf.setFontSize(12);
+    pdf.text(date, 15, 40);
 
     pdf.setProperties({
       title: "Relatório de Cálculo"
     });
     pdf.addImage(imageData.toString(), 'JPEG', 15, 15, 180, 15);
-    autoTable(pdf, { html: '#'+id , startY: 45 , showFoot: 'lastPage'})
+    autoTable(pdf, { 
+      html: '#'+id , 
+      startY: 45 , 
+      showFoot: 'lastPage' , 
+      styles: {
+        font: 'Garamond',
+        halign: 'center'
+      },
+      headStyles: {
+        fontSize: 10,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      bodyStyles: {
+        fontStyle: 'normal',
+      },
+      columnStyles: {
+        2 : {
+          halign: 'right'
+        },
+        4 : {
+          halign: 'right'
+        },
+        8 : {
+          halign: 'right'
+        },
+      }
+    })
     
     /*
     doc.autoTable({
