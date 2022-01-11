@@ -125,6 +125,7 @@ export class CalcComponent implements OnInit {
   firstFormGroup: FormGroup = this.formCalc;
   dados: any = [];
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
+  dataSourceCorrecao: any = [];
   dataTableRelatorio: any = [];
   dataTableJuros: any = [];
   dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataTableJuros);
@@ -238,7 +239,7 @@ export class CalcComponent implements OnInit {
   }
 
   public clearForm() {
-    this.formCalc.reset();
+    //this.formCalc.reset();
     this.dataTableJuros = [];
     this.dataTableAbatimentos = [];
   }
@@ -256,8 +257,8 @@ export class CalcComponent implements OnInit {
     });
   }
 
-  public checkDates(dtIni:Date, dtFim:Date){
-    return dtIni > dtFim;
+  public isDateBefore(dtIni:Date, dtFim:Date){
+    return dtIni < dtFim;
   }
 
   //@Todo incluir selic, caderneta de poupança, order by date
@@ -437,35 +438,43 @@ export class CalcComponent implements OnInit {
   }
 
   public addLancamento() {
-
-    const dat = responseIndice;
-    let data_ini: string;
-    let data_fim: string;
-
-    const INDICES = this.formCalc.get("fcIndiceLanca")?.value;
-    let dt1 = (this.formCalc.get("fcDtIniLanca")?.value);
-    let dt2 = (this.formCalc.get("fcDtFimLanca")?.value);
-        
-    data_ini = moment(dt1).format('DD-MM-YYYY');    
-    data_fim = moment(dt2).format('DD-MM-YYYY');
+    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+    let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
+    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+    let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
 
     //Juros ativo mas não incluído
     if(this.formCalc.get("fcJuros")?.value && this.dataTableJuros.length == 0){
       this.setJuros();
     }
 
-    //Fix initial date are not included in between statement
-    /*if (INDICES.includes('TJ')){
-      data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
-    }
-    */
-    this.service.getIndice(INDICES, data_ini?.toString(), data_fim?.toString()).subscribe((res: any) => {
-      this.ResponseIndice = res.content
-      if (this.ResponseIndice.length > 0) {
-        this.setCalc();
-        this.calcSumTotals();
+    /**
+     * Correção Monetária @Todo Transformar em promise
+     **/
+    let correcao: any = [];
+    if(indiceOption == 'sem-correcao'){
+      correcao = this.setCalcSemCorrecao(valorPrincipal);
+      this.setCalc();
+      this.calcSumTotals();
+      this.clearForm();
+    }else{
+      //Fix initial date are not included in between statement
+      /*if (INDICES.includes('TJ')){
+        data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
       }
-    })
+      */
+      this.service.getIndice(indiceOption, moment(dtIni)?.format("DD-MM-YYYY").toString(), moment(dtFim)?.format("DD-MM-YYYY").toString()).subscribe((res: any) => {
+        this.ResponseIndice = res.content
+        if (this.ResponseIndice.length > 0) {
+          this.dataSourceCorrecao =  this.setCalcCorrecao(valorPrincipal);
+          this.setCalc();
+          this.calcSumTotals();
+          this.clearForm();
+        }
+      })
+    }
+
+
 
   }
 
@@ -517,25 +526,26 @@ export class CalcComponent implements OnInit {
     return juros;
   }
 
-  //@Todo desacoplar da setCalc()
-  setCalcCorrecao(valorPrincipal:number, dtIni:Date, dtFim:Date){
+  setCalcSemCorrecao(valorPrincipal:number){
+    let correcao: any = [];
+
+    correcao = {
+      indice: 'SEM CORREÇÃO',
+      valorAtualizado: valorPrincipal,
+      fatorIni: '',
+      fatorFim: '',
+      fatorDivisao: '',
+      fatorCalculo: ''
+    }
+    this.dataSourceCorrecao = correcao;
+    return;
   }
-  
-  /*
-  * @Todo Refactor 
-  */
-  setCalc() {
+
+
+  setCalcCorrecao(valorPrincipal:number){
     let data :any = this.ResponseIndice;
-    let maior = 0;
-    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
-    let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
-    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
-    let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
-    let juros: any = [];
-    let jurosValorTotal = 0;
-    let jurosDiasTotal = 0;
-    let dias = this.days360(dtIni, dtFim);
-    let respIndice;
+    let indice = data[0].nome;
+    let correcao: any = [];
     let fatores = [];
     let fatorMax: number;
     let fatorMin: number;
@@ -543,10 +553,8 @@ export class CalcComponent implements OnInit {
     let fatorFim: number;
     let fatorDivisao: number;
     let fatorCalculo: number;
-    let fatorCalculoMemoria: number;
     let acumuladoFim: number;
     let valorAtualizado: number;
-    let valorAtualizadoJuros: number;
 
     fatores = data.map((d: any) => d.fator);
     fatorMax = Math.max(...fatores);
@@ -554,17 +562,63 @@ export class CalcComponent implements OnInit {
     fatorIni = fatores[0];
     fatorFim = fatores[fatores.length - 1];
 
-    //@Todo Verificar se a data fim não é superior ao último índice retornado
-    /*if (this.formCalc.get("fcIndiceLanca")?.value.includes('TJ899') && dtFim >= '2021-01-01'){
+    //@Todo Verificar se a data fim não é superior ao último índice existente no DB
+    /*if (this.formCalc.get("fcIndiceLanca")?.value.includes('TJ899') && dtFim >= indiceDataAtualizacao){
       fatorFim = 1.0000000000;
     }*/
     fatorDivisao = fatorIni / fatorFim;
     acumuladoFim = data[data.length - 1].acumulado;
     fatorCalculo = data[0].valor ? acumuladoFim : fatorDivisao;
-    valorAtualizado = fatorCalculo * valorPrincipal,
+    valorAtualizado = fatorCalculo * valorPrincipal;
+    correcao = {
+      indice: indice,
+      valorAtualizado: valorAtualizado,
+      fatorIni: fatorIni,
+      fatorFim: fatorFim,
+      fatorDivisao: fatorDivisao,
+      fatorCalculo: fatorCalculo
+    }
+    return correcao;
+  }
+  
+  //Memória de Calculos
+  setCalcMemoria(correcao:any, juros:any){
+    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+    let data :any = this.ResponseIndice;
+    let fatorCalculoMemoria: number;
 
-    respIndice = data[0].nome;
-    this.dataTableRelatorio = [];
+    //@todo refazer, incluir juros.
+    data.map((x: any) => {
+      fatorCalculoMemoria = x.valor ? x.acumulado : correcao.fatorDivisao;
+      this.dataTableRelatorio.push({
+        //indice: x.nome,
+        data: x.data,
+        fator: x.fator,
+        valorIndice: x.valor ? x.valor : correcao.fatorDivisao,
+        acumulado: x.acumulado,
+        fatorUsed: fatorCalculoMemoria,
+        valorCorrecao: (x.fator * valorPrincipal) - valorPrincipal,
+        valorCorrecaoAcumulado: (fatorCalculoMemoria * valorPrincipal) - valorPrincipal,
+        result: fatorCalculoMemoria * valorPrincipal
+      })
+    })
+  }
+
+  /*
+  * @Todo Refactor 
+  */
+   setCalc() {
+    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+    let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
+    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+    let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
+    let correcao: any = this.dataSourceCorrecao;
+    let juros: any = [];
+    let jurosValorTotal = 0;
+    let jurosDiasTotal = 0;
+    let dias = this.days360(dtIni, dtFim);
+
+  
 
     //Abatimentos
     if (this.formCalc.get("fcAbatimentos")?.value == true) {
@@ -576,56 +630,39 @@ export class CalcComponent implements OnInit {
     //Juros
     if (this.formCalc.get("fcJuros")?.value == true) {
         //juros = this.setCalcJuros(valorPrincipal, this.dataTableJuros );
-        juros = this.setCalcJuros(valorAtualizado, this.dataTableJuros );
+        juros = this.setCalcJuros(correcao.valorAtualizado, this.dataTableJuros );
 
         jurosValorTotal = juros.reduce(function(jurosAcc:number, jurosCurr:any){ return jurosAcc + jurosCurr.valor;}, 0);
         jurosDiasTotal = juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0)
     }
     
-    console.log(respIndice, data[0].data, fatorIni, data[data.length - 1].data, fatorFim, fatorDivisao, acumuladoFim);
-
-    //Memória de Calculos
-    //@todo refazer, incluir juros.
-    data.map((x: any) => {
-      fatorCalculoMemoria = x.valor ? x.acumulado : fatorDivisao;
-      this.dataTableRelatorio.push({
-        //indice: x.nome,
-        data: x.data,
-        fator: x.fator,
-        valorIndice: x.valor ? x.valor : fatorDivisao,
-        acumulado: x.acumulado,
-        fatorUsed: fatorCalculoMemoria,
-        valorCorrecao: (x.fator * valorPrincipal) - valorPrincipal,
-        valorCorrecaoAcumulado: (fatorCalculoMemoria * valorPrincipal) - valorPrincipal,
-        result: fatorCalculoMemoria * valorPrincipal
-      })
-    })
+    this.setCalcMemoria(correcao, juros);
 
     this.dados.push({
       dtIni: dtIni,
       dtFim: dtFim,
-      indice: respIndice,
+      indice: correcao.indice,
       dias: dias,
       principal: valorPrincipal, 
       descricao: descricao,
       jurosValorTotal: jurosValorTotal,
       jurosDiasTotal: jurosDiasTotal,
-      fatorAplicado: fatorCalculo,
-      valorAtualizado: valorAtualizado,
-      valorCorr: (fatorCalculo * valorPrincipal) + jurosValorTotal,
-      correcao: ((fatorCalculo * valorPrincipal) + jurosValorTotal) - (valorPrincipal),
+      fatorAplicado: correcao.fatorCalculo,
+      valorAtualizado: correcao.valorAtualizado,
+      valorCorr: correcao.valorAtualizado + jurosValorTotal,
+      correcao: (correcao.valorAtualizado + jurosValorTotal) - (valorPrincipal),
       memoria: this.dataTableRelatorio,
       juros: juros
     });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados)
     console.log('dataSourceLanca', this.dataSourceLanca)
-    //this.clearForm();
   }
 
   downloadAsPDF(id: string){
     report.downloadAsPDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png');
   }
+
   makePDF(id: string){
     let format = 'p';
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
@@ -633,7 +670,9 @@ export class CalcComponent implements OnInit {
     }
     report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format);
   }
+
   printHtml(id: string){
     report.printHtml(id);
   }
+
 }
