@@ -1,0 +1,39 @@
+<div class="form-container">
+  <h2 mat-dialog-title>{{ title }}</h2>
+  <mat-dialog-content>
+    <form [formGroup]="form">
+      <mat-form-field appearance="standard">
+        <mat-label>Total de parcelas</mat-label>
+        <input
+          matInput
+          placeholder="Nº. total de parcelas"
+          formControlName="qty"
+          type="number"
+          (change)="onChange(form.value)"
+        />
+      </mat-form-field>
+    </form>
+    <div *ngIf="results?.length > 0">
+      <table class="table table-bordered" style="text-align: center">
+        <thead class="table-primary" align="center" valign="middle">
+          <tr>
+            <th class="mat-header-cell cdk-header-cell">Parcela</th>
+            <th class="mat-header-cell cdk-header-cell">Data</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let result of results; let i = index">
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ result | date: "dd/MM/yyyy" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="submit(form.value)">
+      OK
+    </button>
+    <button mat-button (click)="dialogRef.close(false)">Cancelar</button>
+  </mat-dialog-actions>
+</div>

@@ -10,6 +10,10 @@ import {
   FormControlName,
 } from "@angular/forms";
 import { MatTableDataSource } from "@angular/material/table";
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatAlertComponent } from '../material/mat-alert/mat-alert.component';
+import { MatConfirmComponent } from '../material/mat-confirm/mat-confirm.component';
+import { MatInputPromptComponent } from '../material/mat-input-prompt/mat-input-prompt.component';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 
 import html2canvas from "html2canvas"
@@ -43,6 +47,8 @@ export interface ElementLanc {
   dias: number;
   principal: number;
   memoria: any;
+  descricao: string;
+  juros: any;
 }export interface ElementJuros {
   indice: number;
   taxa: string;
@@ -92,12 +98,6 @@ export class CalcComponent implements OnInit {
   public sumTotalAtualizado = 0;
   public sumTotalCorr = 0;
   public sumTotalJuros = 0;
-
-  constructor(public service: CalcService) { 
-    const currentYear = new Date().getFullYear();
-    //this.minDate = new Date(currentYear - 20, 0, 1);
-    this.maxDate = new Date();
-  }
 
   public formCalc = new FormGroup({
     //Lançamentos
@@ -160,14 +160,68 @@ export class CalcComponent implements OnInit {
   displayedColumnsF = ['indice', 'principal'];
   displayedColumnsJuros = ['dtIni', 'valor'];
 
-
+  constructor(public service: CalcService, private dialog: MatDialog) { 
+    const currentYear = new Date().getFullYear();
+    //this.minDate = new Date(currentYear - 20, 0, 1);
+    this.maxDate = new Date();
+  }
 
   ngOnInit(): void {
-
   }
 
   ngAfterViewInit(): void {
+  }
 
+  alertDialog(message: string): void {
+    const dialogRef = this.dialog.open(MatAlertComponent, {
+      data: {
+        message: message,
+      },
+    });
+  }
+
+  confirmDialog(title: string, message: string): void {
+    const ref: MatDialogRef<MatConfirmComponent> =  
+    this.dialog.open(MatConfirmComponent, {
+      width: '600px',
+      height: '210px',
+      data: {
+        title: title,
+        message: message
+      },
+      backdropClass: 'confirmDialogComponent',
+      hasBackdrop: true
+    });
+  }
+
+  showReplicationPrompt(title: string, id: number): void {
+    const dialogRef = this.dialog.open(MatInputPromptComponent, { 
+      width: '300px', 
+      height: '350px',
+      data:{
+        title: title,
+        form: {
+          qty: ['', [Validators.required, Validators.minLength(10)]]
+        },
+        inputs:{
+          qty: {label: 'Parcelas', type: 'number'}
+        }
+      } 
+      });
+
+    dialogRef.componentInstance.params = {
+      parentFunction:(data:any)=>{
+          //manipulate `fromDialog` data
+          //return back to dialog 
+            return this.replicateDate(id, data.qty);
+      }
+    }      
+
+    dialogRef.afterClosed().subscribe((data) => {
+      if (data.clicked === 'submit') {
+        this.setReplication(id, data.form.qty);
+      }
+    });
   }
 
   lastDayOfFebruary(date: any) {
@@ -193,7 +247,7 @@ export class CalcComponent implements OnInit {
 
   // Função para Converter ano em ano 360 dias
   // @Todo Em casos específicos está "roubando" 1 dia
-  days360(dateA: any, dateB: any) {
+  days360(dateA: Date, dateB: Date) {
 
     dateA = new Date(dateA);
     dateB = new Date(dateB);
@@ -219,6 +273,14 @@ export class CalcComponent implements OnInit {
 
     let days = ((dateB.getFullYear() - dateA.getFullYear()) * 360) + (((dateB.getMonth() + 1) - (dateA.getMonth() + 1)) * 30) + (dayB - dayA);
     return days;
+  }
+
+  public removeAllRows(){
+    if(confirm("Deseja EXCLUIR TODOS lançamento?")) {
+      this.dataSourceLanca = new MatTableDataSource<ElementLanc>();
+      this.dados = [];
+      this.calcSumTotals();
+    }
   }
 
   public removeRow(index: number) {
@@ -261,13 +323,27 @@ export class CalcComponent implements OnInit {
     return dtIni < dtFim;
   }
 
-  //@Todo incluir selic, caderneta de poupança, order by date
   public setJuros(){
+    try {
+      let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+      let jurosIndice = (this.formCalc.get("fcIndiceJuros")?.value);
+      let jurosTaxa = (this.formCalc.get("fcTaxaJuros")?.value);
+      let jurosDtIni = moment(this.formCalc.get("fcDtIniJuros")?.value);
+      let jurosDtFim = moment(this.formCalc.get("fcDtFimJuros")?.value);
+      this.addJuros(valorPrincipal, jurosIndice, jurosTaxa, jurosDtIni, jurosDtFim);
+    } catch (e) {
+      console.log(e);
+    }
+
+  }
+
+  //@Todo incluir selic, caderneta de poupança, order by date
+  public addJuros(valorPrincipal: number, jurosIndice: string, jurosTaxa: number, jurosDtIni: any, jurosDtFim: any) {
     let data :any = [];
 
-    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+    //let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
 
-    if (valorPrincipal === ''){
+    if (valorPrincipal < 0){
       return false;
       //mensagem de error
     }
@@ -276,10 +352,12 @@ export class CalcComponent implements OnInit {
     let defDataCodigoCivilFim = moment(defDataCodigoCivil).add(1, 'days');
     let defDataPoupanca = moment('2012-05-03');
     let defDataPoupancaFim = moment(defDataPoupanca).add(1, 'days');
-    let jurosIndice = (this.formCalc.get("fcIndiceJuros")?.value);
-    let jurosTaxa = (this.formCalc.get("fcTaxaJuros")?.value);
-    let jurosDtIni = moment(this.formCalc.get("fcDtIniJuros")?.value);
-    let jurosDtFim = moment(this.formCalc.get("fcDtFimJuros")?.value);
+    //let jurosIndice = (this.formCalc.get("fcIndiceJuros")?.value);
+    //let jurosTaxa = (this.formCalc.get("fcTaxaJuros")?.value);
+    //let jurosDtIni = moment(this.formCalc.get("fcDtIniJuros")?.value);
+    //let jurosDtFim = moment(this.formCalc.get("fcDtFimJuros")?.value);
+    jurosDtIni = moment(jurosDtIni);
+    jurosDtFim = moment(jurosDtFim);
 
     let jurosDt : any;
     let jurosDias = 0;
@@ -371,7 +449,7 @@ export class CalcComponent implements OnInit {
             })
           }
           if(jurosDtFim >= defDataPoupancaFim){
-            this.service.getIndice('POUPNOVA', jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
+            this.service.getIndice('POUPNOVA',  jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
               data = res.content
               if (data.length > 0) {
                 jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupanca;
@@ -422,8 +500,9 @@ export class CalcComponent implements OnInit {
           })
         break;
     } 
-
+    console.log('addJuros dataTableJuros:');console.log(this.dataTableJuros);
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataTableJuros);
+    console.log('addJuros dataSourceJuros:');console.log(this.dataSourceJuros)
     return;
   }
 
@@ -437,49 +516,64 @@ export class CalcComponent implements OnInit {
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>(this.dataTableAbatimentos);
   }
 
-  public addLancamento() {
-    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
-    let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
-    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
-    let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
+  public setLancamento(){
+    try {
+      let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
+      let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+      let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
+      let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+      let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
 
-    //Juros ativo mas não incluído
-    if(this.formCalc.get("fcJuros")?.value && this.dataTableJuros.length == 0){
-      this.setJuros();
+      //Juros ativo mas não incluído
+      if(this.formCalc.get("fcJuros")?.value && this.dataTableJuros.length == 0){
+        this.setJuros();
+      }
+
+      this.addLancamento(indiceOption, valorPrincipal, dtIni, dtFim, descricao);
     }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  public addLancamento(indiceOption: string, valorPrincipal:number, dtIni: any, dtFim: any, descricao: string){ 
+    //let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+    //let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
+    //let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+    //let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
+    dtIni = moment(dtIni);
+    dtFim = moment(dtFim);
 
     /**
-     * Correção Monetária @Todo Transformar em promise
+     * Correção Monetária
      **/
     let correcao: any = [];
     if(indiceOption == 'sem-correcao'){
-      correcao = this.setCalcSemCorrecao(valorPrincipal);
-      this.setCalc();
+      correcao = this.addCalcSemCorrecao(valorPrincipal);
+      this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
       this.calcSumTotals();
-      this.clearForm();
     }else{
-      //Fix initial date are not included in between statement
       if (indiceOption.includes('TJ')){
+        //Fix initial date are not included in between statement
         //data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
-        dtIni = moment(dtIni).startOf('month').format('DD-MM-YYYY');    
-
+        dtIni = moment(dtIni).startOf('month');    
       }
-      this.service.getIndice(indiceOption, moment(dtIni)?.format("DD-MM-YYYY").toString(), moment(dtFim)?.format("DD-MM-YYYY").toString()).subscribe((res: any) => {
+      // @Todo Transformar em promise
+      this.service.getIndice(indiceOption, dtIni?.format("DD-MM-YYYY").toString(), dtFim.format("DD-MM-YYYY").toString()).subscribe((res: any) => {
         this.ResponseIndice = res.content
         if (this.ResponseIndice.length > 0) {
-          this.dataSourceCorrecao =  this.setCalcCorrecao(valorPrincipal);
-          this.setCalc();
+          this.dataSourceCorrecao =  this.addCalcCorrecao(indiceOption, valorPrincipal, dtFim);
+          this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
           this.calcSumTotals();
-          this.clearForm();
+
         }
       })
     }
-
-
+    //this.clearForm();
 
   }
 
-  calcTaxa(taxa:number, dias:number){
+  public calcTaxa(taxa:number, dias:number){
     return ((taxa / 360) * dias);
   }
 
@@ -502,6 +596,13 @@ export class CalcComponent implements OnInit {
     return null;
   }
 
+  orderDatesArray(dates: any){
+    let orderedDates = dates.sort(function(a: any, b: any){
+      return Date.parse(a) > Date.parse(b);
+    });
+    return orderedDates;
+  }
+
   //@todo order by date
   setCalcJuros(valor:number, dataJuros:any){
 
@@ -509,8 +610,6 @@ export class CalcComponent implements OnInit {
     let jurosValor = 0;
 
     dataJuros.map((j: any, i: number) => {
-
-      console.log(i, j);
       jurosValor = this.calcJuros(valor, j.taxa, j.dias);
       juros.push({
         valor: jurosValor,
@@ -521,13 +620,12 @@ export class CalcComponent implements OnInit {
         dtIni: j.dtIni,
         dtFim: j.dtFim
       })
-
     });
 
     return juros;
   }
 
-  setCalcSemCorrecao(valorPrincipal:number){
+  addCalcSemCorrecao(valorPrincipal:number){
     let correcao: any = [];
 
     correcao = {
@@ -542,11 +640,10 @@ export class CalcComponent implements OnInit {
     return;
   }
 
-
-  setCalcCorrecao(valorPrincipal:number){
+  addCalcCorrecao(indiceOption:string, valorPrincipal:number, dtFim: Date){
     let data :any = this.ResponseIndice;
-    let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
-    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+    //let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
+    //let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
     let indice = data[0].nome;
     let correcao: any = [];
     let fatores = [];
@@ -577,7 +674,6 @@ export class CalcComponent implements OnInit {
     }else{
       fatorCalculo = data[0].valor ? acumuladoFim : fatorDivisao;
     }
-    console.log(fatorCalculo);
     valorAtualizado = fatorCalculo * valorPrincipal;
     correcao = {
       indice: indice,
@@ -616,11 +712,11 @@ export class CalcComponent implements OnInit {
   /*
   * @Todo Refactor 
   */
-   setCalc() {
-    let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
-    let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
-    let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
-    let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
+   setCalc(valorPrincipal:number, dtIni:Date, dtFim:Date, descricao:string) {
+    //let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
+    //let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
+    //let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+    //let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
     let correcao: any = this.dataSourceCorrecao;
     let juros: any = [];
     let jurosValorTotal = 0;
@@ -630,17 +726,18 @@ export class CalcComponent implements OnInit {
   
 
     //Abatimentos
-    if (this.formCalc.get("fcAbatimentos")?.value == true) {
+    if (this.dataTableAbatimentos?.length > 0) {
       this.dataTableAbatimentos.map((a: any) =>{
 
       })
     }
 
     //Juros
-    if (this.formCalc.get("fcJuros")?.value == true) {
+    console.log('setCalc dataSourceJuros:');console.log(this.dataSourceJuros.data);
+    if (this.dataSourceJuros.data?.length > 0 && this.formCalc.get("fcJuros")?.value == true) {
         //juros = this.setCalcJuros(valorPrincipal, this.dataTableJuros );
-        juros = this.setCalcJuros(correcao.valorAtualizado, this.dataTableJuros );
-
+        juros = this.setCalcJuros(correcao.valorAtualizado, this.dataSourceJuros.data );
+        console.log('setCalcJuros juros:');console.log(juros);
         jurosValorTotal = juros.reduce(function(jurosAcc:number, jurosCurr:any){ return jurosAcc + jurosCurr.valor;}, 0);
         jurosDiasTotal = juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0)
     }
@@ -665,7 +762,86 @@ export class CalcComponent implements OnInit {
     });
 
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados)
-    console.log('dataSourceLanca', this.dataSourceLanca)
+  }
+
+  public replicateDate(index:number, qty:number = 1) {
+    let dtIni = this.dataSourceLanca.data[index].dtIni;
+    let newDate:any = [];
+    for(let i = 0; i < qty; i++){
+      newDate.push(moment(dtIni).add(i, "months").format('YYYY-MM-DD')); 
+    }
+    return newDate;
+  }
+
+  fixIndices(indice : string) {
+    switch(indice){
+      case 'SEM CORREÇÃO':
+        return 'sem-correcao';
+      break;
+      case 'LEI 6.899/81':
+        return 'TJ899';
+      break;
+      case 'LEI 11.960/2009':
+        return 'TJ11960';
+      break;
+      default:
+        return indice;
+      break;
+    }
+  }
+
+  setReplication(index:number, qty:number = 1){
+    let newDate = this.replicateDate(index, qty);
+    newDate.shift();
+    console.log(newDate);
+    console.log(this.dataSourceLanca.data[index]);
+    for(let i = 0; i < newDate.length; i++){
+      let indiceOption = this.fixIndices(this.dataSourceLanca.data[index].indice);
+      let valorPrincipal = this.dataSourceLanca.data[index].principal;
+      let dtIni = moment(newDate[i]);
+      let dtFim = moment(this.dataSourceLanca.data[index].dtFim);
+      let descricao = this.dataSourceLanca.data[index].descricao;
+
+      if(this.dataSourceLanca.data[index].juros?.length > 0){
+        let jurosIndice = this.dataSourceLanca.data[index].juros[0].indice;
+        let jurosTaxa = this.dataSourceLanca.data[index].juros[0].taxa;
+        let datasJuros = this.dataSourceLanca.data[index].juros.map((d: any) => moment(d.dtIni)?.format('YYYY-MM-DD').toString());
+        let dataJurosMin = this.orderDatesArray(datasJuros);
+        let dataJurosAplicado = dataJurosMin[0] > newDate[i] ? dataJurosMin[0] : newDate[i];
+        console.log(valorPrincipal, jurosIndice, jurosTaxa, dataJurosAplicado, dtFim);
+        this.dataTableJuros = [];
+        this.addJuros(valorPrincipal, jurosIndice, jurosTaxa, dataJurosAplicado, dtFim);
+      }
+
+      console.log(indiceOption, valorPrincipal, dtIni, dtFim, descricao);
+      //this.addLancamento(indiceOption, valorPrincipal, dtIni, dtFim, descricao);
+        /**
+         * Correção Monetária
+         **/
+        let correcao: any = [];
+        if(indiceOption == 'sem-correcao'){
+          correcao = this.addCalcSemCorrecao(valorPrincipal);
+          this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
+          this.calcSumTotals();
+        }else{
+          if (indiceOption.includes('TJ')){
+            //Fix initial date are not included in between statement
+            //data_ini = moment(dt1).startOf('month').subtract(1, "days").format('DD-MM-YYYY');    
+            dtIni = dtIni.startOf('month');    
+          }
+          // @Todo Transformar em promise
+          this.service.getIndice(indiceOption, dtIni?.format("DD-MM-YYYY").toString(), dtFim.format("DD-MM-YYYY").toString()).subscribe((res: any) => {
+            this.ResponseIndice = res.content
+            if (this.ResponseIndice.length > 0) {
+              this.dataSourceCorrecao =  this.addCalcCorrecao(indiceOption, valorPrincipal, dtFim);
+              this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
+              this.calcSumTotals();
+
+            }
+          })
+        }
+    }
+    console.log('setReplication over:'); console.log(this.dataSourceLanca.data);
   }
 
   downloadAsPDF(id: string){

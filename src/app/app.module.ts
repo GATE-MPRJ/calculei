@@ -22,6 +22,7 @@ import { registerLocaleData } from '@angular/common';
 import localeBr from '@angular/common/locales/pt';
 import { FooterComponent } from './footer/footer.component';
 import { DialogComponent } from './dialog/dialog.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 //import { FrmRelatorioComponent } from './frm-relatorio/frm-relatorio.component';
 registerLocaleData(localeBr, 'pt');
 
@@ -61,6 +62,7 @@ export const customCurrencyMaskConfig = {
     HttpClientModule, 
     ReactiveFormsModule,
     FormsModule,
+    FontAwesomeModule,
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt' }],
   bootstrap: [AppComponent]

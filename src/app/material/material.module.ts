@@ -1,4 +1,6 @@
 import { NgModule } from "@angular/core";
+import { CommonModule } from '@angular/common';  
+import { BrowserModule } from '@angular/platform-browser';
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
@@ -31,11 +33,22 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatStepperModule } from "@angular/material/stepper";
+import { MatAlertComponent } from './mat-alert/mat-alert.component';
+import { MatConfirmComponent } from './mat-confirm/mat-confirm.component';
+import { MatInputPromptComponent } from './mat-input-prompt/mat-input-prompt.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { CdkTableModule } from "@angular/cdk/table";
 
 @NgModule({
+  declarations: [
+    MatAlertComponent,
+    MatConfirmComponent,
+    MatInputPromptComponent
+  ],
   imports: [
+    CommonModule,
+    BrowserModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -68,7 +81,8 @@ import { CdkTableModule } from "@angular/cdk/table";
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    CdkTableModule
+    CdkTableModule,
+    ReactiveFormsModule 
   ],
   exports: [
     MatAutocompleteModule,
@@ -103,6 +117,11 @@ import { CdkTableModule } from "@angular/cdk/table";
     MatToolbarModule,
     MatTooltipModule,
     CdkTableModule
+  ],
+  entryComponents: [
+    MatAlertComponent,
+    MatConfirmComponent,
+    MatInputPromptComponent
   ]
 })
 export class MaterialModule {}

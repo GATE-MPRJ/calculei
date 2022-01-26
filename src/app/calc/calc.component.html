@@ -371,7 +371,8 @@
               <div
                 class="flexbox"
                 *ngIf="
-                  formCalc.controls.fcJuros.value && dataTableJuros.length > 0
+                  formCalc.controls.fcJuros.value &&
+                  dataSourceJuros.data.length > 0
                 "
               >
                 <table class="table table-bordered">
@@ -382,7 +383,9 @@
                     <th class="mat-header-cell cdk-header-cell">Taxa</th>
                     <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
                   </thead>
-                  <tbody *ngFor="let element of dataTableJuros; let i = index">
+                  <tbody
+                    *ngFor="let element of dataSourceJuros.data; let i = index"
+                  >
                     <tr>
                       <td class="mat-cell cdk-cell">
                         {{ element.dtIni | date: "dd/MM/yyyy" }}
@@ -407,9 +410,9 @@
                       </td>
                       <td class="mat-cell cdk-cell">
                         <img
-                          src="/assets/imgs/icon_delete.svg"
+                          src="/assets/svgs/trash-alt-regular.svg"
                           class="iconDeleteTab"
-                          title="Clique para excluir"
+                          title="Excluir juros"
                           (click)="this.removeRowJuros(i)"
                         />
                       </td>
@@ -538,7 +541,7 @@
             type="submit"
             mat-raised-button
             color="warn"
-            (click)="addLancamento()"
+            (click)="setLancamento()"
             [disabled]="!formCalc.valid"
           >
             Calcular <mat-icon>calculate</mat-icon>
@@ -568,6 +571,31 @@
             <mat-icon>print</mat-icon>
           </button>
         </div>
+        <!--div class="example-button-row">
+          <button
+            mat-raised-button
+            (click)="alertDialog('Ops, you did it again!')"
+          >
+            Alert
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="confirmDialog('sure?', 'really!')"
+          >
+            Confirm
+          </button>
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="showReplicationPrompt('Replicar lançamento')"
+          >
+            Prompt Input
+          </button>
+          <h2 *ngIf="dataFromDialog">
+            Data from mat-dialog : {{ dataFromDialog | json }}
+          </h2>
+        </div-->
       </div>
       <div class="container" id="Report">
         <div>
@@ -686,12 +714,25 @@
             </ng-container>
 
             <ng-container matColumnDef="delete">
-              <mat-header-cell *matHeaderCellDef>Excluir </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef>
+                <img
+                  src="/assets/svgs/trash-alt-solid.svg"
+                  class="iconDeleteTab"
+                  title="Excluir todos"
+                  (click)="this.removeAllRows(i)"
+                  [hidden]="dataSourceLanca && dataSourceLanca.data.length < 1"
+              /></mat-header-cell>
               <mat-cell *matCellDef="let row; let i = dataIndex">
                 <img
-                  src="/assets/imgs/icon_delete.svg"
+                  src="/assets/svgs/clone-regular.svg"
+                  class="iconClone"
+                  title="Replicar lançamento"
+                  (click)="showReplicationPrompt('Replicar Lançamento', i)"
+                />
+                <img
+                  src="/assets/svgs/trash-alt-regular.svg"
                   class="iconDeleteTab"
-                  title="Clique para excluir"
+                  title="Excluir lançamento"
                   (click)="this.removeRow(i)"
                 />
               </mat-cell>
@@ -706,7 +747,7 @@
                 *matFooterCellDef
                 [attr.colspan]="displayedColumnsLanc.length"
               >
-                Calcule o primeiro lançamento!
+                Calcule o primeiro lançamento.
               </mat-footer-cell>
             </ng-container>
 
@@ -826,20 +867,22 @@
           <ng-container
             *ngFor="let element of dataSourceLanca.data; let i = index"
           >
-            <div *ngIf="element.juros.length > 1">
+            <div *ngIf="element.juros.length > 0">
               <b>JUROS</b>
               <table class="table table-bordered" style="text-align: center">
                 <thead>
-                  <th class="mat-header-cell cdk-header-cell">#</th>
-                  <th class="mat-header-cell cdk-header-cell">
-                    Valor Atualizado
-                  </th>
-                  <th class="mat-header-cell cdk-header-cell">Data Inicio</th>
-                  <th class="mat-header-cell cdk-header-cell">Data Fim</th>
-                  <th class="mat-header-cell cdk-header-cell">Dias</th>
-                  <th class="mat-header-cell cdk-header-cell">Taxa</th>
-                  <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
-                  <th class="mat-header-cell cdk-header-cell">Juros (R$)</th>
+                  <tr>
+                    <th class="mat-header-cell cdk-header-cell">#</th>
+                    <th class="mat-header-cell cdk-header-cell">
+                      Valor Atualizado
+                    </th>
+                    <th class="mat-header-cell cdk-header-cell">Data Inicio</th>
+                    <th class="mat-header-cell cdk-header-cell">Data Fim</th>
+                    <th class="mat-header-cell cdk-header-cell">Dias</th>
+                    <th class="mat-header-cell cdk-header-cell">Taxa</th>
+                    <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
+                    <th class="mat-header-cell cdk-header-cell">Juros (R$)</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let juros of element.juros; let j = index">
@@ -872,7 +915,9 @@
                     <th>{{ element.jurosDiasTotal }}</th>
                     <th></th>
                     <th></th>
-                    <th>{{ this.sumTotalJuros | currency: "BRL":"":"" }}</th>
+                    <th>
+                      {{ element.jurosValorTotal | currency: "BRL":"":"" }}
+                    </th>
                   </tr>
                 </tfoot>
               </table>
