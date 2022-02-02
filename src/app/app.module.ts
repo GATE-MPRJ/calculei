@@ -21,9 +21,7 @@ import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeBr from '@angular/common/locales/pt';
 import { FooterComponent } from './footer/footer.component';
-import { DialogComponent } from './dialog/dialog.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-//import { FrmRelatorioComponent } from './frm-relatorio/frm-relatorio.component';
 registerLocaleData(localeBr, 'pt');
 
 registerLocaleData(ptBr);
@@ -44,10 +42,7 @@ export const customCurrencyMaskConfig = {
     AppComponent,
     CalcComponent,
     ToolbarComponent,
-    FooterComponent,
-    DialogComponent,
-    //FrmRelatorioComponent,
-    
+    FooterComponent,    
   ],
   imports: [
     BrowserModule,
