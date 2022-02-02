@@ -1,4 +1,7 @@
 <div class="alert">
-  <mat-icon aria-hidden="false" (click)="closeAlert()"> close </mat-icon>
+  <mat-icon class="close" aria-hidden="false" (click)="closeAlert()">
+    close
+  </mat-icon>
+  <h1 mat-dialog-title>{{ title }}</h1>
   <p>{{ message }}</p>
 </div>

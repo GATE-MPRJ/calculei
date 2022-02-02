@@ -9,10 +9,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class MatAlertComponent implements OnInit {
 
-  message: string = '';
+   title: string = 'Atenção!';
+   message: string = '';
 
   constructor(private dialogRef: MatDialogRef<MatAlertComponent>,
-    @Inject(MAT_DIALOG_DATA) data: { message: string }) {
+    @Inject(MAT_DIALOG_DATA) data: { title: string, message: string }) {
+    this.title = data ? data.title : '';
     this.message = data ? data.message : '';
   }
 
