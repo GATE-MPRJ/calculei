@@ -856,8 +856,8 @@ export class CalcComponent implements OnInit {
       
       if (lancamento !== undefined) {
         try {
-          let { dtIni: jurosDtIni, dtFim: jurosDtFim, valorPrincipal, jurosIndice, jurosTaxa} = lancamento.juros[0];
           if(lancamento.juros.length){
+            let { dtIni: jurosDtIni, dtFim: jurosDtFim, valorPrincipal, jurosIndice, jurosTaxa} = lancamento.juros[0];
             await this.addJuros({ valorPrincipal, jurosIndice, jurosTaxa, jurosDtIni, jurosDtFim, clearJuros: true })
             await this.addLancamento(lancamento.indice, lancamento.valorPrincipal, lancamento.dtIni, lancamento.dtFim, lancamento.descricao)
             applyReplication()
@@ -867,8 +867,8 @@ export class CalcComponent implements OnInit {
           }
         } catch(e) {
           console.log(e)
-            }
         }
+      }
     }
 
     applyReplication()
