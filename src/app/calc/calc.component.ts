@@ -172,6 +172,11 @@ export class CalcComponent implements OnInit {
   ngAfterViewInit(): void {
   }
 
+/**
+ * It opens a dialog alert box with a title and a message.
+ * @param {string} title - The title of the alert dialog.
+ * @param {string} message - string
+ */
   alertDialog(title:string, message: string): void {
     const dialogRef = this.dialog.open(MatAlertComponent, {
       data: {
@@ -181,6 +186,11 @@ export class CalcComponent implements OnInit {
     });
   }
 
+/**
+ * It opens a dialog confirmation box with a title and a message.
+ * @param {string} title - The title of the dialog box.
+ * @param {string} message - string
+ */
   confirmDialog(title: string, message: string): void {
     const ref: MatDialogRef<MatConfirmComponent> =  
     this.dialog.open(MatConfirmComponent, {
@@ -195,6 +205,11 @@ export class CalcComponent implements OnInit {
     });
   }
 
+/**
+ * It opens a the replication modal box with a title and a form.
+ * @param {string} title - string,
+ * @param {number} id - The id of the date to be replicated.
+ */
   showReplicationPrompt(title: string, id: number): void {
     const dialogRef = this.dialog.open(MatInputPromptComponent, { 
       width: '300px', 
@@ -225,17 +240,28 @@ export class CalcComponent implements OnInit {
     });
   }
 
+/**
+ * Given a date, return true if the date is the last day of February
+ * @param {any} date - The date to check.
+ * @returns The last day of February.
+ */
   lastDayOfFebruary(date: any) {
     let lastDay = new Date(date.getFullYear(), 2, 1);
     return date.getDate() == lastDay;
   }
 
-  //Set type date and fix timestamp 
+/**
+ * Given a date string, return a Date object
+ * @param {string} date - The date to be converted.
+ * @returns The date object.
+ */
   setDate(date:string){
     return new Date(date.replace(/-/g, '\/'));
   }
 
-  //@todo check if date is holiday
+/** 
+ * Checking if the date is a weekend (@Todo and holiday) if it is, it will set the date to the next working. 
+ */
   setWorkDay(date: any){
     let workDay = moment(date);
 
@@ -243,11 +269,14 @@ export class CalcComponent implements OnInit {
       return workDay.day(1);
     }
     return workDay.format('DD-MM-YYYY');
-    
   }
 
-  // Função para Converter ano em ano 360 dias
-  // @Todo Em casos específicos está "roubando" 1 dia
+/**
+ * Given two dates, return the number of days between them
+ * @param {Date} dateA - The first date.
+ * @param {Date} dateB - The date to start with.
+ * @returns The number of days between the two dates.
+ */
   days360(dateA: Date, dateB: Date) {
 
     dateA = new Date(dateA);
@@ -276,6 +305,10 @@ export class CalcComponent implements OnInit {
     return days;
   }
 
+/**
+ * Clear this.dataSourceLanca and removes all rows from the table lançamentos.
+ * Update the total sums.
+ */
   public removeAllRows(){
     if(confirm("Deseja EXCLUIR TODOS lançamento?")) {
       this.dataSourceLanca = new MatTableDataSource<ElementLanc>();
@@ -284,6 +317,10 @@ export class CalcComponent implements OnInit {
     }
   }
 
+/**
+ * It removes a row from the table lançamentos.
+ * @param {number} index - The index of the row you want to remove.
+ */
   public removeRow(index: number) {
     if(confirm("Deseja EXCLUIR o lançamento?")) {
       this.dataSourceLanca.data.splice(index, 1);
@@ -292,6 +329,10 @@ export class CalcComponent implements OnInit {
     }
   }
 
+/**
+ * It removes a row from the table juros.
+ * @param {number} index - juros index number
+ */
   public removeRowJuros(index: number) {
     if(confirm("Deseja EXCLUIR o juros aplicado no período?")) {
       this.dataTableJuros.splice(index, 1);
@@ -301,6 +342,9 @@ export class CalcComponent implements OnInit {
     }
   }
 
+/**
+ * Clear the form and reset the data tables
+ */
   public clearForm() {
     //this.formCalc.reset();
     this.dataTableJuros = [];
@@ -311,6 +355,10 @@ export class CalcComponent implements OnInit {
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>();
   }
 
+/**
+ * It sums up the total of the principal, the total of the current value, the total of the corrected
+ * value and the total of the interest.
+ */
   public calcSumTotals(){
     this.sumTotal = 0;
     this.sumTotalCorr = 0;
@@ -324,10 +372,19 @@ export class CalcComponent implements OnInit {
     });
   }
 
+/**
+ * Given two dates, return true if the first date is before the second date
+ * @param {string} dtIni - The initial date to compare.
+ * @param {string} dtFim - The date you want to compare to.
+ * @returns Nothing.
+ */
   public isDateBefore(dtIni:string, dtFim:string){
     return Date.parse(dtIni) < Date.parse(dtFim);
   }
 
+ /**
+  * It adds a new juros to the list of juros.
+  */
   public setJuros(){
     try {
       let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
@@ -339,10 +396,14 @@ export class CalcComponent implements OnInit {
     } catch (e) {
       console.log(e);
     }
-
   }
 
-  //@Todo incluir selic, caderneta de poupança, order by date
+
+  /**
+   * It calculates the interest rate for a given period.
+   * @param  - valorPrincipal: The value of the principal.
+   * @returns The method returns a promise.
+   */
   public async addJuros({ valorPrincipal, jurosIndice, jurosTaxa, jurosDtIni, jurosDtFim, clearJuros = false, onFinish }: { valorPrincipal: number; jurosIndice: string; jurosTaxa: number; jurosDtIni: any; jurosDtFim: any; clearJuros?: Boolean, onFinish?: any | undefined}) {
     let data :any = [];
 
@@ -507,6 +568,9 @@ export class CalcComponent implements OnInit {
     return indice ? Promise.resolve(indice) : Promise.resolve('without indice');
   }
 
+ /**
+  * It adds the data to the table abatimentos.
+  */
   public setAbatimento(){
     let abatimentosData = (this.formCalc.get("fcDtAbatimento")?.value);
     let abatimentosValor = (this.formCalc.get("fcValorAbatimento")?.value);
@@ -517,6 +581,11 @@ export class CalcComponent implements OnInit {
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>(this.dataTableAbatimentos);
   }
 
+  /**
+   * It adds a new lancamento to the lancamentos array.
+   */
+  /* The above code is responsible for adding the lancamento to the database. */
+  /* Creating a new array called correcao. */
   public setLancamento(){
     try {
       let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
@@ -537,6 +606,15 @@ export class CalcComponent implements OnInit {
     }
   }
 
+  /**
+   * It adds the lancamento to the table Lancamentos.
+   * @param {string} indiceOption - string,
+   * @param {number} valorPrincipal - The principal amount of the loan.
+   * @param {any} dtIni - The initial date of the period.
+   * @param {any} dtFim - The date you want to end the calculation.
+   * @param {string} descricao - string
+   * @returns Nothing.
+   */
   public async addLancamento(indiceOption: string, valorPrincipal:number, dtIni: any, dtFim: any, descricao: string){ 
     try{
     dtIni = moment(dtIni);
@@ -577,18 +655,42 @@ export class CalcComponent implements OnInit {
     return Promise.resolve(true)
   }
 
+/**
+ * Calculate the taxa for a given taxa and number of days
+ * @param {number} taxa - the taxa per dias
+ * @param {number} dias - number of days between the start and end dates
+ * @returns Nothing is being returned.
+ */
   public calcTaxa(taxa:number, dias:number){
     return ((taxa / 360) * dias);
   }
 
+/**
+ * Calculate the accumulated taxa for a given taxa and number of days
+ * @param {number} taxa - the interest rate per year.
+ * @param {number} dias - number of days between payments
+ * @returns Nothing
+ */
   calcTaxaAcumulada(taxa:number, dias:number){
     return ((taxa * 360) / dias)
   }
 
+/**
+ * Calculate the interest on a given value, based on a tax rate and a number of days
+ * @param {number} valor - the value of the loan.
+ * @param {number} taxa - the percentage of the value that will be charged as interest.
+ * @param {number} dias - number of days the money is invested for
+ * @returns Nothing.
+ */
   calcJuros(valor:number, taxa:number, dias:number){
     return this.calcTaxa(taxa, dias) * valor;
   }
 
+/**
+ * Find the index of the response that has the same date as the given date
+ * @param {Date} data - Date
+ * @returns The response object that has the data property equal to the date that was passed in.
+ */
   findIndexResponseByDate(data:Date){
     let response :any =  this.ResponseIndice;
     let countLayer :number = response.length;
@@ -600,6 +702,11 @@ export class CalcComponent implements OnInit {
     return null;
   }
 
+/**
+ * This function sorts an array of dates in ascending order.
+ * @param {any} dates - an array of dates
+ * @returns An array of dates in order.
+ */
   orderDatesArray(dates: any){
     let orderedDates = dates.sort(function(a: any, b: any){
       return Date.parse(a) > Date.parse(b);
@@ -607,7 +714,13 @@ export class CalcComponent implements OnInit {
     return orderedDates;
   }
 
-  //@todo order by date
+
+/**
+ * It calculates the interest rate for each day of the month.
+ * @param {number} valor - The value of the loan.
+ * @param {any} dataJuros - an array of objects containing the following properties:
+ * @returns an array of objects. Each object contains the following properties:
+ */
   setCalcJuros(valor:number, dataJuros:any){
 
     let juros: any = [];
@@ -629,6 +742,11 @@ export class CalcComponent implements OnInit {
     return juros;
   }
 
+/**
+ * It only return the object correcao without corrections.
+ * @param {number} valorPrincipal - The value of the principal.
+ * @returns an object with the following properties:
+ */
   addCalcSemCorrecao(valorPrincipal:number){
     let correcao: any = [];
 
@@ -644,6 +762,13 @@ export class CalcComponent implements OnInit {
     return correcao;
   }
 
+  /**
+   * It calculates the correction factor for the index, the corrected value and return correcao object.
+   * @param {string} indiceOption - string
+   * @param {number} valorPrincipal - number, dtFim: Date
+   * @param {Date} dtFim - Date
+   * @returns a object with the following properties:
+   */
   addCalcCorrecao(indiceOption:string, valorPrincipal:number, dtFim: Date){
     let data :any = this.ResponseIndice;
     let indice = data[0].nome;
@@ -688,7 +813,12 @@ export class CalcComponent implements OnInit {
     return correcao;
   }
   
-  //Memória de Calculos
+//Memória de Calculos
+/**
+ * The function takes the data from the response and creates a table with the data
+ * @param {any} correcao - any, juros: any
+ * @param {any} juros - the interest rate
+ */
   setCalcMemoria(correcao:any, juros:any){
     let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
     let data :any = this.ResponseIndice;
@@ -714,14 +844,20 @@ export class CalcComponent implements OnInit {
   /*
   * @Todo Refactor 
   */
+   /**
+    * Efectively calculates interest and create the data object for the view 
+    * @param {number} valorPrincipal - number
+    * @param {Date} dtIni - Date, the start date of the period
+    * @param {Date} dtFim - Date,
+    * @param {string} descricao - string
+    * @returns The dataSourceLanca object result of the function.
+    */
    setCalc(valorPrincipal:number, dtIni:Date, dtFim:Date, descricao:string) {
     let correcao: any = this.dataSourceCorrecao;
     let juros: any = [];
     let jurosValorTotal = 0;
     let jurosDiasTotal = 0;
     let dias = this.days360(dtIni, dtFim);
-
-  
 
     //Abatimentos
     if (this.dataTableAbatimentos?.length > 0) {
@@ -740,7 +876,6 @@ export class CalcComponent implements OnInit {
           totJurosDias += juros.dias;
         }
     }
-    
     this.setCalcMemoria(correcao, juros);
 
     this.dados.push({
@@ -763,6 +898,12 @@ export class CalcComponent implements OnInit {
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados)
   }
 
+/**
+ * It takes a date and adds a number of months to it.
+ * @param {number} index - The index of the row you want to replicate.
+ * @param {number} [qty=1] - number of months to add to the initial date.
+ * @returns an array of dates.
+ */
   public replicateDate(index:number, qty:number = 1) {
     let dtIni = this.dataSourceLanca.data[index].dtIni;
     let newDate:any = [];
@@ -772,6 +913,11 @@ export class CalcComponent implements OnInit {
     return newDate;
   }
 
+  /**
+   * It changes the name of the indices to the ones used in the system.
+   * @param {string} indice - The index in human readable format.
+   * @returns The indice name, with the correct data format.
+   */
   fixIndices(indice : string) {
     switch(indice){
       case 'SEM CORREÇÃO':
@@ -789,6 +935,9 @@ export class CalcComponent implements OnInit {
     }
   }
 
+/**
+ * Sort the data by the date in ascending order
+ */
   sortByDtIni() {
     this.dataSourceLanca.data.sort((a: any, b: any) => {
         if (Date.parse(moment(a.dtIni).format("YYYY-MM-DD").toString()) < Date.parse(moment(b.dtIni).format("YYYY-MM-DD").toString())) {
@@ -801,6 +950,11 @@ export class CalcComponent implements OnInit {
     });
   }
 
+ /**
+  * It replicates a lancamento based on the index and quantity of replications.
+  * @param {number} index - The index of the lancamento to replicate.
+  * @param {number} [qty=1] - number of replications to be created
+  */
   async setReplication(index:number, qty:number = 1){
     let newDate = this.replicateDate(index, qty);
     newDate.shift();
@@ -843,15 +997,18 @@ export class CalcComponent implements OnInit {
       });
     }
         
+    /* Generator function that will add a replica to the replica set. */
     function* addReplication() {
       let index = 0;
-
       while(index <= replicaSet.length) {
         yield index++
       }
-      }
+    }
 
     const generator = addReplication()
+  /**
+   * It applies the replication of the lancamentos.
+   */
     const applyReplication = async () => {
       const indiceLancamento = generator.next().value 
       const lancamento = replicaSet[indiceLancamento as number]
@@ -877,15 +1034,27 @@ export class CalcComponent implements OnInit {
 
   }
 
+/**
+ * Clear the data table and the juros data source
+ */
   async clearJurosData(){
     this.dataTableJuros = [];
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>();
   }
 
+/**
+ * It downloads the report as a PDF file.
+ * @param {string} id - The id of the report to download.
+ */
   downloadAsPDF(id: string){
     report.downloadAsPDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png');
   }
 
+/**
+ * The function takes in a string id, a string date, a string path to the logo, and a string format. 
+ * The function then calls the report.makePDF function with the id, date, path, and format. 
+ * @param {string} id - The id of the element to be displayed on the report.
+ */
   makePDF(id: string){
     let format = 'p';
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
@@ -894,6 +1063,10 @@ export class CalcComponent implements OnInit {
     report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format);
   }
 
+/**
+ * Prints the HTML of the element with the given id
+ * @param {string} id - The id of the element to print.
+ */
   printHtml(id: string){
     report.printHtml(id);
   }
