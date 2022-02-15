@@ -305,6 +305,8 @@ export class CalcComponent implements OnInit {
     //this.formCalc.reset();
     this.dataTableJuros = [];
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>();
+    this.formCalc.controls.fcJuros.setValue(false);
+    //this.formCalc.controls.fcJuros.disable();
     this.dataTableAbatimentos = [];
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>();
   }
@@ -549,7 +551,7 @@ export class CalcComponent implements OnInit {
         this.dataSourceCorrecao = this.addCalcSemCorrecao(valorPrincipal);
         await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
         await this.calcSumTotals();
-        //await this.clearForm();
+        await this.clearForm();
     }else{
       if (indiceOption.includes('TJ')){
         //Fix initial date are not included in between statement
@@ -563,7 +565,7 @@ export class CalcComponent implements OnInit {
           this.dataSourceCorrecao =  this.addCalcCorrecao(indiceOption, valorPrincipal, dtFim);
           await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
           await this.calcSumTotals();
-          //await this.clearForm();
+          await this.clearForm();
         }else {
             this.alertDialog('Atenção!', 'Indices indisponíveis para as opções escolhidas.');
         }
