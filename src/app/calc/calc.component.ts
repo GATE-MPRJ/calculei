@@ -841,9 +841,15 @@ export class CalcComponent implements OnInit {
     })
   }
 
-  /*
-  * @Todo Refactor 
-  */
+/**
+ * Round a number to two decimal places
+ * @param {number} number - The number to round.
+ * @returns The rounded number.
+ */
+  roundNumber(number: number){
+    return Math.round((number + Number.EPSILON) * 100) / 100;
+  }
+
    /**
     * Efectively calculates interest and create the data object for the view 
     * @param {number} valorPrincipal - number
@@ -877,7 +883,7 @@ export class CalcComponent implements OnInit {
         }
     }
     this.setCalcMemoria(correcao, juros);
-
+    
     this.dados.push({
       dtIni: dtIni,
       dtFim: dtFim,
@@ -889,7 +895,7 @@ export class CalcComponent implements OnInit {
       jurosDiasTotal: jurosDiasTotal,
       fatorAplicado: correcao.fatorCalculo,
       valorAtualizado: correcao.valorAtualizado,
-      valorCorr: correcao.valorAtualizado + jurosValorTotal,
+      valorCorr: this.roundNumber(correcao.valorAtualizado) + this.roundNumber(jurosValorTotal),
       correcao: (correcao.valorAtualizado + jurosValorTotal) - (valorPrincipal),
       memoria: this.dataTableRelatorio,
       juros: juros
