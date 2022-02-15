@@ -15,17 +15,35 @@
                   <mat-form-field appearance="outline">
                     <mat-select formControlName="fcTipos" required>
                       <!-- Nâo aparecer 6.899/81 -->
-                      <mat-option value="particular"
+                      <mat-option
+                        value="particular"
+                        (click)="
+                          this.formCalc.controls.fcIndiceLanca.setValue('TJ899')
+                        "
                         >Créditos / Débitos Entre Particulares</mat-option
                       >
-                      <mat-option value="Ctributado"
+                      <mat-option
+                        value="Ctributado"
+                        (click)="
+                          this.formCalc.controls.fcIndiceLanca.setValue('TJ899')
+                        "
                         >Créditos da Fazenda Pública</mat-option
                       >
-                      <mat-option value="tributado"
+                      <mat-option
+                        value="tributado"
+                        (click)="
+                          this.formCalc.controls.fcIndiceLanca.setValue('SELIC')
+                        "
                         >Débitos da Fazenda Pública - Tributários</mat-option
                       >
                       <!-- Aparecer todos os índices -->
-                      <mat-option value="Ntributado"
+                      <mat-option
+                        value="Ntributado"
+                        (click)="
+                          this.formCalc.controls.fcIndiceLanca.setValue(
+                            'TJ11960'
+                          )
+                        "
                         >Débitos da Fazenda Pública - Não
                         Tributários</mat-option
                       >
@@ -179,6 +197,9 @@
                       >
                       <mat-option value="Ressarcimento ao erário"
                         >Ressarcimento ao erário</mat-option
+                      >
+                      <mat-option value="Débitos da Fazenda Pública"
+                        >Débitos da Fazenda Pública</mat-option
                       >
                       <mat-option value="Multa Civil">Multa Civil</mat-option>
                       <mat-option value="Honorários advocatícios"
