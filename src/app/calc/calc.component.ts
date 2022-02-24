@@ -894,7 +894,7 @@ export class CalcComponent implements OnInit {
       jurosValorTotal: jurosValorTotal,
       jurosDiasTotal: jurosDiasTotal,
       fatorAplicado: correcao.fatorCalculo,
-      valorAtualizado: correcao.valorAtualizado,
+      valorAtualizado: this.roundNumber(correcao.valorAtualizado),
       valorCorr: this.roundNumber(correcao.valorAtualizado) + this.roundNumber(jurosValorTotal),
       correcao: (correcao.valorAtualizado + jurosValorTotal) - (valorPrincipal),
       memoria: this.dataTableRelatorio,
