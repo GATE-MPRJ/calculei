@@ -1,3 +1,7 @@
+<p>
+  Todos os valores estão em Reais (R$) A presente calculadora virtual não
+  substitui o cálculo realizado e homologado judicialmente.
+</p>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <div class="flexbox">
   <div>
@@ -527,52 +531,50 @@
               </div>
             </mat-card>-->
           </form>
-        </div>
-        <mat-card class="ui-overlaypanel">
-          <div class="flexbox">
-            <mat-icon> tips_and_updates </mat-icon>
-            <mat-card-subtitle>
-              <label>Orientações de preenchimento</label>
-            </mat-card-subtitle>
+          <div>
+            <button
+              type="submit"
+              mat-raised-button
+              (click)="setLancamento()"
+              [disabled]="!formCalc.valid"
+              class="btn-calc"
+            >
+              CALCULAR
+            </button>
           </div>
-          <div class="separator"></div>
-          <div class="scrolling">
+        </div>
+        <div>
+          <mat-card class="ui-overlaypanel">
+            <div class="flexbox">
+              <mat-icon> tips_and_updates </mat-icon>
+              <mat-card-subtitle>
+                <label>Orientações de preenchimento</label>
+              </mat-card-subtitle>
+            </div>
+            <div class="separator"></div>
+            <div class="scrolling"></div>
+          </mat-card>
+          <div>
             <p>
               Lançamentos de crédito correspondem a valores de decisões
               judiciais, custas, despesas etc que eventualmente podem ser
               corrigidas por um determinado período de tempo.
             </p>
-            <ul>
-              <li>Todos os valores estão em Reais (R$)</li>
-              <li>
-                A presente calculadora virtual não substitui o cálculo realizado
-                e homologado judicialmente.
-              </li>
-            </ul>
             <p>
               Os calculos realizados seguem as definições disponíveis na
-              diretriz técnica abaixo relacionada.
+              <a
+                href="https://gateprodata.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618"
+                tabindex="-1"
+                >DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069
+              </a>
             </p>
-            <a
-              href="https://gateprodata.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618"
-              tabindex="-1"
-              >DIRETRIZ TÉCNICA nº 010/2020 - MPRJ 2019.00273069
-            </a>
           </div>
-        </mat-card>
+        </div>
       </div>
       <div class="container flexbox">
-        <div>
-          <button
-            type="submit"
-            mat-raised-button
-            color="warn"
-            (click)="setLancamento()"
-            [disabled]="!formCalc.valid"
-          >
-            Calcular <mat-icon>calculate</mat-icon>
-          </button>
-        </div>
+        <h2>Lançamentos</h2>
+      </div>
+      <div class="container flexbox">
         <!--div>
           <button
             mat-raised-button

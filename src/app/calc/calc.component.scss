@@ -1,12 +1,18 @@
 ::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
-  background-color: #702826;
+  background-color: #5b95f3;
 }
+
+::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-bar {
+  background-color: #5b95f3;
+}
+
 ::ng-deep .mat-flat-button.mat-warn,
 .mat-raised-button.mat-warn,
 .mat-fab.mat-warn,
 .mat-mini-fab.mat-warn {
   background-color: #702826;
 }
+
 ::ng-deep ::ng-deep .mat-flat-button.mat-primary.mat-button-disabled,
 .mat-flat-button.mat-warn.mat-button-disabled,
 .mat-flat-button.mat-button-disabled.mat-button-disabled,
@@ -16,8 +22,14 @@
 .mat-fab.mat-button-disabled.mat-button-disabled,
 .mat-mini-fab.mat-warn.mat-button-disabled,
 .mat-mini-fab.mat-button-disabled.mat-button-disabled {
+  color: #5e5e5e;
+  background-color: #9e9e9e !important;
+  cursor: not-allowed;
+}
+
+.mat-raised-button {
   color: #fff;
-  background-color: #7028268f !important;
+  background-color: #5573a9 !important;
 }
 
 ::ng-deep .mat-form-field-outline {
@@ -25,6 +37,11 @@
 }
 ::ng-deep .mat-form-field-invalid .mat-form-field-outline {
   color: #e54b4b !important;
+}
+
+.btn-calc {
+  width: 100%;
+  height: 53px;
 }
 
 .mat-select-big-width {
@@ -86,7 +103,12 @@ mat-card,
 mat-table {
   margin-bottom: 2vh;
 }
+
 #Report {
+  .mat-header-row {
+    background-color: #dde7fb;
+  }
+
   .mat-header-cell:nth-child(1),
   .mat-cell:nth-child(1),
   .mat-footer-cell:nth-child(1) {

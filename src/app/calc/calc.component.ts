@@ -877,10 +877,12 @@ export class CalcComponent implements OnInit {
         juros = this.setCalcJuros(correcao.valorAtualizado, this.dataSourceJuros.data );
         jurosValorTotal = juros.reduce(function(jurosAcc:number, jurosCurr:any){ return jurosAcc + jurosCurr.valor;}, 0);
         jurosDiasTotal = juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
+        /*
         let totJurosDias = 0;
-        for (dias of juros ){
+        for (let i=0; i < juros.length; i++) {
           totJurosDias += juros.dias;
         }
+        */
     }
     this.setCalcMemoria(correcao, juros);
     
@@ -900,7 +902,7 @@ export class CalcComponent implements OnInit {
       memoria: this.dataTableRelatorio,
       juros: juros
     });
-
+    console.log(this.dados)
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados)
   }
 
