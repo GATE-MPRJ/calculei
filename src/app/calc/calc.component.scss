@@ -6,6 +6,27 @@
   background-color: #5b95f3;
 }
 
+::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
+  background-color: #FFFFFF;
+}
+
+::ng-deep .mat-slide-toggle-bar{
+  height: 25px !important;
+  width: 40px !important;
+  border-radius: 12px !important;
+}
+::ng-deep .mat-slide-toggle-thumb-container{
+  top: 2.5px !important;
+  left: 2px !important;
+}
+
+::ng-deep .mat-slide-toggle.mat-disabled .mat-slide-toggle-label, .mat-disabled .mat-slide-toggle-thumb-container {
+  cursor: not-allowed !important;
+}
+::ng-deep .mat-disabled .mat-slide-toggle-thumb-container {
+  cursor: not-allowed !important;
+}
+
 ::ng-deep .mat-flat-button.mat-warn,
 .mat-raised-button.mat-warn,
 .mat-fab.mat-warn,
@@ -13,7 +34,7 @@
   background-color: #702826;
 }
 
-::ng-deep ::ng-deep .mat-flat-button.mat-primary.mat-button-disabled,
+::ng-deep .mat-flat-button.mat-primary.mat-button-disabled,
 .mat-flat-button.mat-warn.mat-button-disabled,
 .mat-flat-button.mat-button-disabled.mat-button-disabled,
 .mat-raised-button.mat-warn.mat-button-disabled,
@@ -22,9 +43,17 @@
 .mat-fab.mat-button-disabled.mat-button-disabled,
 .mat-mini-fab.mat-warn.mat-button-disabled,
 .mat-mini-fab.mat-button-disabled.mat-button-disabled {
-  color: #5e5e5e;
-  background-color: #9e9e9e !important;
+  color: #b2b2b2;
+  background-color: #dbdbdb !important;
   cursor: not-allowed;
+}
+
+::ng-deep .mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
+  color: #5573a9;
+}
+
+::ng-deep .mat-stroked-button:not(.mat-button-disabled) {
+  border-color: #5573A9;
 }
 
 .mat-raised-button {
@@ -37,6 +66,16 @@
 }
 ::ng-deep .mat-form-field-invalid .mat-form-field-outline {
   color: #e54b4b !important;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-start, 
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-gap,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-end{
+  border-radius: 0px !important;
+}
+
+.align-self-center{
+  align-self: center;
 }
 
 .btn-calc {
