@@ -611,6 +611,35 @@
         <h2>Lançamentos</h2>
       </div>
       <div class="container flexbox">
+        <div>
+          <button
+            mat-raised-button
+            color="primary"
+            style="background-color: #198cbb"
+            (click)="makePDF('myPdfTable')"
+            [hidden]="dataSourceLanca.data.length == 0"
+          >
+            Relatório
+            <img
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAB1ElEQVRIic2VPUhbURTHf+8jGqJUq5YgRSXEIi1twKmCpYsELDa4iCgOLX6ATg5xcCnUXRxEwaWraOxQEDuJhZZSp1YRBFGMKPiFSFT8Cry8Dm8QE2zuTW6Df7jLuef8f5x7z30PciwtOWC3+7xY2gspF1vf1WY2VkVSzZRIgtdoRIRhpgt0M263+lq0SHQ2XboubHyX3AVYfSN5uD2f7VZf6P8DAdsfwOoVgyoBykCVAUWhSoFJ0IjdVl2bvJ86pbK6PMMY7kyNm3luri+qgT9qgZaFtr0mnC5/pGWP4c17eOiVLoVMOuwagmd18KQWRvuly+U7NF1wfgrFj6RLMwOuL0OJF/aiOQIuTIOdgB3xQckOaBiABsEOcOXnAFgfgs0VsIF3H6TL5abUdEFDO0wNw+EOfJwCbwUUFEFhsXOv42E4PVYEfNUMpeXQ1AWVNRBdhQelUPUUTo7geb3zZBa/Zgl0e+BtD4S6YXcTfnyBn7MQOwTdgJeN4A9A7Ah+L/zTKj3QH4CBCefLsr8FgyGIX93sJyz4NecsAaUfms4hBxa/grHwbVgGSt/h/CQcH8DcJ9hYygomBvw24yxFUv4DvnfA1CPV+Y5FUIm7wYoSn2z0F2ZCgXe+7E0BAAAAAElFTkSuQmCC"
+            />
+
+            <!-- <mat-icon>picture_as_pdf</mat-icon> -->
+          </button>
+        </div>
+        <div>
+          <button
+            type="submit"
+            mat-raised-button
+            (click)="SaveCalc()"
+            [hidden]="dataSourceLanca.data.length == 0"
+          >
+            Relatório
+            <img
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAACb0lEQVRIie2WT2gTQRTGv7ebhLZJSNvEWpoab61IIF7EWulRKKKISPGqSKkHhaIiXgpiRQ9qKKhgETzEg+DBixSh0F4qhgr+gWIOVcHWJoK2jW3SpJvs7vMgiUnW/dOS6MF+pzfDN+83OzP7ZoAt/SWRFZNvpK9TFNQdRh5vsJPZ7tDNR1BSsZ7hactg390THYKixACIRr7mPbsXiKjdyENEp2M9Vx4CgGAGtuWVNjOoZakIFEJTcK30z8C2kpjcg91dKqnOUsP6UjIkuho0AwWHDSRufgeKYPeFff3M6mjlaZMza5Aza9qRRDmh0fO60Ewvfl+HSF+MYGQTUxowM7VtaMrMDlVR9heaiirHwfAbgvPyeCHW3WO/pwXbXE3FdqCpFZ5614bmZiRd8Mmuo4hefIQGRx327gzizeUn2O721h4cnoxAyufQf+A4rh85h/BkBLPf5moPzuYlDI3dw1DvAFrczQhPRKoGBcp/J43q7XWQZAlEBCJtdXVG48VY8rnZtCoQuBDqWr3ORlw7fBYDj4exmE7i0sFTZknNLxz1t0f3i28eO4+55QTG3k/hRzaFZ2fu4Om7CcwkPpjmt6I/gokIV5+PIplZATPjxae3CN3ow2o2XRWoLpiZ8XkpXtY3v/y1atAyMBEnmC29C375FTUHULFk2tK5DNvFeUOYpK5owKnb0w/cg90zlZeEfTkfsqfztyqTCJLiIOJiyfR8TC0QwfghABovrFvpUnNq5GW00tzaG5QB1SjfpvT/PQRMwaIgJwBSqgFj4mKxt3SM/Yd2dcgKBYw8nnYfQxD184nK6uz9qVeWZ7mlaukn+qHDBVf59wAAAAAASUVORK5CYII="
+            />
+          </button>
+        </div>
         <!--div>
           <button
             mat-raised-button
@@ -623,18 +652,7 @@
             <mat-icon>visibility</mat-icon>
           </button>
         </div-->
-        <div>
-          <button
-            mat-raised-button
-            color="primary"
-            style="background-color: #198cbb"
-            (click)="makePDF('myPdfTable')"
-            [hidden]="dataSourceLanca.data.length == 0"
-          >
-            Relatório
-            <mat-icon>print</mat-icon>
-          </button>
-        </div>
+
         <!--div class="example-button-row">
           <button
             mat-raised-button

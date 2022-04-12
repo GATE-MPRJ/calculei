@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
 //home/anderson_valgas/Documentos/OpenShift/CalcJud_Front/src/environments/environment.ts
@@ -52,5 +52,30 @@ export class CalcService {
     return throwError(errorMessage);
   };
 
+
+  // Start Function to Save and return calc
+  // Salva o Calculos enviando o JSON como paramentro e retorna um tokem  
+  pushSaveCalc(json: any){        
+    const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=UTF-8');    
+    headers.append('Accept', 'application/json');
+    headers.append( 'responseType', 'text' )    
+    console.log(json);
+    const body = json
+    return this.httpClient.post(this.baseUrl + 'web/saveCalc', body,{ responseType: 'text' });    
+  }
+  // Rertorna um Arquivo Excel com base em um token gerado no saveCalc
+  getExcel(token: string): Observable<Blob>{
+    console.log(token)        
+    return this.httpClient.get(this.baseUrl + "web/getExcel?token=" + token, { responseType: 'blob' });
+  }  
+  // Gerar QrCode  Base64 enviando o Texto a Largura e Altura
+  getQrcode(content: string, width: number, height: number ) {
+    return this.httpClient.get(this.baseUrl + "/qrlogo?text="+ content +"&width="+ width  + "&height=" + height, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
+  }
+  // Retorna o json do calculo Salvo Usando como paramentro o token 
+  getJsonCalc(token: string) {
+    return this.httpClient.get(this.baseUrl + "/getJsonCalc?token=" + token, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
+  }
+  //End
 
 }

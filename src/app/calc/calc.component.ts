@@ -98,7 +98,7 @@ export class CalcComponent implements OnInit {
   public sumTotalAtualizado = 0;
   public sumTotalCorr = 0;
   public sumTotalJuros = 0;
-
+  public tokens ="";
   public formCalc = new FormGroup({
     //Lançamentos
     fcTipos: new FormControl(""),
@@ -1077,6 +1077,33 @@ export class CalcComponent implements OnInit {
  */
   printHtml(id: string){
     report.printHtml(id);
+  }
+
+
+  
+  public SaveCalc(){
+    this.service.pushSaveCalc(this.dados).subscribe((res) => {    
+        this.tokens = res
+        this.getExcel(this.tokens)
+    }
+    );
+    
+  }
+
+  public getExcel(token: string){    
+    console.log('excel', token)
+    this.service.getExcel(token).subscribe((x) => {
+      const newBlob = new Blob([x], { type: "application/xls" });      
+      const downloadURL = window.URL.createObjectURL(x);
+      const link = document.createElement("a");
+      link.href = downloadURL;      
+      let newstr = "Relatorio_Calculei_" + new Date().getTime() + ".xls";
+      link.download = newstr;
+      link.click();
+      window.URL.revokeObjectURL(downloadURL);
+      link.remove();
+    });
+    //this.service.pushSaveCalc(this.dados)
   }
 
 }
