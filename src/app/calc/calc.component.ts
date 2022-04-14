@@ -1084,14 +1084,14 @@ export class CalcComponent implements OnInit {
   public SaveCalc(){
     this.service.pushSaveCalc(this.dados).subscribe((res) => {    
         this.tokens = res
-        this.getExcel(this.tokens)
+        //this.getExcel(this.tokens)
     }
     );
-    
   }
 
-  public getExcel(token: string){    
-    console.log('excel', token)
+  //public getExcel(token: string){    
+  public getExcel(){ 
+    let token = this.tokens;
     this.service.getExcel(token).subscribe((x) => {
       const newBlob = new Blob([x], { type: "application/xls" });      
       const downloadURL = window.URL.createObjectURL(x);
