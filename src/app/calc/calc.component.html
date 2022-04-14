@@ -546,13 +546,49 @@
         <div>
           <mat-card class="ui-overlaypanel">
             <div class="flexbox">
-              <mat-icon> tips_and_updates </mat-icon>
               <mat-card-subtitle>
-                <label>Orientações de preenchimento</label>
+                <label>Histórico de cálculos</label>
               </mat-card-subtitle>
             </div>
             <div class="separator"></div>
-            <div class="scrolling"></div>
+            <div class="scrolling">
+              <table class="table table-bordered" style="text-align: center">
+                <thead class="table-primary" align="center" valign="middle">
+                  <tr>
+                    <th>#</th>
+                    <th class="mat-header-cell cdk-header-cell">
+                      Data inicial
+                    </th>
+                    <th class="mat-header-cell cdk-header-cell">
+                      Valor principal
+                    </th>
+                    <th class="mat-header-cell cdk-header-cell">
+                      Total devido
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  *ngFor="let element of dataSourceLanca.data; let i = index"
+                >
+                  <tr>
+                    <td>{{ i + 1 }}. <br />{{ element.descricao }}</td>
+                    <td>
+                      {{ element.dtIni | date: "dd/MM/yyyy" }}
+                    </td>
+                    <td>{{ element.principal | currency: "BRL":"":"" }}</td>
+                    <td>{{ element.valorCorr | currency: "BRL":"":"" }}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th>{{ this.sumTotal | currency: "BRL":"":"" }}</th>
+                    <th>{{ this.sumTotalCorr | currency: "BRL":"":"" }}</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </mat-card>
           <div>
             <p>
@@ -561,7 +597,7 @@
               corrigidas por um determinado período de tempo.
             </p>
             <p>
-              Os calculos realizados seguem as definições disponíveis na
+              Os cálculos realizados devem seguir as definições disponíveis na
               <a
                 href="https://gateprodata.mprj.mp.br/gate/api/Cidadao/downloadPDF/27618"
                 tabindex="-1"

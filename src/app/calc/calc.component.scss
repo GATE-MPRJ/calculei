@@ -7,20 +7,21 @@
 }
 
 ::ng-deep .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
-::ng-deep .mat-slide-toggle-bar{
+::ng-deep .mat-slide-toggle-bar {
   height: 25px !important;
   width: 40px !important;
   border-radius: 12px !important;
 }
-::ng-deep .mat-slide-toggle-thumb-container{
+::ng-deep .mat-slide-toggle-thumb-container {
   top: 2.5px !important;
   left: 2px !important;
 }
 
-::ng-deep .mat-slide-toggle.mat-disabled .mat-slide-toggle-label, .mat-disabled .mat-slide-toggle-thumb-container {
+::ng-deep .mat-slide-toggle.mat-disabled .mat-slide-toggle-label,
+.mat-disabled .mat-slide-toggle-thumb-container {
   cursor: not-allowed !important;
 }
 ::ng-deep .mat-disabled .mat-slide-toggle-thumb-container {
@@ -48,12 +49,14 @@
   cursor: not-allowed;
 }
 
-::ng-deep .mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
+::ng-deep .mat-button.mat-primary,
+.mat-icon-button.mat-primary,
+.mat-stroked-button.mat-primary {
   color: #5573a9;
 }
 
 ::ng-deep .mat-stroked-button:not(.mat-button-disabled) {
-  border-color: #5573A9;
+  border-color: #5573a9;
 }
 
 .mat-raised-button {
@@ -64,17 +67,18 @@
 ::ng-deep .mat-form-field-outline {
   color: #6d8bbf !important;
 }
-::ng-deep .mat-form-field-invalid .mat-form-field-outline {
-  color: #e54b4b !important;
+::ng-deep .mat-form-field-invalid .mat-form-field-outline,
+::ng-deep .mat-form-field .mat-select.mat-select-invalid .mat-select-arrow {
+  color: #f58400 !important;
 }
 
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-start, 
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-start,
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-gap,
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-end{
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-end {
   border-radius: 0px !important;
 }
 
-.align-self-center{
+.align-self-center {
   align-self: center;
 }
 
@@ -134,8 +138,14 @@ label {
 .width-fit-content {
   width: fit-content;
 }
+mat-card-subtitle {
+  margin: auto;
+  font: normal normal medium 20px/24px Roboto-Medium;
+  letter-spacing: 0.15px;
+  color: #252c33;
+}
 .scrolling {
-  max-height: 380px;
+  max-height: 310px;
   overflow-y: auto;
 }
 mat-card,

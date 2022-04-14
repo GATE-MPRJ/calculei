@@ -1,0 +1,22 @@
+::ng-deep .mat-dialog-container {
+  max-height: 90vh !important;
+  overflow: auto;
+}
+img {
+  display: block;
+  margin: 0 auto;
+}
+p {
+  text-align: left;
+  font: normal normal normal 16px/33px Roboto;
+  font-size: 14px/33px;
+  letter-spacing: 0px;
+  color: #243d68;
+}
+h3 {
+  text-align: center;
+  font: normal normal normal 24px/29px Roboto;
+  letter-spacing: 0px;
+  color: #243d68;
+  text-transform: capitalize;
+}
