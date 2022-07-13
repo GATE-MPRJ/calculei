@@ -169,8 +169,8 @@ export class CalcComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(this.checkIfValidMD5Hash(params['token'])){
-        this.token = params['token'];
+      if(this.checkIfValidMD5Hash(params['calculo'])){
+        this.token = params['calculo'];
         this.getJsonCalc(this.token);
       }
     });
@@ -1083,7 +1083,7 @@ export class CalcComponent implements OnInit {
  */
   makePDF(id: string){
     let format = 'p';
-    let url = location.protocol+'//'+location.hostname+"/?token="+this.token
+    let url = location.protocol+'//'+location.hostname+"/?calculo="+this.token
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
       format = 'l';	
     }
