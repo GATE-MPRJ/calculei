@@ -648,6 +648,7 @@ export class CalcComponent implements OnInit {
         await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
         await this.calcSumTotals();
         await this.clearForm();
+        await this.sortByDtIni();
     }else{
       if (indiceOption.includes('TJ')){
         //Fix initial date are not included in between statement
@@ -662,6 +663,7 @@ export class CalcComponent implements OnInit {
           await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
           await this.calcSumTotals();
           await this.clearForm();
+          await this.sortByDtIni();
         }else {
             this.alertDialog('Atenção!', 'Indices indisponíveis para as opções escolhidas.');
         }
