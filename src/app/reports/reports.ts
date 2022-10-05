@@ -29,7 +29,7 @@ export class Reports {
     })
   }
 
-  async makePDF(id: string, date: string, headerImg:string, format:any = 'p') {
+  async makePDF(id: string, date: string, headerImg:string, format:any = 'p', url:string = '') {
 
     let imageData : any = await this.getBase64ImageFromUrl(headerImg);
 
@@ -73,6 +73,13 @@ export class Reports {
         },
       }
     })
+
+    let footerPosition = 285;
+    if(format == 'l'){
+      footerPosition = 200;
+    }
+    pdf.text(url, 15, footerPosition);
+
     
     /*
     doc.autoTable({

@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { CalcService } from '../services/calc.service'
 import { Reports } from '../reports/reports'
 import {
@@ -98,7 +99,7 @@ export class CalcComponent implements OnInit {
   public sumTotalAtualizado = 0;
   public sumTotalCorr = 0;
   public sumTotalJuros = 0;
-  public tokens ="";
+  public token ="";
   public formCalc = new FormGroup({
     //Lançamentos
     fcTipos: new FormControl(""),
@@ -160,13 +161,19 @@ export class CalcComponent implements OnInit {
   displayedColumnsF = ['indice', 'principal'];
   displayedColumnsJuros = ['dtIni', 'valor'];
 
-  constructor(public service: CalcService, private dialog: MatDialog) { 
+  constructor(  private route: ActivatedRoute, public service: CalcService, private dialog: MatDialog) { 
     const currentYear = new Date().getFullYear();
     //this.minDate = new Date(currentYear - 20, 0, 1);
     this.maxDate = new Date();
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if(this.checkIfValidMD5Hash(params['calculo'])){
+        this.token = params['calculo'];
+        this.getJsonCalc(this.token);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -239,6 +246,17 @@ export class CalcComponent implements OnInit {
       }
     });
   }
+
+
+/* Check if string is a valid MD5 Hash */
+ checkIfValidMD5Hash(token:string) {
+  // Regular expression to check if string is a MD5 hash
+  const regexExp = /^[a-f0-9]{32}$/gi;
+
+  return regexExp.test(token);
+}
+
+
 
 /**
  * Given a date, return true if the date is the last day of February
@@ -630,6 +648,7 @@ export class CalcComponent implements OnInit {
         await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
         await this.calcSumTotals();
         await this.clearForm();
+        await this.sortByDtIni();
     }else{
       if (indiceOption.includes('TJ')){
         //Fix initial date are not included in between statement
@@ -644,6 +663,7 @@ export class CalcComponent implements OnInit {
           await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
           await this.calcSumTotals();
           await this.clearForm();
+          await this.sortByDtIni();
         }else {
             this.alertDialog('Atenção!', 'Indices indisponíveis para as opções escolhidas.');
         }
@@ -1065,10 +1085,11 @@ export class CalcComponent implements OnInit {
  */
   makePDF(id: string){
     let format = 'p';
+    let url = location.protocol+'//'+location.hostname+"/?calculo="+this.token
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
       format = 'l';	
     }
-    report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format);
+    report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format, url);
   }
 
 /**
@@ -1081,17 +1102,29 @@ export class CalcComponent implements OnInit {
 
 
   
-  public SaveCalc(){
+  public saveCalc(){
     this.service.pushSaveCalc(this.dados).subscribe((res) => {    
-        this.tokens = res
-        //this.getExcel(this.tokens)
+        this.token = res
+        //this.getExcel(this.token)
     }
     );
   }
 
+  /**
+  * Get json from service and load calculation to the view
+  * @param {string} token - the calculation token
+  */
+  public getJsonCalc(token:string){
+    this.service.getJsonCalc(token).subscribe((res) => {
+      this.dados = res;
+      this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
+      this.calcSumTotals();
+    });
+  }
+
   //public getExcel(token: string){    
   public getExcel(){ 
-    let token = this.tokens;
+    let token = this.token;
     this.service.getExcel(token).subscribe((x) => {
       const newBlob = new Blob([x], { type: "application/xls" });      
       const downloadURL = window.URL.createObjectURL(x);

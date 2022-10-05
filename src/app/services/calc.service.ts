@@ -70,11 +70,11 @@ export class CalcService {
   }  
   // Gerar QrCode  Base64 enviando o Texto a Largura e Altura
   getQrcode(content: string, width: number, height: number ) {
-    return this.httpClient.get(this.baseUrl + "/qrlogo?text="+ content +"&width="+ width  + "&height=" + height, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
+    return this.httpClient.get(this.baseUrl + "web/qrlogo?text="+ content +"&width="+ width  + "&height=" + height, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
   }
   // Retorna o json do calculo Salvo Usando como paramentro o token 
   getJsonCalc(token: string) {
-    return this.httpClient.get(this.baseUrl + "/getJsonCalc?token=" + token, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
+    return this.httpClient.get(this.baseUrl + "web/getJsonCalc?token=" + token, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
   }
   //End
 
