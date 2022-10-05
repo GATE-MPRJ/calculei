@@ -22,14 +22,14 @@
                       <mat-option
                         value="particular"
                         (click)="
-                          this.formCalc.controls.fcIndiceLanca.setValue('TJ899')
+                          this.formCalc.controls.fcIndiceLanca.setValue('TJ6899')
                         "
                         >Créditos / Débitos Entre Particulares</mat-option
                       >
                       <mat-option
                         value="Ctributado"
                         (click)="
-                          this.formCalc.controls.fcIndiceLanca.setValue('TJ899')
+                          this.formCalc.controls.fcIndiceLanca.setValue('TJ6899')
                         "
                         >Créditos da Fazenda Pública</mat-option
                       >
@@ -99,7 +99,7 @@
                         TR-UFIR-IPCA-E)</mat-option
                       >
                       <mat-option
-                        value="TJ899"
+                        value="TJ6899"
                         [hidden]="
                           formCalc.controls.fcTipos.value == 'tributado'
                         "
@@ -275,12 +275,6 @@
                         >Juros Simples 12% a.a.</mat-option
                       >
                       <mat-option value="SELIC">Selic</mat-option>
-
-                      <!--mat-option
-                        value="TJ899"
-                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
-                        >Ufir (em desenvolvimento)</mat-option
-                      -->
                       <mat-option
                         value="poupanca"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
