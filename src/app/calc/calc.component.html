@@ -10,14 +10,17 @@
         <div>
           <form id="htmlData" [formGroup]="formCalc">
             <div class="flexbox">
-              <div><mat-card-title></mat-card-title></div>
+              <div>
+                <mat-card-title></mat-card-title>
+                <input type="hidden" formControlName="fcIndex" />
+              </div>
             </div>
             <mat-card>
               <div class="flexbox">
                 <div class="mat-select-big-width">
                   <label>Tipo de cálculo</label>
                   <mat-form-field appearance="outline">
-                    <mat-select formControlName="fcTipos" required>
+                    <mat-select formControlName="fcTipoCalculo" required>
                       <!-- Nâo aparecer 6.899/81 -->
                       <mat-option
                         value="particular"
@@ -70,7 +73,7 @@
                   </mat-form-field>
                 </div>
                 <div
-                  [hidden]="formCalc.controls.fcTipos.value == 'abatimentos'"
+                  [hidden]="formCalc.controls.fcTipoCalculo.value == 'abatimentos'"
                 >
                   <label>Índice de correção monetária</label>
                   <mat-form-field appearance="outline">
@@ -91,7 +94,7 @@
                       <mat-option
                         value="TJ11960"
                         [hidden]="
-                          formCalc.controls.fcTipos.value == 'particular'
+                          formCalc.controls.fcTipoCalculo.value == 'particular'
                         "
                         title="TJ/RJ LEI 11.960/2009 (ORTN-OTN-BTN- TR-UFIR-IPCA-E)"
                       >
@@ -101,7 +104,7 @@
                       <mat-option
                         value="TJ6899"
                         [hidden]="
-                          formCalc.controls.fcTipos.value == 'tributado'
+                          formCalc.controls.fcTipoCalculo.value == 'tributado'
                         "
                       >
                         TJ/RJ LEI 6.899/81 (UFIR-RJ)</mat-option
@@ -115,7 +118,7 @@
               </div>
               <div class="flexbox">
                 <div
-                  [hidden]="formCalc.controls.fcTipos.value != 'abatimentos'"
+                  [hidden]="formCalc.controls.fcTipoCalculo.value != 'abatimentos'"
                 >
                   <label>Lançamento</label>
                   <mat-hint *ngIf="dataSourceLanca.data.length == 0"
@@ -175,6 +178,7 @@
                         name="dataDeInicio"
                         required
                         max="2999-12-31"
+                        (change)="this.formCalc.controls.fcDtIniJuros.setValue(this.formCalc.controls.fcDtIniLanca.value)"
                       />
                     </mat-form-field>
                   </div>
@@ -190,6 +194,7 @@
                         name="dataDeTermino"
                         required
                         max="2999-12-31"
+                        (change)="this.formCalc.controls.fcDtFimJuros.setValue(this.formCalc.controls.fcDtFimLanca.value);"
                       />
                     </mat-form-field>
                   </div>
@@ -241,16 +246,14 @@
                   <mat-slide-toggle
                     color="warn"
                     formControlName="fcJuros"
-                    (change)="
-                      this.formCalc.controls.fcIndiceJuros.setValue(
-                        'codigo_civil'
-                      )
-                    "
-                    [disabled]="
-                      !formCalc.valid ||
-                      formCalc.controls.fcIndiceLanca.value === 'SELIC'
-                    "
+                    [disabled]="formCalc.controls.fcIndiceLanca.value === 'SELIC'"
                   ></mat-slide-toggle>
+                    <!--mat-slide-toggle
+                    color="warn"
+                    formControlName="fcJuros"
+                    (click)="this.enableJuros();"
+                    [disabled]="!formCalc.valid || formCalc.controls.fcIndiceLanca.value === 'SELIC'"
+                  ></mat-slide-toggle-->
                 </div>
                 <div *ngIf="formCalc.controls.fcJuros.value">
                   <label>Índice de juros</label>
@@ -274,7 +277,7 @@
                         "
                         >Juros Simples 12% a.a.</mat-option
                       >
-                      <mat-option value="SELIC">Selic</mat-option>
+                      <mat-option value="SELIC">SELIC</mat-option>
                       <mat-option
                         value="poupanca"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
@@ -533,7 +536,7 @@
               [disabled]="!formCalc.valid"
               class="btn-calc"
             >
-              CALCULAR
+              {{'CALCULAR'}}
             </button>
           </div>
         </div>
@@ -820,6 +823,12 @@
               /></mat-header-cell>
               <mat-cell *matCellDef="let row; let i = dataIndex">
                 <img
+                  src="/assets/svgs/pen-to-square-regular.svg"
+                  class="iconDeleteTab"
+                  title="Editar lançamento"
+                  (click)="this.editRow(i)"
+                />                     
+                <img
                   src="/assets/svgs/clone-regular.svg"
                   class="iconClone"
                   title="Replicar lançamento"
@@ -830,7 +839,7 @@
                   class="iconDeleteTab"
                   title="Excluir lançamento"
                   (click)="this.removeRow(i)"
-                />
+                />           
               </mat-cell>
               <mat-footer-cell
                 *matFooterCellDef
