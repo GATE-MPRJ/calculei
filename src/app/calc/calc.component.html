@@ -6,7 +6,7 @@
 <div class="flexbox">
   <div>
     <mat-card-content>
-      <div class="container flexbox">
+      <div class="container flexbox" (keydown.enter)="setLancamento()">
         <div>
           <form id="htmlData" [formGroup]="formCalc">
             <div class="flexbox">
@@ -20,7 +20,7 @@
                 <div class="mat-select-big-width">
                   <label>Tipo de cálculo</label>
                   <mat-form-field appearance="outline">
-                    <mat-select formControlName="fcTipoCalculo" required>
+                    <mat-select formControlName="fcTipoCalculo" required autofocus>
                       <!-- Nâo aparecer 6.899/81 -->
                       <mat-option
                         value="particular"
@@ -162,6 +162,7 @@
                         decimal: ','
                       }"
                       min="1"
+                      #valorLanca
                     />
                   </mat-form-field>
                 </div>
@@ -536,8 +537,17 @@
               [disabled]="!formCalc.valid"
               class="btn-calc"
             >
-              {{'CALCULAR'}}
+              {{formCalc.controls.fcIndex.value === '' ? 'CALCULAR' : 'RECALCULAR'}}
             </button>
+            <button
+            type="submit"
+            mat-stroked-button
+            color="primary"
+            (click)="clearForm()"
+            class="btn-cancel"
+          >
+            {{formCalc.controls.fcIndex.value === '' ? 'LIMPAR' : 'CANCELAR'}}
+          </button>
           </div>
         </div>
         <div>

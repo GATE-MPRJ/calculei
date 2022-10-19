@@ -85,6 +85,9 @@ export interface ElementMemoria {
 
 export class CalcComponent implements OnInit {
 
+  @ViewChild('valorLanca') valorLanca!: ElementRef;
+
+
   //minDate: Date;
   maxDate: Date;
   // Mostrar memória de cálculo
@@ -105,8 +108,8 @@ export class CalcComponent implements OnInit {
   public formCalc = new FormGroup({
     //Lançamentos
     fcIndex: new FormControl(""),
-    fcTipoCalculo: new FormControl("", [Validators.required]),
-    fcIndiceLanca: new FormControl("", [Validators.required]),
+    fcTipoCalculo: new FormControl("particular", [Validators.required]),
+    fcIndiceLanca: new FormControl("TJ6899", [Validators.required]),
     fcListaLancamento: new FormControl(""),
     fcDtIniLanca: new FormControl("", [Validators.required,  Validators.pattern(patternData)]),
     fcDtFimLanca: new FormControl(this.dataHoje, [Validators.required,  Validators.pattern(patternData)]),
@@ -421,8 +424,13 @@ export class CalcComponent implements OnInit {
  */
   public clearForm() {
     let dataCalculo = this.formCalc.controls.fcDtFimLanca.value;
-    this.formCalc.controls.fcIndex.setValue(null);
+    this.formCalc.controls.fcIndex.setValue('');
     //this.formCalc.reset();
+    this.formCalc.controls.fcValorLanca.setValue('');
+    this.formCalc.controls.fcDtIniLanca.setValue('');
+    this.formCalc.controls.fcDescricao.setValue('');
+    this.formCalc.controls.fcDescricaoOutros.setValue('');
+
     this.formCalc.setErrors(null)
     this.formCalc.controls.fcDtFimLanca.setValue(dataCalculo);
     //this.dataTableJuros = [];
@@ -434,6 +442,7 @@ export class CalcComponent implements OnInit {
     //this.formCalc.controls.fcJuros.disable();
     this.dataTableAbatimentos = [];
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>();
+    this.valorLanca.nativeElement.focus();
   }
 
   /**
@@ -698,8 +707,8 @@ export class CalcComponent implements OnInit {
       let tipoCalculo: string = this.formCalc.get("fcTipoCalculo")?.value;
       let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
       let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
-      let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
-      let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+      let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value);
+      let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value);
       let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
 
       //Juros ativo mas não incluído
@@ -707,7 +716,12 @@ export class CalcComponent implements OnInit {
         this.setJuros();
       }
 
-      this.addLancamento(tipoCalculo, indiceOption, valorPrincipal, dtIni, dtFim, descricao);
+      if(valorPrincipal < 0 || !dtIni.isValid()  || !dtFim.isValid() ) {
+        this.alertDialog('Atenção!', 'Preencha todos os campos corretamente.');
+      }
+      else {
+        this.addLancamento(tipoCalculo, indiceOption, valorPrincipal, dtIni, dtFim, descricao);
+      }
     }
     catch(e){
       console.log(e);
@@ -726,8 +740,8 @@ export class CalcComponent implements OnInit {
    */
   public async addLancamento(tipoCalculo:string, indiceOption:string, valorPrincipal:number, dtIni:any, dtFim:any, descricao:string){ 
     try{
-    dtIni = moment(dtIni);
-    dtFim = moment(dtFim);
+    //dtIni = moment(dtIni);
+    //dtFim = moment(dtFim);
       let dtIniGetIndice = null;
 
     /**
@@ -1011,8 +1025,10 @@ export class CalcComponent implements OnInit {
       juros: juros
     }
     
+    //edit
     if(this.formCalc.get("fcIndex")?.value !== '' && this.formCalc.get("fcIndex")?.value !== null){
       this.dados[this.formCalc.get("fcIndex")?.value] = dataLancamento;
+    //new
     }else{
       this.dados.push(dataLancamento);
     }
