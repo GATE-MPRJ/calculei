@@ -1,7 +1,10 @@
 <div class="alert">
-  <mat-icon class="close" aria-hidden="false" (click)="closeAlert()">
+  <button class="close" (click)="closeAlert()" autofocus>
+    <mat-icon  aria-hidden="false">
     close
   </mat-icon>
+  </button>
+
   <h1 mat-dialog-title>{{ title }}</h1>
   <p>{{ message }}</p>
 </div>
