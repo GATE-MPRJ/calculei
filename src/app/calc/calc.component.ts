@@ -25,6 +25,7 @@ let report = new Reports();
 
 const dateFormat = require('dateformat');
 const moment = require('moment');
+const patternData = "(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))";
 // const jsdom = require("jsdom");
 // const { JSDOM } = jsdom;
 // var { window } = new JSDOM("")
@@ -41,10 +42,11 @@ import { IfStmt } from '@angular/compiler';
 import { style } from '@angular/animations';
 
 export interface ElementLanc {
+  tipoCalculo: string;
+  indice: string;
   dtIni: Date;
   position: number;
   dtFim: Date;
-  indice: string;
   dias: number;
   principal: number;
   memoria: any;
@@ -83,6 +85,9 @@ export interface ElementMemoria {
 
 export class CalcComponent implements OnInit {
 
+  @ViewChild('valorLanca') valorLanca!: ElementRef;
+
+
   //minDate: Date;
   maxDate: Date;
   // Mostrar memória de cálculo
@@ -102,26 +107,28 @@ export class CalcComponent implements OnInit {
   public token ="";
   public formCalc = new FormGroup({
     //Lançamentos
-    fcTipos: new FormControl(""),
+    fcIndex: new FormControl(""),
+    fcTipoCalculo: new FormControl("particular", [Validators.required]),
+    fcIndiceLanca: new FormControl("TJ6899", [Validators.required]),
     fcListaLancamento: new FormControl(""),
-    fcDtIniLanca: new FormControl(""),
-    fcDtFimLanca: new FormControl(this.dataHoje),
-    fcValorLanca: new FormControl(""),
-    fcIndiceLanca: new FormControl(""),
+    fcDtIniLanca: new FormControl("", [Validators.required,  Validators.pattern(patternData)]),
+    fcDtFimLanca: new FormControl(this.dataHoje, [Validators.required,  Validators.pattern(patternData)]),
+    fcValorLanca: new FormControl("", [Validators.required]),
     fcDescricao: new FormControl(""),
     fcDescricaoOutros: new FormControl(""),
     //Juros
     fcJuros: new FormControl(""),
-    fcDtIniJuros: new FormControl(""),
-    fcDtFimJuros: new FormControl(this.dataHoje),
+    fcDtIniJuros: new FormControl("", [ Validators.pattern(patternData)]),
+    fcDtFimJuros: new FormControl(this.dataHoje, [ Validators.pattern(patternData)]),
     fcValorJuros: new FormControl(""),
-    fcIndiceJuros: new FormControl(""),
+    fcIndiceJuros: new FormControl("codigo_civil"),
     fcTaxaJuros: new FormControl(""),
     //Abatimentos
     fcAbatimentos: new FormControl(""),
     fcDtAbatimento: new FormControl(""),
     fcValorAbatimento: new FormControl(""),
   })
+
 
   firstFormGroup: FormGroup = this.formCalc;
   dados: any = [];
@@ -324,6 +331,58 @@ export class CalcComponent implements OnInit {
   }
 
 /**
+ * It edit a row from the table lançamentos.
+ * @param {number} index - The index of the row you want to edit.
+ */
+ public editRow(index: number) {
+  this.clearForm();
+  console.log(index, this.dataSourceLanca.data[index]);
+  this.formCalc.controls.fcIndex.setValue(index);
+
+  //fcListaLancamento???
+  //fcTipoCalculo
+  this.formCalc.controls.fcTipoCalculo.setValue(this.dataSourceLanca.data[index]?.tipoCalculo);
+
+  this.formCalc.controls.fcIndiceLanca.setValue(this.fixIndices(this.dataSourceLanca.data[index].indice));
+
+  this.formCalc.controls.fcValorLanca.setValue(this.dataSourceLanca.data[index].principal);
+  this.formCalc.controls.fcDtIniLanca.setValue(moment(this.dataSourceLanca.data[index].dtIni).format('YYYY-MM-DD').toString());
+  this.formCalc.controls.fcDtFimLanca.setValue(moment(this.dataSourceLanca.data[index].dtFim).format('YYYY-MM-DD').toString());
+  //Verificar se = 'outros'
+  
+  this.formCalc.controls.fcDescricao.setValue(['Ressarcimento', 'Ressarcimento ao erário', 'Débitos da Fazenda Pública', 'Multa Civil', 'Honorários advocatícios'].includes(this.dataSourceLanca.data[index].descricao) ? this.dataSourceLanca.data[index].descricao : 'Outros');
+  //this.formCalc.controls.fcDescricaoOutros.setValue(this.dataSourceLanca.data[index].descricao != '' ? this.dataSourceLanca.data[index].descricao : 'Outros');
+  this.formCalc.controls.fcDescricaoOutros.setValue(this.dataSourceLanca.data[index].descricao);
+
+  if(this.fixIndices(this.dataSourceLanca.data[index].indice) == 'SELIC'){
+
+  }
+  //juros
+  if(this.dataSourceLanca.data[index].juros.length > 0){
+    //console.log(this.dataSourceLanca.data[index].indice);
+    this.formCalc.controls.fcJuros.setValue(true);
+    this.dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataSourceLanca.data[index].juros);
+    this.dataTableJuros = this.dataSourceLanca.data[index].juros;
+
+    this.formCalc.controls.fcDtIniJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtIni).format('YYYY-MM-DD').toString());
+    this.formCalc.controls.fcDtFimJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtFim).format('YYYY-MM-DD').toString());
+    this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice);
+    
+
+
+    this.dataSourceLanca.data[index].juros.map((j: any) =>{
+      console.log(j);
+    })
+
+    //this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros.[this.dataSourceLanca.data[index].juros.length-1][indice]);
+    //this.formCalc.controls.fcDtIniJuros.setValue(this.dataSourceLanca.data[index].juros.[this.dataSourceLanca.data[index].juros.length-1][dtIni]);
+    
+  }
+
+}
+
+
+/**
  * Clear this.dataSourceLanca and removes all rows from the table lançamentos.
  * Update the total sums.
  */
@@ -364,14 +423,43 @@ export class CalcComponent implements OnInit {
  * Clear the form and reset the data tables
  */
   public clearForm() {
+    let dataCalculo = this.formCalc.controls.fcDtFimLanca.value;
+    this.formCalc.controls.fcIndex.setValue('');
     //this.formCalc.reset();
-    this.dataTableJuros = [];
-    this.dataSourceJuros = new MatTableDataSource<ElementJuros>();
-    this.formCalc.controls.fcJuros.setValue(false);
+    this.formCalc.controls.fcValorLanca.setValue('');
+    this.formCalc.controls.fcDtIniLanca.setValue('');
+    this.formCalc.controls.fcDescricao.setValue('');
+    this.formCalc.controls.fcDescricaoOutros.setValue('');
+
+    this.formCalc.setErrors(null)
+    this.formCalc.controls.fcDtFimLanca.setValue(dataCalculo);
+    //this.dataTableJuros = [];
+    //this.dataSourceJuros = new MatTableDataSource<ElementJuros>();
+    //this.formCalc.controls.fcJuros.setValue(false);
+    //this.formCalc.controls.fcIndiceJuros.setValue('codigo_civil');
+
+    this.clearJurosData();
     //this.formCalc.controls.fcJuros.disable();
     this.dataTableAbatimentos = [];
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>();
+    this.valorLanca.nativeElement.focus();
   }
+
+  /**
+ * Clear the data table and the juros data source
+ */
+ async clearJurosData(){
+  this.dataTableJuros = [];
+  this.dataSourceJuros = new MatTableDataSource<ElementJuros>();
+  this.formCalc.controls.fcJuros.setValue(false);
+
+  //this.formCalc.controls.fcDtIniJuros.setValue('');
+  //this.formCalc.controls.fcDtIniJuros.setErrors(null);
+  //this.formCalc.controls.fcDtIniJuros.updateValueAndValidity();
+  //this.formCalc.controls.fcDtFimJuros.setValue('');
+  //this.formCalc.controls.fcDtFimJuros.setErrors(null);
+  //this.formCalc.controls.fcDtFimJuros.updateValueAndValidity();
+}
 
 /**
  * It sums up the total of the principal, the total of the current value, the total of the corrected
@@ -398,6 +486,15 @@ export class CalcComponent implements OnInit {
  */
   public isDateBefore(dtIni:string, dtFim:string){
     return Date.parse(dtIni) < Date.parse(dtFim);
+  }
+
+  public enableJuros(){
+    this.formCalc.controls.fcDtIniJuros.setValue(this.formCalc.controls.fcDtIniLanca.value);
+    this.formCalc.controls.fcDtFimJuros.setValue(this.formCalc.controls.fcDtFimLanca.value);
+    this.formCalc.controls.fcIndiceJuros.setValue('codigo_civil');
+    if(this.formCalc.controls.fcJuros.value){
+      this.clearJurosData();
+    }
   }
 
  /**
@@ -606,10 +703,12 @@ export class CalcComponent implements OnInit {
   /* Creating a new array called correcao. */
   public setLancamento(){
     try {
+      let index: number = this.formCalc.get("fcIndex")?.value;
+      let tipoCalculo: string = this.formCalc.get("fcTipoCalculo")?.value;
       let indiceOption: string = this.formCalc.get("fcIndiceLanca")?.value;
       let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
-      let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value).format("YYYY-MM-DD");
-      let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value).format("YYYY-MM-DD");
+      let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value);
+      let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value);
       let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
 
       //Juros ativo mas não incluído
@@ -617,7 +716,12 @@ export class CalcComponent implements OnInit {
         this.setJuros();
       }
 
-      this.addLancamento(indiceOption, valorPrincipal, dtIni, dtFim, descricao);
+      if(valorPrincipal < 0 || !dtIni.isValid()  || !dtFim.isValid() ) {
+        this.alertDialog('Atenção!', 'Preencha todos os campos corretamente.');
+      }
+      else {
+        this.addLancamento(tipoCalculo, indiceOption, valorPrincipal, dtIni, dtFim, descricao);
+      }
     }
     catch(e){
       console.log(e);
@@ -626,17 +730,18 @@ export class CalcComponent implements OnInit {
 
   /**
    * It adds the lancamento to the table Lancamentos.
-   * @param {string} indiceOption - string,
+   * @param {string} tipoCalculo - Calculo type,
+   * @param {string} indiceOption - Index option for the type of calculation,
    * @param {number} valorPrincipal - The principal amount of the loan.
    * @param {any} dtIni - The initial date of the period.
    * @param {any} dtFim - The date you want to end the calculation.
    * @param {string} descricao - string
    * @returns Nothing.
    */
-  public async addLancamento(indiceOption: string, valorPrincipal:number, dtIni: any, dtFim: any, descricao: string){ 
+  public async addLancamento(tipoCalculo:string, indiceOption:string, valorPrincipal:number, dtIni:any, dtFim:any, descricao:string){ 
     try{
-    dtIni = moment(dtIni);
-    dtFim = moment(dtFim);
+    //dtIni = moment(dtIni);
+    //dtFim = moment(dtFim);
       let dtIniGetIndice = null;
 
     /**
@@ -645,7 +750,7 @@ export class CalcComponent implements OnInit {
       //let correcao: any = [];
     if(indiceOption == 'sem-correcao'){
         this.dataSourceCorrecao = this.addCalcSemCorrecao(valorPrincipal);
-        await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
+        await this.setCalc({tipoCalculo, valorPrincipal, dtIni, dtFim, descricao});
         await this.calcSumTotals();
         await this.clearForm();
         await this.sortByDtIni();
@@ -660,7 +765,7 @@ export class CalcComponent implements OnInit {
         this.ResponseIndice = indiceRes.content;
         if (this.ResponseIndice.length > 0) {
           this.dataSourceCorrecao =  this.addCalcCorrecao(indiceOption, valorPrincipal, dtFim);
-          await this.setCalc(valorPrincipal, dtIni, dtFim, descricao);
+          await this.setCalc({tipoCalculo, valorPrincipal, dtIni, dtFim, descricao});
           await this.calcSumTotals();
           await this.clearForm();
           await this.sortByDtIni();
@@ -824,6 +929,7 @@ export class CalcComponent implements OnInit {
     valorAtualizado = fatorCalculo * valorPrincipal;
     correcao = {
       indice: indice,
+      /*indice: indiceOption,*/
       valorAtualizado: valorAtualizado,
       fatorIni: fatorIni,
       fatorFim: fatorFim,
@@ -878,7 +984,7 @@ export class CalcComponent implements OnInit {
     * @param {string} descricao - string
     * @returns The dataSourceLanca object result of the function.
     */
-   setCalc(valorPrincipal:number, dtIni:Date, dtFim:Date, descricao:string) {
+   setCalc({tipoCalculo, valorPrincipal, dtIni, dtFim, descricao}: {tipoCalculo:string, valorPrincipal:number, dtIni:Date, dtFim:Date, descricao:string}) {
     let correcao: any = this.dataSourceCorrecao;
     let juros: any = [];
     let jurosValorTotal = 0;
@@ -897,16 +1003,12 @@ export class CalcComponent implements OnInit {
         juros = this.setCalcJuros(correcao.valorAtualizado, this.dataSourceJuros.data );
         jurosValorTotal = juros.reduce(function(jurosAcc:number, jurosCurr:any){ return jurosAcc + jurosCurr.valor;}, 0);
         jurosDiasTotal = juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
-        /*
-        let totJurosDias = 0;
-        for (let i=0; i < juros.length; i++) {
-          totJurosDias += juros.dias;
-        }
-        */
     }
-    this.setCalcMemoria(correcao, juros);
     
-    this.dados.push({
+    this.setCalcMemoria(correcao, juros);
+
+    let dataLancamento = {
+      tipoCalculo: tipoCalculo,
       dtIni: dtIni,
       dtFim: dtFim,
       indice: correcao.indice,
@@ -921,8 +1023,18 @@ export class CalcComponent implements OnInit {
       correcao: (correcao.valorAtualizado + jurosValorTotal) - (valorPrincipal),
       memoria: this.dataTableRelatorio,
       juros: juros
-    });
+    }
+    
+    //edit
+    if(this.formCalc.get("fcIndex")?.value !== '' && this.formCalc.get("fcIndex")?.value !== null){
+      this.dados[this.formCalc.get("fcIndex")?.value] = dataLancamento;
+    //new
+    }else{
+      this.dados.push(dataLancamento);
+    }
     console.log(this.dados)
+
+
     this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados)
   }
 
@@ -951,7 +1063,7 @@ export class CalcComponent implements OnInit {
       case 'SEM CORREÇÃO':
         return 'sem-correcao';
       break;
-      case 'LEI 6.899/81':
+      case 'LEI 6.899/1981':
         return 'TJ6899';
       break;
       case 'LEI 11.960/2009':
@@ -1046,10 +1158,10 @@ export class CalcComponent implements OnInit {
           if(lancamento.juros.length){
             let { dtIni: jurosDtIni, dtFim: jurosDtFim, valorPrincipal, jurosIndice, jurosTaxa} = lancamento.juros[0];
             await this.addJuros({ valorPrincipal, jurosIndice, jurosTaxa, jurosDtIni, jurosDtFim, clearJuros: true })
-            await this.addLancamento(lancamento.indice, lancamento.valorPrincipal, lancamento.dtIni, lancamento.dtFim, lancamento.descricao)
+            await this.addLancamento(lancamento.tipoCalculo, lancamento.indice, lancamento.valorPrincipal, lancamento.dtIni, lancamento.dtFim, lancamento.descricao)
             applyReplication()
         }else{
-            await this.addLancamento(lancamento.indice, lancamento.valorPrincipal, lancamento.dtIni, lancamento.dtFim, lancamento.descricao)
+            await this.addLancamento(lancamento.tipoCalculo,lancamento.indice, lancamento.valorPrincipal, lancamento.dtIni, lancamento.dtFim, lancamento.descricao)
             applyReplication()
           }
         } catch(e) {
@@ -1060,14 +1172,6 @@ export class CalcComponent implements OnInit {
 
     applyReplication()
 
-  }
-
-/**
- * Clear the data table and the juros data source
- */
-  async clearJurosData(){
-    this.dataTableJuros = [];
-    this.dataSourceJuros = new MatTableDataSource<ElementJuros>();
   }
 
 /**
