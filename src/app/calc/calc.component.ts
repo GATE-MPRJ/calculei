@@ -810,7 +810,7 @@ export class CalcComponent implements OnInit {
     fatorFim = fatores[fatores.length - 1];
 
     //@Todo Verificar se a data fim não é superior ao último índice existente no DB
-    /*if (this.formCalc.get("fcIndiceLanca")?.value.includes('TJ899') && dtFim >= indiceDataAtualizacao){
+    /*if (this.formCalc.get("fcIndiceLanca")?.value.includes('TJ6899') && dtFim >= indiceDataAtualizacao){
       fatorFim = 1.0000000000;
     }*/
     
@@ -952,7 +952,7 @@ export class CalcComponent implements OnInit {
         return 'sem-correcao';
       break;
       case 'LEI 6.899/81':
-        return 'TJ899';
+        return 'TJ6899';
       break;
       case 'LEI 11.960/2009':
         return 'TJ11960';
