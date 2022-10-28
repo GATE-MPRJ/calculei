@@ -99,6 +99,7 @@ export class CalcComponent implements OnInit {
   public sumTotalAtualizado = 0;
   public sumTotalCorr = 0;
   public sumTotalJuros = 0;
+  public sumTotalJurosDias = 0;
   public token ="";
   public formCalc = new FormGroup({
     //Lançamentos
@@ -382,12 +383,20 @@ export class CalcComponent implements OnInit {
     this.sumTotalCorr = 0;
     this.sumTotalAtualizado = 0;
     this.sumTotalJuros = 0;
+    this.sumTotalJurosDias = 0;
+
     this.dados.map((x: any) => {
       this.sumTotal = this.sumTotal + x.principal;
       this.sumTotalAtualizado = this.sumTotalAtualizado + x.valorAtualizado;
       this.sumTotalCorr = this.sumTotalCorr + x.valorCorr;
       this.sumTotalJuros = this.sumTotalJuros + x.jurosValorTotal;
+      this.sumTotalJurosDias = this.sumTotalJurosDias + x.juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
+
     });
+  }
+  
+  public checkJurosLength() {
+    return this.dados.filter((e:any) => e.juros.length > 0).length;
   }
 
 /**
@@ -1083,13 +1092,15 @@ export class CalcComponent implements OnInit {
  * The function then calls the report.makePDF function with the id, date, path, and format. 
  * @param {string} id - The id of the element to be displayed on the report.
  */
-  makePDF(id: string){
+  makePDF(id: any){
+    let date = this.myFormattedDate;
+    let headerImg = '/assets/imgs/LOGO_MPRJ_GATE.png';
     let format = 'p';
     let url = location.protocol+'//'+location.hostname+"/?calculo="+this.token
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
       format = 'l';	
     }
-    report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format, url);
+    report.makePDF({id, date, headerImg, format, url});
   }
 
 /**

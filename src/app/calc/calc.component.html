@@ -22,14 +22,18 @@
                       <mat-option
                         value="particular"
                         (click)="
-                          this.formCalc.controls.fcIndiceLanca.setValue('TJ6899')
+                          this.formCalc.controls.fcIndiceLanca.setValue(
+                            'TJ6899'
+                          )
                         "
                         >Créditos / Débitos Entre Particulares</mat-option
                       >
                       <mat-option
                         value="Ctributado"
                         (click)="
-                          this.formCalc.controls.fcIndiceLanca.setValue('TJ6899')
+                          this.formCalc.controls.fcIndiceLanca.setValue(
+                            'TJ6899'
+                          )
                         "
                         >Créditos da Fazenda Pública</mat-option
                       >
@@ -407,10 +411,13 @@
                     <th class="mat-header-cell cdk-header-cell">Taxa</th>
                     <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
                   </thead>
-                  <tbody
-                    *ngFor="let element of dataSourceJuros.data; let i = index"
-                  >
-                    <tr>
+                  <tbody>
+                    <tr
+                      *ngFor="
+                        let element of dataSourceJuros.data;
+                        let i = index
+                      "
+                    >
                       <td class="mat-cell cdk-cell">
                         {{ element.dtIni | date: "dd/MM/yyyy" }}
                       </td>
@@ -561,10 +568,10 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody
-                  *ngFor="let element of dataSourceLanca.data; let i = index"
-                >
-                  <tr>
+                <tbody>
+                  <tr
+                    *ngFor="let element of dataSourceLanca.data; let i = index"
+                  >
                     <td>{{ i + 1 }}. <br />{{ element.descricao }}</td>
                     <td>
                       {{ element.dtIni | date: "dd/MM/yyyy" }}
@@ -615,7 +622,21 @@
             Relatório
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="makePDF('myPdfTable')">
+            <button
+              mat-menu-item
+              (click)="
+                makePDF([
+                  {
+                    title: 'Cálculo de débitos judiciais',
+                    object: 'pdfTableLancamentos'
+                  },
+                  {
+                    title: 'Memória de cálculo dos juros',
+                    object: 'pdfTableJuros'
+                  }
+                ])
+              "
+            >
               PDF
               <img
                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAB1ElEQVRIic2VPUhbURTHf+8jGqJUq5YgRSXEIi1twKmCpYsELDa4iCgOLX6ATg5xcCnUXRxEwaWraOxQEDuJhZZSp1YRBFGMKPiFSFT8Cry8Dm8QE2zuTW6Df7jLuef8f5x7z30PciwtOWC3+7xY2gspF1vf1WY2VkVSzZRIgtdoRIRhpgt0M263+lq0SHQ2XboubHyX3AVYfSN5uD2f7VZf6P8DAdsfwOoVgyoBykCVAUWhSoFJ0IjdVl2bvJ86pbK6PMMY7kyNm3luri+qgT9qgZaFtr0mnC5/pGWP4c17eOiVLoVMOuwagmd18KQWRvuly+U7NF1wfgrFj6RLMwOuL0OJF/aiOQIuTIOdgB3xQckOaBiABsEOcOXnAFgfgs0VsIF3H6TL5abUdEFDO0wNw+EOfJwCbwUUFEFhsXOv42E4PVYEfNUMpeXQ1AWVNRBdhQelUPUUTo7geb3zZBa/Zgl0e+BtD4S6YXcTfnyBn7MQOwTdgJeN4A9A7Ah+L/zTKj3QH4CBCefLsr8FgyGIX93sJyz4NecsAaUfms4hBxa/grHwbVgGSt/h/CQcH8DcJ9hYygomBvw24yxFUv4DvnfA1CPV+Y5FUIm7wYoSn2z0F2ZCgXe+7E0BAAAAAElFTkSuQmCC"
@@ -815,7 +836,7 @@
                   src="/assets/svgs/trash-alt-solid.svg"
                   class="iconDeleteTab"
                   title="Excluir todos"
-                  (click)="this.removeAllRows(i)"
+                  (click)="this.removeAllRows()"
                   [hidden]="dataSourceLanca && dataSourceLanca.data.length < 1"
               /></mat-header-cell>
               <mat-cell *matCellDef="let row; let i = dataIndex">
@@ -876,7 +897,7 @@
             <!--img alt="MPRJ Logo" src="/assets/imgs/LOGO_MPRJ_GATE.png" /-->
             <ng-container>
               <table
-                id="myPdfTable"
+                id="pdfTableLancamentos"
                 class="table table-bordered"
                 style="text-align: center"
               >
@@ -934,7 +955,7 @@
                       {{ element.valorAtualizado | currency: "BRL":"":"" }}
                     </td>
                     <td>{{ element.juros[0]?.dtIni | date: "dd/MM/yyyy" }}</td>
-                    <td>{{ element.jurosDiasTotal }}</td>
+                    <td>{{ element.jurosDiasTotal | number: "1.0-2" }}</td>
                     <td>
                       {{ element.jurosValorTotal | currency: "BRL":"":"" }}
                     </td>
@@ -958,14 +979,14 @@
                 </tfoot>
               </table>
             </ng-container>
-          </div>
-          <br />
-          <ng-container
-            *ngFor="let element of dataSourceLanca.data; let i = index"
-          >
-            <div *ngIf="element.juros.length > 0">
-              <b>JUROS</b>
-              <table class="table table-bordered" style="text-align: center">
+
+            <div *ngIf="'juros'; in: dataSourceLanca.data">
+              <!--b>JUROS</b-->
+              <table
+                id="pdfTableJuros"
+                class="table table-bordered"
+                style="text-align: center"
+              >
                 <thead>
                   <tr>
                     <th class="mat-header-cell cdk-header-cell">#</th>
@@ -981,26 +1002,52 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let juros of element.juros; let j = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>
-                      {{ element.valorAtualizado | currency: "BRL":"":"" }}
-                    </td>
-                    <td>
-                      {{ juros.dtIni | date: "dd/MM/yyyy" }}
-                    </td>
-                    <td>
-                      {{ juros.dtFim | date: "dd/MM/yyyy" }}
-                    </td>
-                    <td>
-                      {{ juros.dias }}
-                    </td>
-                    <td>{{ juros.taxa * 100 | number: "1.0-2" }} % a.a.</td>
-                    <td>{{ juros.taxaAcumulada * 100 | number: "1.0-2" }} %</td>
-                    <td>
-                      {{ juros.valor | currency: "BRL":"":"" }}
-                    </td>
-                  </tr>
+                  <ng-container
+                    *ngFor="let element of dataSourceLanca.data; let i = index"
+                  >
+                    <ng-container
+                      *ngFor="let juros of element.juros; let j = index"
+                    >
+                      <tr>
+                        <td>{{ i + 1 }}. <br />{{ element.descricao }}</td>
+                        <td>
+                          {{ element.valorAtualizado | currency: "BRL":"":"" }}
+                        </td>
+                        <td>
+                          {{ juros.dtIni | date: "dd/MM/yyyy" }}
+                        </td>
+                        <td>
+                          {{ juros.dtFim | date: "dd/MM/yyyy" }}
+                        </td>
+                        <td>
+                          {{ juros.dias | number: "1.0-2" }}
+                        </td>
+                        <td>{{ juros.taxa * 100 | number: "1.0-2" }} % a.a.</td>
+                        <td>
+                          {{ juros.taxaAcumulada * 100 | number: "1.0-2" }} %
+                        </td>
+                        <td>
+                          {{ juros.valor | currency: "BRL":"":"" }}
+                        </td>
+                      </tr>
+                    </ng-container>
+                    <tr
+                      *ngIf="
+                        element.juros.length > 0 && this.checkJurosLength() > 1
+                      "
+                    >
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th>{{ element.jurosDiasTotal | number: "1.0-2" }}</th>
+                      <th>{{ element.taxaAcumulada }}</th>
+                      <th></th>
+                      <th>
+                        {{ element.jurosValorTotal | currency: "BRL":"":"" }}
+                      </th>
+                    </tr>
+                  </ng-container>
                 </tbody>
                 <tfoot>
                   <tr>
@@ -1008,16 +1055,19 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th>{{ element.jurosDiasTotal }}</th>
+                    <th>{{ this.sumTotalJurosDias | number: "1.0-2" }}</th>
                     <th></th>
                     <th></th>
-                    <th>
-                      {{ element.jurosValorTotal | currency: "BRL":"":"" }}
-                    </th>
+                    <th>{{ this.sumTotalJuros | currency: "BRL":"":"" }}</th>
                   </tr>
                 </tfoot>
               </table>
             </div>
+          </div>
+          <br />
+          <ng-container
+            *ngFor="let element of dataSourceLanca.data; let i = index"
+          >
             <mat-card *ngIf="isActive">
               <b>MEMÓRIA DE CÁLCULO</b>
               <table class="table table-bordered" style="text-align: center">

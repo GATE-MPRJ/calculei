@@ -155,6 +155,9 @@ mat-table {
   margin-bottom: 2vh;
 }
 
+.table-bordered tr:nth-child(even){background-color: #f2f2f2;}
+.table-bordered thead th, .table-bordered thead tr {background-color: #dde7fb;}
+
 #Report {
   .mat-header-row {
     background-color: #dde7fb;
