@@ -54,12 +54,11 @@ export class CalcService {
 
 
   // Start Function to Save and return calc
-  // Salva o Calculos enviando o JSON como paramentro e retorna um tokem  
+  // Salva o Calculos enviando o JSON como paramentro e retorna um token 
   pushSaveCalc(json: any){        
     const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=UTF-8');    
     headers.append('Accept', 'application/json');
-    headers.append( 'responseType', 'text' )    
-    console.log(json);
+    headers.append( 'responseType', 'text' );
     const body = json
     return this.httpClient.post(this.baseUrl + 'web/saveCalc', body,{ responseType: 'text' });    
   }
