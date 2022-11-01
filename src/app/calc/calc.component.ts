@@ -482,7 +482,7 @@ export class CalcComponent implements OnInit {
         }
         if(jurosDtFim >= defDataCodigoCivilFim){
           jurosTaxa = 0.12;
-          jurosDt = jurosDtIni > defDataCodigoCivilFim ? jurosDtIni : defDataCodigoCivil;
+          jurosDt = jurosDtIni > defDataCodigoCivilFim ? jurosDtIni : defDataCodigoCivilFim;
           jurosDias = this.days360(jurosDt, jurosDtFim);
           jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
           jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
@@ -545,7 +545,7 @@ export class CalcComponent implements OnInit {
             indice = await this.service.getIndice('POUPNOVA',  jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
               data = res.content
               if (data.length > 0) {
-                jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupanca;
+                jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupancaFim;
                 jurosDias = this.days360(jurosDt, jurosDtFim);
                 data.sort((a:any, b:any) => {
                   return new Date(a.data).getTime() - new Date(b.data).getTime();
@@ -589,7 +589,10 @@ export class CalcComponent implements OnInit {
             }
           })
         break;
-    } 
+    }
+    this.dataTableJuros.sort((a:any, b:any) => {
+      return new Date(a.dtIni).getTime() - new Date(b.dtIni).getTime();
+    });
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataTableJuros);
     onFinish && await onFinish()
     return indice ? Promise.resolve(indice) : Promise.resolve('without indice');
