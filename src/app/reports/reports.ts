@@ -29,14 +29,16 @@ export class Reports {
     })
   }
 
-  async makePDF(id: string, date: string, headerImg:string, format:any = 'p', url:string = '') {
+  async makePDF({id, date, headerImg, format = 'p', url = ''}: {id: any, date: string, headerImg:string, format:any, url:string}) {
 
     let imageData : any = await this.getBase64ImageFromUrl(headerImg);
 
-    const pdf = new jsPDF(format, 'mm', [297, 210]); //portrait A4
-    //const pdf = new jsPDF('l', 'mm', [297, 210]); //landscape
+    const pdf = new jsPDF(format, 'mm', [297, 210]); //portrait || landscape A4
+    let height: any = 45;
+    let widthTitle: any = format == 'p' ? 80 : 130;
+    let widthHeader: any = format == 'p' ? 15 : 55;
 
- 
+
     pdf.setFont("Garamond", "normal");
     pdf.setFontSize(12);
     pdf.text(date, 15, 40);
@@ -44,35 +46,45 @@ export class Reports {
     pdf.setProperties({
       title: "Relatório de Cálculo"
     });
-    pdf.addImage(imageData.toString(), 'JPEG', 15, 15, 180, 15);
-    autoTable(pdf, { 
-      html: '#'+id , 
-      startY: 45 , 
-      showFoot: 'lastPage' , 
-      styles: {
-        font: 'Garamond',
-        halign: 'center'
-      },
-      headStyles: {
-        fontSize: 10,
-        fontStyle: 'bold',
-        halign: 'center'
-      },
-      bodyStyles: {
-        fontStyle: 'normal',
-      },
-      columnStyles: {
-        2 : {
-          halign: 'right'
+    pdf.addImage(imageData.toString(), 'JPEG', widthHeader, 15, 180, 15);
+
+    for( let element of id){
+      pdf.text(element.title, widthTitle, height);
+      height += 5;
+      autoTable(pdf, { 
+        html: '#'+element.object , 
+        startY: height , 
+        showFoot: 'lastPage' , 
+        styles: {
+          font: 'Garamond',
+          halign: 'center'
         },
-        4 : {
-          halign: 'right'
+        headStyles: {
+          fontSize: 10,
+          fontStyle: 'bold',
+          halign: 'center'
         },
-        8 : {
-          halign: 'right'
+        bodyStyles: {
+          fontStyle: 'normal',
         },
-      }
-    })
+        columnStyles: {
+          2 : {
+            halign: 'right'
+          },
+          4 : {
+            halign: 'right'
+          },
+          8 : {
+            halign: 'right'
+          },
+        },
+        didDrawPage: (HookData) => {
+          height = HookData.cursor?.y;
+        }
+      });
+      height += 10 ;
+    }
+
 
     let footerPosition = 285;
     if(format == 'l'){

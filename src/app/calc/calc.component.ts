@@ -104,6 +104,7 @@ export class CalcComponent implements OnInit {
   public sumTotalAtualizado = 0;
   public sumTotalCorr = 0;
   public sumTotalJuros = 0;
+  public sumTotalJurosDias = 0;
   public token ="";
   public formCalc = new FormGroup({
     //Lançamentos
@@ -470,12 +471,20 @@ export class CalcComponent implements OnInit {
     this.sumTotalCorr = 0;
     this.sumTotalAtualizado = 0;
     this.sumTotalJuros = 0;
+    this.sumTotalJurosDias = 0;
+
     this.dados.map((x: any) => {
       this.sumTotal = this.sumTotal + x.principal;
       this.sumTotalAtualizado = this.sumTotalAtualizado + x.valorAtualizado;
       this.sumTotalCorr = this.sumTotalCorr + x.valorCorr;
       this.sumTotalJuros = this.sumTotalJuros + x.jurosValorTotal;
+      this.sumTotalJurosDias = this.sumTotalJurosDias + x.juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
+
     });
+  }
+  
+  public checkJurosLength() {
+    return this.dados.filter((e:any) => e.juros.length > 0).length;
   }
 
 /**
@@ -570,7 +579,7 @@ export class CalcComponent implements OnInit {
         }
         if(jurosDtFim >= defDataCodigoCivilFim){
           jurosTaxa = 0.12;
-          jurosDt = jurosDtIni > defDataCodigoCivilFim ? jurosDtIni : defDataCodigoCivil;
+          jurosDt = jurosDtIni > defDataCodigoCivilFim ? jurosDtIni : defDataCodigoCivilFim;
           jurosDias = this.days360(jurosDt, jurosDtFim);
           jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
           jurosTaxaTotal = jurosTaxaTotal + jurosTaxaAcumulada;
@@ -633,7 +642,7 @@ export class CalcComponent implements OnInit {
             indice = await this.service.getIndice('POUPNOVA',  jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
               data = res.content
               if (data.length > 0) {
-                jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupanca;
+                jurosDt = jurosDtIni >defDataPoupancaFim ? jurosDtIni : defDataPoupancaFim;
                 jurosDias = this.days360(jurosDt, jurosDtFim);
                 data.sort((a:any, b:any) => {
                   return new Date(a.data).getTime() - new Date(b.data).getTime();
@@ -677,7 +686,10 @@ export class CalcComponent implements OnInit {
             }
           })
         break;
-    } 
+    }
+    this.dataTableJuros.sort((a:any, b:any) => {
+      return new Date(a.dtIni).getTime() - new Date(b.dtIni).getTime();
+    });
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataTableJuros);
     onFinish && await onFinish()
     return indice ? Promise.resolve(indice) : Promise.resolve('without indice');
@@ -1187,13 +1199,15 @@ export class CalcComponent implements OnInit {
  * The function then calls the report.makePDF function with the id, date, path, and format. 
  * @param {string} id - The id of the element to be displayed on the report.
  */
-  makePDF(id: string){
+  makePDF(id: any){
+    let date = this.myFormattedDate;
+    let headerImg = '/assets/imgs/LOGO_MPRJ_GATE.png';
     let format = 'p';
     let url = location.protocol+'//'+location.hostname+"/?calculo="+this.token
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
       format = 'l';	
     }
-    report.makePDF(id, this.myFormattedDate, '/assets/imgs/LOGO_MPRJ_GATE.png', format, url);
+    report.makePDF({id, date, headerImg, format, url});
   }
 
 /**
