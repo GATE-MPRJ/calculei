@@ -21,6 +21,16 @@
                   <label>Tipo de cálculo</label>
                   <mat-form-field appearance="outline">
                     <mat-select formControlName="fcTipoCalculo" required autofocus>
+                      <mat-option value="abatimentos"
+                        [hidden]="dataSourceLanca && dataSourceLanca.data.length < 1" 
+                        (click)="
+                          this.formCalc.controls.fcIndiceLanca.setValue(
+                            'sem-correcao'
+                          );this.formCalc.controls.fcDescricao.setValue(
+                            'Abatimento'
+                          );"
+                      >Abatimentos</mat-option
+                      >                      
                       <!-- Nâo aparecer 6.899/81 -->
                       <mat-option
                         value="particular"
@@ -53,15 +63,10 @@
                         (click)="
                           this.formCalc.controls.fcIndiceLanca.setValue(
                             'TJ11960'
-                          )
-                        "
-                        >Débitos da Fazenda Pública - Não
+                          )"
+                      >Débitos da Fazenda Pública - Não
                         Tributários</mat-option
                       >
-                      <!-- Nâo aparecer 11.960/2009 
-                      <mat-option value="abatimentos" disabled
-                        >Abatimentos (em desenvolvimento)</mat-option
-                      >-->
                       <!-- Incluir Calculos de Precatórios -->
                       <mat-option value="precatorios"
                         >Precatórios - Tributários</mat-option
@@ -77,7 +82,6 @@
                   </mat-form-field>
                 </div>
                 <div
-                  [hidden]="formCalc.controls.fcTipoCalculo.value == 'abatimentos'"
                 >
                   <label>Índice de correção monetária</label>
                   <mat-form-field appearance="outline">
@@ -121,38 +125,6 @@
                 </div>
               </div>
               <div class="flexbox">
-                <div
-                  [hidden]="formCalc.controls.fcTipoCalculo.value != 'abatimentos'"
-                >
-                  <label>Lançamento</label>
-                  <mat-hint *ngIf="dataSourceLanca.data.length == 0"
-                    >Nenhum lançamento cadastrado</mat-hint
-                  >
-                  <mat-form-field
-                    appearance="outline"
-                    *ngIf="dataSourceLanca.data.length > 0"
-                  >
-                    <mat-select
-                      formControlName="fcListaLancamento"
-                      style="width: 100%"
-                    >
-                      <!-- Nâo aparecer 6.899/81 -->
-                      <mat-option
-                        *ngFor="
-                          let element of dataSourceLanca.data;
-                          let i = index
-                        "
-                        [value]="i"
-                        >{{ element.dtIni | date: "dd/MM/yyyy" }} |
-                        {{ element.principal | currency: "BRL" }} ({{
-                          element.indice
-                        }})
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="flexbox">
                 <div>
                   <label for="valor">Valor</label>
                   <mat-form-field appearance="outline">
@@ -167,6 +139,7 @@
                       }"
                       min="1"
                       #valorLanca
+                      (blur)="this.valorAbatimento()"
                     />
                   </mat-form-field>
                 </div>
@@ -211,6 +184,9 @@
                   <label for="descricao">Descrição</label>
                   <mat-form-field appearance="outline">
                     <mat-select formControlName="fcDescricao">
+                      <mat-option value="Abatimento" [hidden]="dataSourceLanca && dataSourceLanca.data.length < 1"
+                      >Abatimento</mat-option
+                    >
                       <mat-option value="Ressarcimento"
                         >Ressarcimento</mat-option
                       >
@@ -242,23 +218,18 @@
                 </div>
               </div>
             </mat-card>
+            <!--Juros-->
             <mat-card>
               <div class="flexbox">
                 <div>
                   <label labelPlacement="top" for="fcJuros"
-                    >Incidir juros?</label
+                    >Juros</label
                   >
                   <mat-slide-toggle
                     color="warn"
                     formControlName="fcJuros"
                     [disabled]="formCalc.controls.fcIndiceLanca.value === 'SELIC'"
                   ></mat-slide-toggle>
-                    <!--mat-slide-toggle
-                    color="warn"
-                    formControlName="fcJuros"
-                    (click)="this.enableJuros();"
-                    [disabled]="!formCalc.valid || formCalc.controls.fcIndiceLanca.value === 'SELIC'"
-                  ></mat-slide-toggle-->
                 </div>
                 <div *ngIf="formCalc.controls.fcJuros.value">
                   <label>Índice de juros</label>
@@ -395,7 +366,7 @@
                     color="primary"
                     (click)="setJuros()"
                   >
-                    APLICAR JUROS
+                    APLICAR
                     <!--mat-icon>add_circle</mat-icon-->
                   </button>
                 </div>
@@ -414,6 +385,7 @@
                     <th class="mat-header-cell cdk-header-cell">Dias</th>
                     <th class="mat-header-cell cdk-header-cell">Taxa</th>
                     <th class="mat-header-cell cdk-header-cell">% Acumulado</th>
+                    <th class="mat-header-cell cdk-header-cell"></th>
                   </thead>
                   <tbody>
                     <tr
@@ -456,85 +428,6 @@
                 </table>
               </div>
             </mat-card>
-            <!--Abatimentos
-            <mat-card>
-              <div class="flexbox">
-                <div>
-                  <label labelPlacement="top" for="fcAbatimentos"
-                    >Abatimentos?</label
-                  >
-                  <mat-slide-toggle
-                    color="warn"
-                    formControlName="fcAbatimentos"
-                  ></mat-slide-toggle>
-                </div>
-                <div *ngIf="formCalc.controls.fcAbatimentos.value">
-                  <label for="fcDtAbatimento">Data do abatimento</label>
-                  <mat-form-field appearance="outline">
-                    <input
-                      formControlName="fcDtAbatimento"
-                      matInput
-                      type="date"
-                      id="fcDtAbatimento"
-                      name="fcDtAbatimento"
-                      required
-                    />
-                  </mat-form-field>
-                </div>
-                <div *ngIf="formCalc.controls.fcAbatimentos.value">
-                  <label for="fcValorAbatimento">Valor do abatimento</label>
-                  <mat-form-field appearance="outline">
-                    <input
-                      formControlName="fcValorAbatimento"
-                      matInput
-                      currencyMask
-                      [options]="{
-                        prefix: 'R$ ',
-                        thousands: '.',
-                        decimal: ','
-                      }"
-                      min="1"
-                    />
-                  </mat-form-field>
-                </div>
-                <div *ngIf="formCalc.controls.fcAbatimentos.value">
-                  <button
-                    type="button"
-                    mat-raised-button
-                    color="warn"
-                    (click)="setAbatimento()"
-                  >
-                    Abatimento <mat-icon>attach_money</mat-icon>
-                  </button>
-                </div>
-              </div>
-              <div
-                class="flexbox"
-                *ngIf="
-                  formCalc.controls.fcAbatimentos.value &&
-                  dataTableAbatimentos.length > 0
-                "
-              >
-                <table class="table">
-                  <thead class="">
-                    <th class="mat-header-cell cdk-header-cell">Data</th>
-                    <th class="mat-header-cell cdk-header-cell">Valor</th>
-                  </thead>
-                  <tbody
-                    *ngFor="let element of dataTableAbatimentos; let i = index"
-                  >
-                    <tr>
-                      <td class="mat-cell cdk-cell">
-                        {{ element.data | date: "dd/MM/yyyy" }}
-                      </td>
-                      <td class="mat-cell cdk-cell">
-                        {{ element.valor | currency: "BRL" }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </mat-card>-->
           </form>
           <div>
             <button
@@ -663,69 +556,6 @@
             </button>
           </mat-menu>
         </div>
-        <!--div>
-          <button
-            mat-raised-button
-            (click)="makePDF('myPdfTable')"
-            [hidden]="dataSourceLanca.data.length == 0"
-          >
-            Relatório
-            <img
-              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABmJLR0QA/wD/AP+gvaeTAAAB1ElEQVRIic2VPUhbURTHf+8jGqJUq5YgRSXEIi1twKmCpYsELDa4iCgOLX6ATg5xcCnUXRxEwaWraOxQEDuJhZZSp1YRBFGMKPiFSFT8Cry8Dm8QE2zuTW6Df7jLuef8f5x7z30PciwtOWC3+7xY2gspF1vf1WY2VkVSzZRIgtdoRIRhpgt0M263+lq0SHQ2XboubHyX3AVYfSN5uD2f7VZf6P8DAdsfwOoVgyoBykCVAUWhSoFJ0IjdVl2bvJ86pbK6PMMY7kyNm3luri+qgT9qgZaFtr0mnC5/pGWP4c17eOiVLoVMOuwagmd18KQWRvuly+U7NF1wfgrFj6RLMwOuL0OJF/aiOQIuTIOdgB3xQckOaBiABsEOcOXnAFgfgs0VsIF3H6TL5abUdEFDO0wNw+EOfJwCbwUUFEFhsXOv42E4PVYEfNUMpeXQ1AWVNRBdhQelUPUUTo7geb3zZBa/Zgl0e+BtD4S6YXcTfnyBn7MQOwTdgJeN4A9A7Ah+L/zTKj3QH4CBCefLsr8FgyGIX93sJyz4NecsAaUfms4hBxa/grHwbVgGSt/h/CQcH8DcJ9hYygomBvw24yxFUv4DvnfA1CPV+Y5FUIm7wYoSn2z0F2ZCgXe+7E0BAAAAAElFTkSuQmCC"
-            />
-          </button>
-        </div>
-        <div>
-          <button
-            type="submit"
-            mat-raised-button
-            (click)="saveCalc()"
-            [hidden]="dataSourceLanca.data.length == 0"
-          >
-            Relatório
-            <img
-              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAACb0lEQVRIie2WT2gTQRTGv7ebhLZJSNvEWpoab61IIF7EWulRKKKISPGqSKkHhaIiXgpiRQ9qKKhgETzEg+DBixSh0F4qhgr+gWIOVcHWJoK2jW3SpJvs7vMgiUnW/dOS6MF+pzfDN+83OzP7ZoAt/SWRFZNvpK9TFNQdRh5vsJPZ7tDNR1BSsZ7hactg390THYKixACIRr7mPbsXiKjdyENEp2M9Vx4CgGAGtuWVNjOoZakIFEJTcK30z8C2kpjcg91dKqnOUsP6UjIkuho0AwWHDSRufgeKYPeFff3M6mjlaZMza5Aza9qRRDmh0fO60Ewvfl+HSF+MYGQTUxowM7VtaMrMDlVR9heaiirHwfAbgvPyeCHW3WO/pwXbXE3FdqCpFZ5614bmZiRd8Mmuo4hefIQGRx327gzizeUn2O721h4cnoxAyufQf+A4rh85h/BkBLPf5moPzuYlDI3dw1DvAFrczQhPRKoGBcp/J43q7XWQZAlEBCJtdXVG48VY8rnZtCoQuBDqWr3ORlw7fBYDj4exmE7i0sFTZknNLxz1t0f3i28eO4+55QTG3k/hRzaFZ2fu4Om7CcwkPpjmt6I/gokIV5+PIplZATPjxae3CN3ow2o2XRWoLpiZ8XkpXtY3v/y1atAyMBEnmC29C375FTUHULFk2tK5DNvFeUOYpK5owKnb0w/cg90zlZeEfTkfsqfztyqTCJLiIOJiyfR8TC0QwfghABovrFvpUnNq5GW00tzaG5QB1SjfpvT/PQRMwaIgJwBSqgFj4mKxt3SM/Yd2dcgKBYw8nnYfQxD184nK6uz9qVeWZ7mlaukn+qHDBVf59wAAAAAASUVORK5CYII="
-            />
-          </button>
-        </div>
-        <div>
-          <button
-            mat-raised-button
-            color="primary"
-            style="background-color: #00afaa"
-            (click)="isActive = !isActive"
-            [hidden]="dataSourceLanca.data.length == 0"
-          >
-            Memória de cálculo
-            <mat-icon>visibility</mat-icon>
-          </button>
-        </div>
-
-        <div class="example-button-row">
-          <button
-            mat-raised-button
-            (click)="alertDialog('Ops, you did it again!')"
-          >
-            Alert
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="confirmDialog('sure?', 'really!')"
-          >
-            Confirm
-          </button>
-          <button
-            mat-raised-button
-            color="accent"
-            (click)="showReplicationPrompt('Replicar lançamento')"
-          >
-            Prompt Input
-          </button>
-          <h2 *ngIf="dataFromDialog">
-            Data from mat-dialog : {{ dataFromDialog | json }}
-          </h2>
-        </div-->
       </div>
       <div class="container" id="Report">
         <div>
@@ -793,7 +623,7 @@
                 Índice de correção monetária</mat-header-cell
               >
               <mat-cell *matCellDef="let element"
-                >{{ element.fatorAplicado | number: "1.0-8" }} <br />({{
+                >{{ element.fatorAplicado > 0 ? element.fatorAplicado : '' | number: "1.0-8" }} <br />({{
                   element.indice
                 }})
               </mat-cell>

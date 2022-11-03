@@ -115,7 +115,7 @@ export class CalcComponent implements OnInit {
     fcDtIniLanca: new FormControl("", [Validators.required,  Validators.pattern(patternData)]),
     fcDtFimLanca: new FormControl(this.dataHoje, [Validators.required,  Validators.pattern(patternData)]),
     fcValorLanca: new FormControl("", [Validators.required]),
-    fcDescricao: new FormControl(""),
+    fcDescricao: new FormControl("Ressarcimento"),
     fcDescricaoOutros: new FormControl(""),
     //Juros
     fcJuros: new FormControl(""),
@@ -337,49 +337,22 @@ export class CalcComponent implements OnInit {
  */
  public editRow(index: number) {
   this.clearForm();
-  console.log(index, this.dataSourceLanca.data[index]);
   this.formCalc.controls.fcIndex.setValue(index);
-
-  //fcListaLancamento???
-  //fcTipoCalculo
   this.formCalc.controls.fcTipoCalculo.setValue(this.dataSourceLanca.data[index]?.tipoCalculo);
-
   this.formCalc.controls.fcIndiceLanca.setValue(this.fixIndices(this.dataSourceLanca.data[index].indice));
-
   this.formCalc.controls.fcValorLanca.setValue(this.dataSourceLanca.data[index].principal);
   this.formCalc.controls.fcDtIniLanca.setValue(moment(this.dataSourceLanca.data[index].dtIni).format('YYYY-MM-DD').toString());
   this.formCalc.controls.fcDtFimLanca.setValue(moment(this.dataSourceLanca.data[index].dtFim).format('YYYY-MM-DD').toString());
-  //Verificar se = 'outros'
-  
-  this.formCalc.controls.fcDescricao.setValue(['Ressarcimento', 'Ressarcimento ao erário', 'Débitos da Fazenda Pública', 'Multa Civil', 'Honorários advocatícios'].includes(this.dataSourceLanca.data[index].descricao) ? this.dataSourceLanca.data[index].descricao : 'Outros');
-  //this.formCalc.controls.fcDescricaoOutros.setValue(this.dataSourceLanca.data[index].descricao != '' ? this.dataSourceLanca.data[index].descricao : 'Outros');
+  this.formCalc.controls.fcDescricao.setValue(['Abatimento','Ressarcimento', 'Ressarcimento ao erário', 'Débitos da Fazenda Pública', 'Multa Civil', 'Honorários advocatícios', ''].includes(this.dataSourceLanca.data[index].descricao) ? this.dataSourceLanca.data[index].descricao : 'Outros');
   this.formCalc.controls.fcDescricaoOutros.setValue(this.dataSourceLanca.data[index].descricao);
-
-  if(this.fixIndices(this.dataSourceLanca.data[index].indice) == 'SELIC'){
-
-  }
-  //juros
   if(this.dataSourceLanca.data[index].juros.length > 0){
-    //console.log(this.dataSourceLanca.data[index].indice);
     this.formCalc.controls.fcJuros.setValue(true);
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataSourceLanca.data[index].juros);
     this.dataTableJuros = this.dataSourceLanca.data[index].juros;
-
     this.formCalc.controls.fcDtIniJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtIni).format('YYYY-MM-DD').toString());
     this.formCalc.controls.fcDtFimJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtFim).format('YYYY-MM-DD').toString());
     this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice);
-    
-
-
-    this.dataSourceLanca.data[index].juros.map((j: any) =>{
-      console.log(j);
-    })
-
-    //this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros.[this.dataSourceLanca.data[index].juros.length-1][indice]);
-    //this.formCalc.controls.fcDtIniJuros.setValue(this.dataSourceLanca.data[index].juros.[this.dataSourceLanca.data[index].juros.length-1][dtIni]);
-    
   }
-
 }
 
 
@@ -414,9 +387,6 @@ export class CalcComponent implements OnInit {
   public removeRowJuros(index: number) {
     if(confirm("Deseja EXCLUIR o juros aplicado no período?")) {
       this.dataTableJuros.splice(index, 1);
-      //this.dataSourceJuros.data.splice(index, 1);
-      //this.dataSourceJuros._updateChangeSubscription();
-      //this.calcSumTotals();
     }
   }
 
@@ -429,7 +399,7 @@ export class CalcComponent implements OnInit {
     //this.formCalc.reset();
     this.formCalc.controls.fcValorLanca.setValue('');
     this.formCalc.controls.fcDtIniLanca.setValue('');
-    this.formCalc.controls.fcDescricao.setValue('');
+    this.formCalc.controls.fcDescricao.setValue('Ressarcimento');
     this.formCalc.controls.fcDescricaoOutros.setValue('');
 
     this.formCalc.setErrors(null)
@@ -474,12 +444,11 @@ export class CalcComponent implements OnInit {
     this.sumTotalJurosDias = 0;
 
     this.dados.map((x: any) => {
-      this.sumTotal = this.sumTotal + x.principal;
-      this.sumTotalAtualizado = this.sumTotalAtualizado + x.valorAtualizado;
-      this.sumTotalCorr = this.sumTotalCorr + x.valorCorr;
-      this.sumTotalJuros = this.sumTotalJuros + x.jurosValorTotal;
-      this.sumTotalJurosDias = this.sumTotalJurosDias + x.juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
-
+        this.sumTotal = this.sumTotal + x.principal;
+        this.sumTotalAtualizado = this.sumTotalAtualizado + x.valorAtualizado;
+        this.sumTotalCorr = this.sumTotalCorr + x.valorCorr;
+        this.sumTotalJuros = this.sumTotalJuros + x.jurosValorTotal;
+        this.sumTotalJurosDias = this.sumTotalJurosDias + x.juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
     });
   }
   
@@ -533,8 +502,8 @@ export class CalcComponent implements OnInit {
 
     //let valorPrincipal = this.formCalc.get("fcValorLanca")?.value;
 
-    if (valorPrincipal < 0 || !jurosIndice || !jurosDtIni.isValid() || !jurosDtFim.isValid()){
-      this.alertDialog('Atenção!', 'Preencha todos os campos corretamente.');
+    if (valorPrincipal == 0 || !jurosIndice || !jurosDtIni.isValid() || !jurosDtFim.isValid()){
+      this.alertDialog('Atenção!', 'Preencha o valor e os campos de juros corretamente.');
       return false;
     }
 
@@ -695,20 +664,12 @@ export class CalcComponent implements OnInit {
     return indice ? Promise.resolve(indice) : Promise.resolve('without indice');
   }
 
- /**
-  * It adds the data to the table abatimentos.
-  */
-  public setAbatimento(){
-    let abatimentosData = (this.formCalc.get("fcDtAbatimento")?.value);
-    let abatimentosValor = (this.formCalc.get("fcValorAbatimento")?.value);
-    this.dataTableAbatimentos.push({
-      data: abatimentosData,
-      valor: abatimentosValor,
-    });
-    this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>(this.dataTableAbatimentos);
+
+  public valorAbatimento(){
+    this.formCalc.get("fcTipoCalculo")?.value == 'abatimentos' && this.formCalc.get("fcValorLanca")?.value > 0 ? this.formCalc.controls.fcValorLanca.setValue(this.formCalc.get("fcValorLanca")?.value * -1) : true;
   }
 
-  /**
+   /**
    * It adds a new lancamento to the lancamentos array.
    */
   /* The above code is responsible for adding the lancamento to the database. */
@@ -728,7 +689,7 @@ export class CalcComponent implements OnInit {
         this.setJuros();
       }
 
-      if(valorPrincipal < 0 || !dtIni.isValid()  || !dtFim.isValid() ) {
+      if(valorPrincipal == 0 || !dtIni.isValid()  || !dtFim.isValid() ) {
         this.alertDialog('Atenção!', 'Preencha todos os campos corretamente.');
       }
       else {
