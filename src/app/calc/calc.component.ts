@@ -1,5 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import {
+  HttpEvent,
+  HttpEventType,
+  // tslint:disable-next-line: import-spacing
+} from "@angular/common/http";
 import { CalcService } from '../services/calc.service'
 import { Reports } from '../reports/reports'
 import {
@@ -361,7 +366,7 @@ export class CalcComponent implements OnInit {
  * Update the total sums.
  */
   public removeAllRows(){
-    if(confirm("Deseja EXCLUIR TODOS lançamento?")) {
+    if(confirm("Excluir TODOS lançamentos?")) {
       this.dataSourceLanca = new MatTableDataSource<ElementLanc>();
       this.dados = [];
       this.calcSumTotals();
@@ -450,6 +455,8 @@ export class CalcComponent implements OnInit {
         this.sumTotalJuros = this.sumTotalJuros + x.jurosValorTotal;
         this.sumTotalJurosDias = this.sumTotalJurosDias + x.juros.reduce(function(jurosDiasAcc:number, jurosCurr:any){ return jurosDiasAcc + jurosCurr.dias;}, 0);
     });
+
+    return true;
   }
   
   public checkJurosLength() {
@@ -1216,6 +1223,84 @@ export class CalcComponent implements OnInit {
       link.remove();
     });
     //this.service.pushSaveCalc(this.dados)
+  }
+
+  public readExcel(event:any){
+    if (event.target.files.length > 0) {
+      let file = event.target.files[0];
+      /*this.formCadastro.patchValue({
+        fileSource: this.file
+      });*/
+
+      let data = new FormData();
+      data.append('file', file);
+
+      this.service.pushReadExcel(data).subscribe((event: HttpEvent<any>) => {
+
+        switch (event.type) {
+          case HttpEventType.Sent:
+            // console.log(HttpEventType.Sent)
+            return true;
+            break;
+          case HttpEventType.ResponseHeader:
+            if (event.status !== 200) {
+              //let onLoading = false;
+              //document.getElementById("progress").setAttribute("mode", "determinate");
+              //this.progressBar = 0;
+            }
+            return true;
+            break;
+  
+          case HttpEventType.UploadProgress:
+            //this.progressBar = Math.round((100 * event.loaded) / event.total);
+            // console.log(event.total, event.total);
+            // console.log(`Uploaded! ${this.progressBar}%`);
+            //return `Arquivo "${this.file.name}" foi ${this.progressBar}% enviado.`;
+            return true;
+            break;
+  
+          case HttpEventType.Response:
+
+            // console.log('Http Envent Resposnse', HttpEventType.Response)
+
+            //console.log(HttpEventType.Response);
+            this.dados = event.body.content;
+            //console.log(this.dados);
+            this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
+            this.calcSumTotals();
+    
+            /*const dt2 = {
+              titulo: "Sucess",
+              status: 200,
+              statusText: event.body.status+"!",
+            };
+            if (event.status === 400) {
+              console.log(event.body.status)
+            }
+            if (event.status !== 200) {
+              document
+                .getElementById("progress")
+                .setAttribute("mode", "determinate");
+            }
+            this.msgdialogService.openDialog(dt2);
+            setTimeout(() => {
+              this.router.navigate(["home"]);
+            }, 3000);
+            break;
+            */
+            return true;
+            break;
+            
+            default:
+            return true;
+            break;
+
+        }
+      });
+      return false;
+    }
+
+    return false;
   }
 
 }
