@@ -92,6 +92,7 @@ export class CalcComponent implements OnInit {
 
   @ViewChild('valorLanca') valorLanca!: ElementRef;
 
+  public hostname: string = location.hostname;
 
   //minDate: Date;
   maxDate: Date;
