@@ -496,6 +496,28 @@
                 </tfoot>
               </table>
             </div>
+            <div [hidden]="dataSourceLanca.data.length > 0">
+              <label
+              for="xlsLancamentos"
+              mat-stroked-button
+              color="primary"
+              class="mat-stroked-button"
+              style="color:#5573a9; flex-flow: column;"
+              >IMPORTAR LANÇAMENTOS</label>
+              <input
+              id="xlsLancamentos" 
+              type="file"
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+              (change)="readExcel($event)"
+              style="visibility:hidden; display:none;"
+              />
+ 
+              <!--img
+              src="/assets/svgs/xls-regular.svg" class="iconXls"/-->
+              <div>
+                <a href="#">Download da planilha modelo.</a>
+              </div>
+            </div>
           </mat-card>
           <div>
             <p>
