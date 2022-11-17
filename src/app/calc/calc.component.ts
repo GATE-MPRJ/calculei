@@ -134,6 +134,9 @@ export class CalcComponent implements OnInit {
     fcAbatimentos: new FormControl(""),
     fcDtAbatimento: new FormControl(""),
     fcValorAbatimento: new FormControl(""),
+    //multa
+    fcValorMulta: new FormControl({ value: null, disabled: true }),
+    fcMultaDias: new FormControl({ value: null, disabled: true }),
   })
 
 
@@ -338,6 +341,48 @@ export class CalcComponent implements OnInit {
   }
 
 /**
+ * It takes two dates, converts them to milliseconds, calculates the difference in milliseconds,
+ * converts the difference back to days, and returns the result
+ * @param {Date} dateA - The first date to compare.
+ * @param {Date} dateB - The date you want to compare to.
+ * @returns The number of days between two dates.
+ */
+  daysBetween(dateA: Date, dateB: Date) {
+
+    dateA = new Date(dateA);
+    dateB = new Date(dateB);
+    // The number of milliseconds in one day
+    const ONE_DAY = 1000 * 60 * 60 * 24;
+
+    // Convert both dates to milliseconds
+    const dateAMs = dateA.getTime();
+    const dateBMs = dateB.getTime();
+
+    // Calculate the difference in milliseconds
+    const differenceMs = Math.abs(dateAMs - dateBMs);
+
+    // Convert back to days and return
+    let days = Math.round(differenceMs / ONE_DAY) + 1;
+    return days;
+  }
+
+/**
+ * It calculates the number of days between two dates and multiplie it by the value of daily fee 
+ * sets the results in the inputs fields for days and total fee
+ */
+  public setCalcMultaDiaria() {
+    let dateA = new Date (this.formCalc.controls.fcDtIniLanca.value);
+    let dateB = new Date (this.formCalc.controls.fcDtFimLanca.value);
+    let days = this.daysBetween(dateA, dateB);
+    this.formCalc.controls.fcMultaDias.setValue(days);
+
+    let multa =  this.formCalc.controls.fcValorLanca.value;
+    let multaTotal = multa * days;
+    this.formCalc.controls.fcValorMulta.setValue(multaTotal);
+
+  }
+
+/**
  * It edit a row from the table lançamentos.
  * @param {number} index - The index of the row you want to edit.
  */
@@ -419,6 +464,10 @@ export class CalcComponent implements OnInit {
     //this.formCalc.controls.fcJuros.disable();
     this.dataTableAbatimentos = [];
     this.dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>();
+
+    this.formCalc.controls.fcMultaDias.setValue('');
+    this.formCalc.controls.fcValorMulta.setValue('');
+
     this.valorLanca.nativeElement.focus();
   }
 
@@ -691,6 +740,11 @@ export class CalcComponent implements OnInit {
       let dtIni = moment(this.formCalc.get("fcDtIniLanca")?.value);
       let dtFim = moment(this.formCalc.get("fcDtFimLanca")?.value);
       let descricao = this.formCalc.get("fcDescricao")?.value == "Outros" ? this.formCalc.get("fcDescricaoOutros")?.value : this.formCalc.get("fcDescricao")?.value;
+
+      //Multa
+      if(this.formCalc.get("fcTipoCalculo")?.value == "multa-diaria" ){
+        valorPrincipal = this.formCalc.get("fcValorLanca")?.value * this.daysBetween(dtIni, dtFim); 
+      }
 
       //Juros ativo mas não incluído
       if(this.formCalc.get("fcJuros")?.value && this.dataTableJuros.length == 0){
