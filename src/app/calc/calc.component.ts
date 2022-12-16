@@ -139,7 +139,7 @@ export class CalcComponent implements OnInit {
     fcMultaDias: new FormControl({ value: null, disabled: true }),
   })
 
-
+  
   firstFormGroup: FormGroup = this.formCalc;
   dados: any = [];
   dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
@@ -149,7 +149,7 @@ export class CalcComponent implements OnInit {
   dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataTableJuros);
   dataTableAbatimentos: any = [];
   dataSourceAbatimentos = new MatTableDataSource<ElementAbatimentos>(this.dataTableAbatimentos);
-
+  indiceJuros = true;
     
   displayedColumns = [
     "select",
@@ -388,6 +388,7 @@ export class CalcComponent implements OnInit {
  */
  public editRow(index: number) {
   this.clearForm();
+  console.log('dataSourceLanca',this.dataSourceLanca.data)
   this.formCalc.controls.fcIndex.setValue(index);
   this.formCalc.controls.fcTipoCalculo.setValue(this.dataSourceLanca.data[index]?.tipoCalculo);
   this.formCalc.controls.fcIndiceLanca.setValue(this.fixIndices(this.dataSourceLanca.data[index].indice));
@@ -403,6 +404,12 @@ export class CalcComponent implements OnInit {
     this.formCalc.controls.fcDtIniJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtIni).format('YYYY-MM-DD').toString());
     this.formCalc.controls.fcDtFimJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtFim).format('YYYY-MM-DD').toString());
     this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice);
+    if (this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice == 'especificar' && this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.taxa =='0.06' ){
+      this.formCalc.controls.fcIndiceJuros.setValue("simples6")
+      this.indiceJuros = false;
+    }
+    this.formCalc.controls.fcTaxaJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.taxa);
+    
   }
 }
 
@@ -622,7 +629,8 @@ export class CalcComponent implements OnInit {
           })
         }
       break;
-      case 'especificar':
+      case 'simples6':
+      case 'simples12':
         jurosTaxa = jurosTaxa * 0.01;
         jurosDias = this.days360(jurosDtIni, jurosDtFim);
         jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
@@ -971,6 +979,7 @@ export class CalcComponent implements OnInit {
       fatorDivisao: fatorDivisao,
       fatorCalculo: fatorCalculo
     }
+    console.log('correção', correcao)
     return correcao;
   }
   
@@ -1054,12 +1063,12 @@ export class CalcComponent implements OnInit {
       jurosDiasTotal: jurosDiasTotal,
       fatorAplicado: correcao.fatorCalculo,
       valorAtualizado: this.roundNumber(correcao.valorAtualizado),
-      valorCorr: this.roundNumber(correcao.valorAtualizado) + this.roundNumber(jurosValorTotal),
+      valorCorr: (this.roundNumber(correcao.valorAtualizado) + this.roundNumber(jurosValorTotal)),
       correcao: (correcao.valorAtualizado + jurosValorTotal) - (valorPrincipal),
       memoria: this.dataTableRelatorio,
       juros: juros
     }
-    
+     console.log('',dataLancamento)
     //edit
     if(this.formCalc.get("fcIndex")?.value !== '' && this.formCalc.get("fcIndex")?.value !== null){
       this.dados[this.formCalc.get("fcIndex")?.value] = dataLancamento;
@@ -1316,12 +1325,13 @@ export class CalcComponent implements OnInit {
   
           case HttpEventType.Response:
 
-            // console.log('Http Envent Resposnse', HttpEventType.Response)
+            console.log('Http Envent Resposnse', HttpEventType.Response)
 
-            //console.log(HttpEventType.Response);
-            this.dados = event.body.content;
-            //console.log(this.dados);
+            console.log('EVENT', event);
+            this.dados = event.body;
+            console.log(this.dados);
             this.dataSourceLanca = new MatTableDataSource<ElementLanc>(this.dados);
+            console.log('DADOS',this.dataSourceLanca);
             this.calcSumTotals();
     
             /*const dt2 = {

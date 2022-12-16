@@ -313,39 +313,43 @@
                     <mat-select formControlName="fcIndiceJuros" required>
                       <mat-option
                         value="codigo_civil"
+                        (click) = "this.indiceJuros = true"
                         title="Juros do Código Civil - Lei nº 10406/02 (6% a.a. até 10/01/2003 e 12% a.a. a partir de 10/01/2003 a.a.)"
                         >Juros do Código Civil - Lei nº 10406/02 (6% e 12%
                         a.a.)</mat-option
                       >
                       <mat-option
-                        value="especificar"
-                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(6)"
+                        value="simples6"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(6); this.indiceJuros = false "
                         >Juros Simples 6% a.a.</mat-option
                       >
                       <mat-option
-                        value="especificar"
+                        value="simples12"
                         (click)="
-                          this.formCalc.controls.fcTaxaJuros.setValue(12)
+                          this.formCalc.controls.fcTaxaJuros.setValue(12); this.indiceJuros = false
                         "
                         >Juros Simples 12% a.a.</mat-option
                       >
-                      <mat-option value="SELIC">SELIC</mat-option>
+                      <mat-option value="SELIC"
+                      (click)="this.indiceJuros = true"
+                      >SELIC</mat-option>
                       <mat-option
                         value="poupanca"
-                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1); this.indiceJuros = true"
                         >Poupança (Antiga + Nova)</mat-option
                       >
                       <mat-option
                         value="POUPANTIGA"
-                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1); this.indiceJuros = true "
                         >Poupança Antiga</mat-option
                       >
                       <mat-option
                         value="POUPNOVA"
-                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1)"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1); this.indiceJuros = true "
                         >Poupança Nova</mat-option
                       >
                       <mat-option value="especificar"
+                      (click) ="this.indiceJuros = false"
                         >Especificar Taxa</mat-option
                       >
                     </mat-select>
@@ -381,11 +385,11 @@
                     índices. <BR />
                   </mat-hint>
                 </div>
-                <div
+                <label>{{this.indiceJuros}}</label>
+                <div                
                   [hidden]="
                     !formCalc.controls.fcJuros.value ||
-                    formCalc.controls.fcIndiceJuros.value == 'codigo_civil' ||
-                    formCalc.controls.fcIndiceJuros.value != 'especificar'
+                    indiceJuros
                   "
                 >
                   <label for="fcTaxaJuros">Taxa de juros</label>
