@@ -896,6 +896,10 @@ export class CalcComponent implements OnInit {
 
     dataJuros.map((j: any, i: number) => {
       jurosValor = this.calcJuros(valor, j.taxa, j.dias);
+      //poupança remove o valor principal
+      if(j.indice.indexOf('poup') > -1){
+        jurosValor = jurosValor - valor;
+      }
       juros.push({
         valor: jurosValor,
         indice: j.indice,
