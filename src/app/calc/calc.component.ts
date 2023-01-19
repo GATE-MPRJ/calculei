@@ -111,6 +111,7 @@ export class CalcComponent implements OnInit {
   public sumTotalCorr = 0;
   public sumTotalJuros = 0;
   public sumTotalJurosDias = 0;
+  public ufir = 0;
   public token ="";
   public formCalc = new FormGroup({
     //Lançamentos
@@ -385,33 +386,43 @@ export class CalcComponent implements OnInit {
 /**
  * It edit a row from the table lançamentos.
  * @param {number} index - The index of the row you want to edit.
- */
- public editRow(index: number) {
+ */ 
+public editRow(index: number) {
+
   this.clearForm();
-  console.log('dataSourceLanca',this.dataSourceLanca.data)
+
   this.formCalc.controls.fcIndex.setValue(index);
   this.formCalc.controls.fcTipoCalculo.setValue(this.dataSourceLanca.data[index]?.tipoCalculo);
   this.formCalc.controls.fcIndiceLanca.setValue(this.fixIndices(this.dataSourceLanca.data[index].indice));
   this.formCalc.controls.fcValorLanca.setValue(this.dataSourceLanca.data[index].principal);
-  this.formCalc.controls.fcDtIniLanca.setValue(moment(this.dataSourceLanca.data[index].dtIni).format('YYYY-MM-DD').toString());
-  this.formCalc.controls.fcDtFimLanca.setValue(moment(this.dataSourceLanca.data[index].dtFim).format('YYYY-MM-DD').toString());
+  let editDtIni = moment(this.dataSourceLanca.data[index].dtIni).format('YYYY-MM-DD').toString();
+  this.formCalc.controls.fcDtIniLanca.setValue(editDtIni);
+  let editDtFim = moment(this.dataSourceLanca.data[index].dtFim).format('YYYY-MM-DD').toString();
+  this.formCalc.controls.fcDtFimLanca.setValue(editDtFim);
   this.formCalc.controls.fcDescricao.setValue(['Abatimento','Ressarcimento', 'Ressarcimento ao erário', 'Débitos da Fazenda Pública', 'Multa Civil', 'Honorários advocatícios', ''].includes(this.dataSourceLanca.data[index].descricao) ? this.dataSourceLanca.data[index].descricao : 'Outros');
   this.formCalc.controls.fcDescricaoOutros.setValue(this.dataSourceLanca.data[index].descricao);
+
+  if(this.dataSourceLanca.data[index]?.tipoCalculo == 'multa-diaria'){
+    this.formCalc.controls.fcValorMulta.setValue(this.dataSourceLanca.data[index].principal);
+    this.formCalc.controls.fcValorLanca.setValue(this.dataSourceLanca.data[index].principal / this.daysBetween(editDtIni, editDtFim));
+    this.formCalc.controls.fcMultaDias.setValue(this.daysBetween(editDtIni, editDtFim));
+  }
   if(this.dataSourceLanca.data[index].juros.length > 0){
     this.formCalc.controls.fcJuros.setValue(true);
     this.dataSourceJuros = new MatTableDataSource<ElementJuros>(this.dataSourceLanca.data[index].juros);
     this.dataTableJuros = this.dataSourceLanca.data[index].juros;
     this.formCalc.controls.fcDtIniJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtIni).format('YYYY-MM-DD').toString());
     this.formCalc.controls.fcDtFimJuros.setValue(moment(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.dtFim).format('YYYY-MM-DD').toString());
-    this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice);
+    //this.formCalc.controls.fcIndiceJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice);
     if (this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.indice == 'especificar' && this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.taxa =='0.06' ){
-      this.formCalc.controls.fcIndiceJuros.setValue("simples6")
+      this.formCalc.controls.fcIndiceJuros.setValue(6)
       this.indiceJuros = false;
     }
-    this.formCalc.controls.fcTaxaJuros.setValue(this.dataSourceLanca.data[index].juros[this.dataSourceLanca.data[index].juros.length-1]?.taxa);
-    
   }
+
+
 }
+
 
 
 /**
@@ -1253,6 +1264,13 @@ export class CalcComponent implements OnInit {
 
   
   public saveCalc(){
+    let data :any = [];
+    this.service.getUFIR().subscribe((res:any) => {
+      const data = res.content
+      console.log(data.fator)
+      this.ufir = data.map((d: any) => d.fator);
+
+    })
     this.service.pushSaveCalc(this.dados).subscribe((res) => {    
         this.token = res
         //this.getExcel(this.token)

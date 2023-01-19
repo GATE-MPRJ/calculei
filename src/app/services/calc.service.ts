@@ -21,6 +21,11 @@ export class CalcService {
       
     })
   }
+
+  getUFIR(){
+    return this.httpClient.get(this.baseUrl + "UFIR/getUfir", { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
+  }
+
   
   getIndice(indice: string,startDate: any, endDate: any) {
     return this.httpClient.get(this.baseUrl + indice +"/BetweenDates?startDate="+ startDate+ "&endDate=" + endDate,{ responseType: 'json' })      .pipe(
