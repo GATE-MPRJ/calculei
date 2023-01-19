@@ -112,6 +112,7 @@ export class CalcComponent implements OnInit {
   public sumTotalJuros = 0;
   public sumTotalJurosDias = 0;
   public ufir = 0;
+  public TotalUfir = 0;
   public token ="";
   public formCalc = new FormGroup({
     //Lançamentos
@@ -711,14 +712,19 @@ public editRow(index: number) {
         default:
           indice = await this.service.getIndice(jurosIndice, jurosDtIni?.format('DD-MM-YYYY').toString(), jurosDtFim?.format('DD-MM-YYYY').toString()).subscribe((res: any) => {
             data = res.content
+            console.log(data)
             if (data.length > 0) {
               jurosDias = this.days360(jurosDtIni, jurosDtFim);
               data.sort((a:any, b:any) => {
                 return new Date(a.data).getTime() - new Date(b.data).getTime();
               });
-              indiceAcumulados = data.map((d: any) => d.acumulado);
+              indiceAcumulados = data.map((d:any) => d.acumulado);
+              //console.log("indiceAcumulados: " + indiceAcumulados)
               jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
+              console.log("jurosTaxaAcumulada: " + jurosTaxaAcumulada )
               jurosTaxa = this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
+              console.log("jurosTaxaAcumulada: " + jurosTaxaAcumulada,"jurosDias: " + jurosDias);
+              console.log("jurosTaxa " + jurosTaxa)
               this.dataTableJuros.push({
                 //valor: jurosValor,
                 indice: jurosIndice,
@@ -728,6 +734,8 @@ public editRow(index: number) {
                 dtIni: jurosDtIni,
                 dtFim: jurosDtFim
               })
+              //console.log("dataTableJuros " + this.dataTableJuros.taxaAcumulada)
+
             }
           })
         break;
@@ -842,6 +850,10 @@ public editRow(index: number) {
  */
   public calcTaxa(taxa:number, dias:number){
     return ((taxa / 360) * dias);
+  }
+  public calcTotalUfir(){
+    console.log(this.sumTotalCorr/this.ufir)
+    return this.sumTotalCorr/this.ufir
   }
 
 /**
@@ -1244,12 +1256,14 @@ public editRow(index: number) {
  */
   makePDF(id: any){
     let date = this.myFormattedDate;
+    this.TotalUfir = this.calcTotalUfir();
     let headerImg = '/assets/imgs/LOGO_MPRJ_GATE.png';
     let format = 'p';
     let url = location.protocol+'//'+location.hostname+"/?calculo="+this.token
     if (this.sumTotal.toString().length >= 9 && this.sumTotalAtualizado.toString().length >= 9){
       format = 'l';	
     }
+    
     report.makePDF({id, date, headerImg, format, url});
   }
 

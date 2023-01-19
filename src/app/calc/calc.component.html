@@ -305,7 +305,7 @@
                     [disabled]="
                       formCalc.controls.fcIndiceLanca.value === 'SELIC'
                     "
-                  ></mat-slide-toggle>
+                  ></mat-slide-toggle>                  
                 </div>
                 <div *ngIf="formCalc.controls.fcJuros.value">
                   <label>Índice de juros</label>
@@ -333,6 +333,11 @@
                       <mat-option value="SELIC"
                       (click)="this.indiceJuros = true"
                       >SELIC</mat-option>
+                      <mat-option
+                        value="CDI"
+                        (click)="this.formCalc.controls.fcTaxaJuros.setValue(1); this.indiceJuros = true"
+                        >CDI</mat-option
+                      >
                       <mat-option
                         value="poupanca"
                         (click)="this.formCalc.controls.fcTaxaJuros.setValue(1); this.indiceJuros = true"
@@ -385,7 +390,7 @@
                     índices. <BR />
                   </mat-hint>
                 </div>
-                <label>{{this.indiceJuros}}</label>
+                
                 <div                
                   [hidden]="
                     !formCalc.controls.fcJuros.value ||
@@ -507,6 +512,7 @@
                   </tbody>
                 </table>
               </div>
+              
             </mat-card>
           </form>
           <div>
@@ -922,6 +928,17 @@
                     </td>
                     <td>{{ element.valorCorr | currency: "BRL":"":"" }}</td>
                   </tr>
+                  <tr>
+                    <td></td>
+                    <td style="font-weight: bold ;"><strong> Total em UFIR </strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ this.TotalUfir | number: "1.0-2"}}</td>
+                </tr>
                 </tbody>
                 <tfoot>
                   <tr>
@@ -938,18 +955,8 @@
                     <th>{{ this.sumTotalCorr | currency: "BRL":"":"" }}</th>
                   </tr>
                 </tfoot>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th>UFIR</th>
-                  <th></th>
-                  <th>                     
-                  </th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th>{{ this.sumTotalCorr/this.ufir | number: "1.0-2"}}</th>
-              </tr>
+                
+                
               </table>
             </ng-container>
 
