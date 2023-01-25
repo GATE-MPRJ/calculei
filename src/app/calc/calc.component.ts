@@ -102,6 +102,7 @@ export class CalcComponent implements OnInit {
 
   myFormattedDate = moment(Date.now()).format('LL')
   dataHoje = moment(Date.now()).format('YYYY-MM-DD');
+  
 
   public ResponseIndice: responseIndice[] = [];
   //public ResponseIndice: Observable<responseIndice>;
@@ -382,6 +383,13 @@ export class CalcComponent implements OnInit {
     let multaTotal = multa * days;
     this.formCalc.controls.fcValorMulta.setValue(multaTotal);
 
+  }
+  setDateLastday(){
+    //this.dataHoje.subtract(1, 'd');
+    let dataontem = moment(this.dataHoje).subtract(1, 'day').format('YYYY-MM-DD');
+    console.log(this.dataHoje) 
+    this.formCalc.controls.fcDtFimLanca.setValue(dataontem)
+    //fcDtFimLanca: new FormControl(this.dataHoje, [Validators.required,  Validators.pattern(patternData)]),
   }
 
 /**
@@ -1021,7 +1029,7 @@ public editRow(index: number) {
     data.map((x: any) => {
       fatorCalculoMemoria = x.valor ? x.acumulado : correcao.fatorDivisao;
       this.dataTableRelatorio.push({
-        //indice: x.nome,
+        indice: x.nome,
         data: x.data,
         fator: x.fator,
         valorIndice: x.valor ? x.valor : correcao.fatorDivisao,
