@@ -21,6 +21,11 @@ export class CalcService {
       
     })
   }
+
+  getUFIR(){
+    return this.httpClient.get(this.baseUrl + "UFIR/getUfir", { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
+  }
+
   
   getIndice(indice: string,startDate: any, endDate: any) {
     return this.httpClient.get(this.baseUrl + indice +"/BetweenDates?startDate="+ startDate+ "&endDate=" + endDate,{ responseType: 'json' })      .pipe(
@@ -62,7 +67,7 @@ export class CalcService {
     const body = json
     return this.httpClient.post(this.baseUrl + 'web/saveCalc', body,{ responseType: 'text' });    
   }
-  // Rertorna um Arquivo Excel com base em um token gerado no saveCalc
+  // Retorna um Arquivo Excel com base em um token gerado no saveCalc
   getExcel(token: string): Observable<Blob>{
     console.log(token)        
     return this.httpClient.get(this.baseUrl + "web/getExcel?token=" + token, { responseType: 'blob' });
@@ -76,5 +81,14 @@ export class CalcService {
     return this.httpClient.get(this.baseUrl + "web/getJsonCalc?token=" + token, { responseType: 'json' }).pipe(retry(1), catchError(this.handleError))       
   }
   //End
+
+  //Send excel file to be parsed and return a json
+  pushReadExcel(data: any){
+    //console.log(data);
+    return this.httpClient.post(this.baseUrl + 'web/readExcel', data, {
+      reportProgress: true,
+      observe: 'events',
+    });
+  }
 
 }

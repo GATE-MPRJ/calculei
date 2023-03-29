@@ -1,7 +1,7 @@
 {
     "/calc/*": {
         "changeOrigin": true,
-        "target": "https://h-calculei.mprj.mp.br/calc",
+        "target": "http://10.12.10.213:8092/calc",        
         "pathRewrite": {"^/calc" : ""},
         "logLevel": "debug",
         "secure": false

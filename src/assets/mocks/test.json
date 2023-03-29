@@ -1,130 +1,56 @@
-{
-        "content": [
-                {
-                        "data": "2019-01-01 00:00:00.0",
-                        "fator": 1.05318899,
-                        "nome": "INDICE-TJ",
-                        "id": 652
-                },
-                {
-                        "data": "2019-02-01 00:00:00.0",
-                        "fator": 1.05003761,
-                        "nome": "INDICE-TJ",
-                        "id": 653
-                },
-                {
-                        "data": "2019-03-01 00:00:00.0",
-                        "fator": 1.04648063,
-                        "nome": "INDICE-TJ",
-                        "id": 654
-                },
-                {
-                        "data": "2019-04-01 00:00:00.0",
-                        "fator": 1.04085657,
-                        "nome": "INDICE-TJ",
-                        "id": 655
-                },
-                {
-                        "data": "2019-05-01 00:00:00.0",
-                        "fator": 1.03341907,
-                        "nome": "INDICE-TJ",
-                        "id": 656
-                },
-                {
-                        "data": "2019-06-01 00:00:00.0",
-                        "fator": 1.029816,
-                        "nome": "INDICE-TJ",
-                        "id": 657
-                },
-                {
-                        "data": "2019-07-01 00:00:00.0",
-                        "fator": 1.02919732,
-                        "nome": "INDICE-TJ",
-                        "id": 658
-                },
-                {
-                        "data": "2019-08-01 00:00:00.0",
-                        "fator": 1.02827069,
-                        "nome": "INDICE-TJ",
-                        "id": 659
-                },
-                {
-                        "data": "2019-09-01 00:00:00.0",
-                        "fator": 1.02744655,
-                        "nome": "INDICE-TJ",
-                        "id": 660
-                },
-                {
-                        "data": "2019-10-01 00:00:00.0",
-                        "fator": 1.02652307,
-                        "nome": "INDICE-TJ",
-                        "id": 661
-                },
-                {
-                        "data": "2019-11-01 00:00:00.0",
-                        "fator": 1.02560125,
-                        "nome": "INDICE-TJ",
-                        "id": 662
-                },
-                {
-                        "data": "2019-12-01 00:00:00.0",
-                        "fator": 1.02416874,
-                        "nome": "INDICE-TJ",
-                        "id": 663
-                },
-                {
-                        "data": "2020-01-01 00:00:00.0",
-                        "fator": 1.0135266,
-                        "nome": "INDICE-TJ",
-                        "id": 664
-                },
-                {
-                        "data": "2020-02-01 00:00:00.0",
-                        "fator": 1.00638184,
-                        "nome": "INDICE-TJ",
-                        "id": 665
-                },
-                {
-                        "data": "2020-03-01 00:00:00.0",
-                        "fator": 1.0041724,
-                        "nome": "INDICE-TJ",
-                        "id": 666
-                },
-                {
-                        "data": "2020-04-01 00:00:00.0",
-                        "fator": 1.0039691,
-                        "nome": "INDICE-TJ",
-                        "id": 667
-                },
-                {
-                        "data": "2020-05-01 00:00:00.0",
-                        "fator": 1.00407074,
-                        "nome": "INDICE-TJ",
-                        "id": 668
-                },
-                {
-                        "data": "2020-06-01 00:00:00.0",
-                        "fator": 1.01002819,
-                        "nome": "INDICE-TJ",
-                        "id": 669
-                },
-                {
-                        "data": "2020-07-01 00:00:00.0",
-                        "fator": 1.00982793,
-                        "nome": "INDICE-TJ",
-                        "id": 670
-                },
-                {
-                        "data": "2020-08-01 00:00:00.0",
-                        "fator": 1.00680661,
-                        "nome": "INDICE-TJ",
-                        "id": 671
-                },
-                {
-                        "data": "2020-09-01 00:00:00.0",
-                        "fator": 1.00449891,
-                        "nome": "INDICE-TJ",
-                        "id": 672
-                }
-        ]
-}
+[
+        {
+                "dias": 957,
+                "dtFim": "2022-10-14T03:00:00.000Z",
+                "dtIni": "2020-02-17T03:00:00.000Z",
+                "juros": [
+                        {
+                                "id": 0,
+                                "dias": 957,
+                                "taxa": 0.12,
+                                "dtFim": 1665716400000,
+                                "dtIni": "2020-02-17T03:00:00.000Z",
+                                "valor": 1835.70816495,
+                                "indice": "codigo_civil",
+                                "taxaAcumulada": 0.319
+                        }
+                ],
+                "indice": "LEI 6.899/1981",
+                "correcao": 2590.27921495,
+                "descricao": "",
+                "principal": 5000.0,
+                "valorCorr": 7590.28,
+                "tipoCalculo": null,
+                "fatorAplicado": 1.15091421,
+                "jurosDiasTotal": 957,
+                "jurosValorTotal": 1835.70816495,
+                "valorAtualizado": 5754.57
+        },
+        {
+                "dias": 691,
+                "dtFim": "2022-10-14T03:00:00.000Z",
+                "dtIni": "2020-11-13T03:00:00.000Z",
+                "juros": [
+                        {
+                                "id": 0,
+                                "dias": 691,
+                                "taxa": 0.12,
+                                "dtFim": 1665716400000,
+                                "dtIni": "2020-11-13T03:00:00.000Z",
+                                "valor": 9275.959198452072,
+                                "indice": "codigo_civil",
+                                "taxaAcumulada": 0.23033333333333333
+                        }
+                ],
+                "indice": "LEI 6.899/1981",
+                "correcao": 14556.631521688272,
+                "descricao": "",
+                "principal": 34991.22,
+                "valorCorr": 49547.85,
+                "tipoCalculo": null,
+                "fatorAplicado": 1.15091421,
+                "jurosDiasTotal": 691,
+                "jurosValorTotal": 9275.959198452072,
+                "valorAtualizado": 40271.89
+        }
+]
