@@ -871,6 +871,7 @@ public editRow(index: number) {
  * @returns Nothing is being returned.
  */
   public calcTaxa(taxa:number, dias:number){
+    console.log("Calctaxa", taxa + " " + dias)
     return ((taxa / 360) * dias);
   }
   public calcTotalUfir(){
@@ -896,6 +897,7 @@ public editRow(index: number) {
  * @returns Nothing.
  */
   calcJuros(valor:number, taxa:number, dias:number){
+    
     return this.calcTaxa(taxa, dias) * valor;
   }
 
@@ -938,13 +940,21 @@ public editRow(index: number) {
 
     let juros: any = [];
     let jurosValor = 0;
-
+    console.log("valor", valor)
     dataJuros.map((j: any, i: number) => {
-      jurosValor = this.calcJuros(valor, j.taxa, j.dias);
-      //poupança remove o valor principal
-      if(j.indice.indexOf('poup') > -1){
-        jurosValor = jurosValor - valor;
+      debugger
+      if(j.indice.indexOf('poup') > -1 || j.indice.indexOf('POUP') > -1){
+        let jtaxa: any;
+        jtaxa = j.taxaAcumulada.toFixed(8); 
+        //(Math.round(j.taxaAcumulada*100)/100).toFixed(4)
+        jurosValor = (valor * jtaxa);
+
+      } else{      
+        jurosValor = this.calcJuros(valor, j.taxa, j.dias);
       }
+      console.log("jurosValor 947", jurosValor)
+      //poupança remove o valor principal
+      
       juros.push({
         valor: jurosValor,
         indice: j.indice,
@@ -955,7 +965,7 @@ public editRow(index: number) {
         dtFim: j.dtFim
       })
     });
-
+    console.log("Juros", juros )
     return juros;
   }
 
