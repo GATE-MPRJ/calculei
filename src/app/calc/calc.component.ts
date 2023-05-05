@@ -679,7 +679,9 @@ public editRow(index: number) {
                 });
                 indiceAcumulados = data.map((d: any) => d.acumulado);
                 jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
-                jurosTaxa = this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
+                jurosTaxa = (jurosTaxaAcumulada*100)-100;                
+                jurosTaxaAcumulada = jurosTaxa/100;
+                //jurosTaxa = jurosTaxaAcumulada -1//this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
                 this.dataTableJuros.push({
                   //valor: jurosValor,
                   indice: jurosIndice,
@@ -703,7 +705,10 @@ public editRow(index: number) {
                 });
                 indiceAcumulados = data.map((d: any) => d.acumulado);
                 jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
-                jurosTaxa = this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
+                jurosTaxa = (jurosTaxaAcumulada*100)-100;                
+                jurosTaxaAcumulada = jurosTaxa/100;
+                //jurosTaxa = jurosTaxaAcumulada -1;
+                //this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
                 this.dataTableJuros.push({
                   //valor: jurosValor,
                   indice: jurosIndice,
@@ -728,11 +733,20 @@ public editRow(index: number) {
               });
               indiceAcumulados = data.map((d:any) => d.acumulado);
               //console.log("indiceAcumulados: " + indiceAcumulados)
-              jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
-              console.log("jurosTaxaAcumulada: " + jurosTaxaAcumulada )
-              jurosTaxa = this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
+              
+              
+              if(jurosIndice == "POUPNOVA" || jurosIndice == "POUPANTIGA"){
+                jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
+                jurosTaxa = (jurosTaxaAcumulada)/100;                
+                jurosTaxaAcumulada = ((jurosTaxaAcumulada*100)-100)/100;
+
+              }else{
+                jurosTaxaAcumulada = indiceAcumulados[indiceAcumulados.length - 1];
+                jurosTaxa = this.calcTaxaAcumulada(jurosTaxaAcumulada, jurosDias);
+              }
               console.log("jurosTaxaAcumulada: " + jurosTaxaAcumulada,"jurosDias: " + jurosDias);
               console.log("jurosTaxa " + jurosTaxa)
+              console.log("indice " + jurosIndice)
               this.dataTableJuros.push({
                 //valor: jurosValor,
                 indice: jurosIndice,
