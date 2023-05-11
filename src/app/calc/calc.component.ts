@@ -651,6 +651,7 @@ public editRow(index: number) {
       break;
       case 'simples6':
       case 'simples12':
+      case 'especificar':  
         jurosTaxa = jurosTaxa * 0.01;
         jurosDias = this.days360(jurosDtIni, jurosDtFim);
         jurosTaxaAcumulada = this.calcTaxa(jurosTaxa, jurosDias);
