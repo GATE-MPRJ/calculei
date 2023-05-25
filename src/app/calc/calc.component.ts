@@ -1291,9 +1291,9 @@ public editRow(index: number) {
  * The function then calls the report.makePDF function with the id, date, path, and format. 
  * @param {string} id - The id of the element to be displayed on the report.
  */
-  makePDF(id: any){
+  public async makePDF(id: any){
+    await this.saveCalc();
     let date = this.myFormattedDate;
-    this.TotalUfir = this.calcTotalUfir();
     let headerImg = '/assets/imgs/LOGO_MPRJ_GATE.png';
     let format = 'p';
     let url = location.protocol+'//'+location.hostname+"/?calculo="+this.token
@@ -1314,19 +1314,18 @@ public editRow(index: number) {
 
 
   
-  public saveCalc(){
+  public async saveCalc(){
     let data :any = [];
     this.service.getUFIR().subscribe((res:any) => {
       const data = res.content
       console.log(data.fator)
       this.ufir = data.map((d: any) => d.fator);
-
+      this.TotalUfir = this.calcTotalUfir();
     })
     this.service.pushSaveCalc(this.dados).subscribe((res) => {    
         this.token = res
-        //this.getExcel(this.token)
-    }
-    );
+    });
+    return true;
   }
 
   /**
@@ -1342,9 +1341,9 @@ public editRow(index: number) {
   }
 
   //public getExcel(token: string){    
-  public getExcel(){ 
-    let token = this.token;
-    this.service.getExcel(token).subscribe((x) => {
+  public async getExcel(){ 
+      await this.saveCalc();
+      this.service.getExcel(this.token).subscribe((x) => {
       const newBlob = new Blob([x], { type: "application/xls" });      
       const downloadURL = window.URL.createObjectURL(x);
       const link = document.createElement("a");
